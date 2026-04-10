@@ -7,6 +7,8 @@ import { provide, ref, onMounted, onUnmounted } from 'vue';
 import AppLayout from '@/components/layout/AppLayout.vue';
 import { useWebSocket } from '@/composables/useWebSocket';
 import { systemApi } from '@/api/system';
+import { useTradingStore } from '@/stores/trading';
+import { useOrdersStore } from '@/stores/orders';
 
 const wsConnected = ref(false);
 const paperTrading = ref(false);
@@ -19,19 +21,37 @@ const ws = useWebSocket({
   apiKey: import.meta.env.VITE_API_KEY,
 });
 
-ws.onMessage((msg) => {
-  console.log('[WS]', msg.channel, msg.data);
-});
-
 let wsPollTimer: ReturnType<typeof setInterval> | null = null;
 
 onMounted(async () => {
+  const tradingStore = useTradingStore();
+  const ordersStore = useOrdersStore();
+
+  ws.onMessage((msg) => {
+    switch (msg.channel) {
+      case 'positions':
+        tradingStore.updatePositionsFromWS(msg.data);
+        break;
+      case 'pnl':
+        tradingStore.updatePortfolioFromWS(msg.data as Record<string, unknown>);
+        break;
+      case 'orders':
+        ordersStore.updateOrderFromWS(msg.data as Record<string, unknown>);
+        break;
+    }
+  });
+
   ws.connect();
-  wsPollTimer = setInterval(() => { wsConnected.value = ws.isConnected.value; }, 1000);
+  wsPollTimer = setInterval(() => {
+    wsConnected.value = ws.isConnected.value;
+  }, 1000);
+
   try {
     const status = await systemApi.getPaperStatus();
     paperTrading.value = status.paper_trading === true;
-  } catch { /* Backend not running */ }
+  } catch {
+    /* Backend not running */
+  }
 });
 
 onUnmounted(() => {

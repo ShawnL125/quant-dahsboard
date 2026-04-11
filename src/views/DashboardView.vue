@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, inject, watch, onMounted, onUnmounted, type Ref } from 'vue';
 import { useTradingStore } from '@/stores/trading';
 import { useOrdersStore } from '@/stores/orders';
 import { useSystemStore } from '@/stores/system';
@@ -50,6 +50,7 @@ import SystemStatusBar from '@/components/dashboard/SystemStatusBar.vue';
 const tradingStore = useTradingStore();
 const ordersStore = useOrdersStore();
 const systemStore = useSystemStore();
+const wsConnected = inject<Ref<boolean>>('wsConnected', ref(false));
 
 const equityTimestamps = ref<string[]>([]);
 const equityValues = ref<number[]>([]);
@@ -73,24 +74,53 @@ function updateEquitySnapshot() {
   }
 }
 
+async function pollData() {
+  await Promise.all([
+    tradingStore.fetchAll(),
+    ordersStore.fetchOrders(),
+  ]);
+  updateEquitySnapshot();
+}
+
+function startPolling() {
+  if (pollTimer) return;
+  pollData();
+  pollTimer = setInterval(pollData, 5000);
+}
+
+function stopPolling() {
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
+}
+
+// WS 连接状态变化时切换轮询策略
+watch(wsConnected, (connected) => {
+  if (connected) {
+    stopPolling();
+  } else {
+    startPolling();
+  }
+});
+
 onMounted(async () => {
+  // 初始加载：HTTP 拉一次全量数据
   await Promise.all([
     tradingStore.fetchAll(),
     ordersStore.fetchOrders(),
     systemStore.fetchAll(),
   ]);
   updateEquitySnapshot();
-  pollTimer = setInterval(async () => {
-    await Promise.all([
-      tradingStore.fetchAll(),
-      ordersStore.fetchOrders(),
-    ]);
-    updateEquitySnapshot();
-  }, 5000);
+
+  // 如果 WS 没连上，启动轮询兜底
+  if (!wsConnected.value) {
+    startPolling();
+  }
 });
 
 onUnmounted(() => {
-  if (pollTimer) clearInterval(pollTimer);
+  stopPolling();
 });
 </script>
 

@@ -12,11 +12,12 @@ export const useOrdersStore = defineStore('orders', () => {
   async function fetchOrders() {
     try {
       loading.value = true;
-      const orders = await ordersApi.getOrders();
-      openOrders.value = orders.filter((o) =>
-        ['CREATED', 'SUBMITTED', 'ACCEPTED', 'PARTIALLY_FILLED'].includes(o.status),
-      );
-      orderHistory.value = orders;
+      const [open, history] = await Promise.all([
+        ordersApi.getOpenOrders(),
+        ordersApi.getOrderHistory(),
+      ]);
+      openOrders.value = open;
+      orderHistory.value = history;
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : String(e);
     } finally {

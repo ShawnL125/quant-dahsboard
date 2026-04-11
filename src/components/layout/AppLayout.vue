@@ -41,6 +41,7 @@ const paperTrading = inject<Ref<boolean>>('paperTrading', { value: false } as Re
 
 const pageTitle: Record<string, string> = {
   Dashboard: 'Overview of key metrics',
+  Positions: 'Open positions and P&L',
   Orders: 'Place and manage orders',
   Strategies: 'Manage trading strategies',
   Backtest: 'Run and review backtests',

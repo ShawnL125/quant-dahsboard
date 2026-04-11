@@ -32,6 +32,7 @@ import {
   ThunderboltOutlined,
   LineChartOutlined,
   SettingOutlined,
+  PieChartOutlined,
 } from '@ant-design/icons-vue';
 
 const router = useRouter();
@@ -40,6 +41,7 @@ const wsConnected = inject<Ref<boolean>>('wsConnected', { value: false } as Ref<
 
 const menuItems = [
   { path: '/', label: 'Dashboard', icon: DashboardOutlined },
+  { path: '/positions', label: 'Positions', icon: PieChartOutlined },
   { path: '/orders', label: 'Orders', icon: SwapOutlined },
   { path: '/strategies', label: 'Strategies', icon: ThunderboltOutlined },
   { path: '/backtest', label: 'Backtest', icon: LineChartOutlined },

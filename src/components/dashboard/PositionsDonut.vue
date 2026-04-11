@@ -1,6 +1,9 @@
 <template>
-  <div class="donut-card">
-    <div class="donut-title">Positions</div>
+  <div class="donut-card" @click="router.push('/positions')" style="cursor: pointer;">
+    <div class="donut-title">
+      <span>Positions</span>
+      <span class="view-link">View All →</span>
+    </div>
     <div v-if="positions.length > 0" class="donut-body">
       <v-chart :option="chartOption" style="height: 160px; width: 160px" autoresize />
       <div class="donut-legend">
@@ -27,6 +30,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import VChart from 'vue-echarts';
 import { PieChart } from 'echarts/charts';
 import { TooltipComponent } from 'echarts/components';
@@ -35,6 +39,8 @@ import { use } from 'echarts/core';
 import type { Position } from '@/types';
 
 use([PieChart, TooltipComponent, CanvasRenderer]);
+
+const router = useRouter();
 
 const props = defineProps<{
   positions: Position[];
@@ -92,6 +98,19 @@ const chartOption = computed(() => {
   font-weight: 600;
   color: var(--q-primary-dark);
   margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.view-link {
+  font-size: 12px;
+  color: var(--q-primary);
+  font-weight: 500;
+}
+
+.view-link:hover {
+  text-decoration: underline;
 }
 
 .donut-body {

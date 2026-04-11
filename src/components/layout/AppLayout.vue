@@ -7,7 +7,7 @@
       <header class="app-header">
         <div class="header-left">
           <h1 class="header-title">{{ route.name }}</h1>
-          <span class="header-subtitle">{{ pageTitle }}</span>
+          <span class="header-subtitle">{{ pageTitle[route.name as string] }}</span>
         </div>
         <div class="header-right">
           <div class="header-search">

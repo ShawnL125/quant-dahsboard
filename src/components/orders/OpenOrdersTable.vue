@@ -31,7 +31,7 @@
           <td>{{ order.price || '-' }}</td>
           <td>{{ order.filled_quantity || '0' }}</td>
           <td>
-            <a-popconfirm title="Cancel this order?" @confirm="emit('cancel', order.order_id)">
+            <a-popconfirm title="Cancel this order?" @confirm="emit('cancel', order)">
               <span class="cancel-btn">Cancel</span>
             </a-popconfirm>
           </td>
@@ -50,7 +50,7 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  cancel: [orderId: string];
+  cancel: [order: Order];
 }>();
 
 function formatTime(dateStr?: string): string {

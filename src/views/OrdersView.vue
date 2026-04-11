@@ -71,6 +71,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useOrdersStore } from '@/stores/orders';
+import type { Order } from '@/types';
 import OrderForm from '@/components/orders/OrderForm.vue';
 import OpenOrdersTable from '@/components/orders/OpenOrdersTable.vue';
 import { message } from 'ant-design-vue';
@@ -99,9 +100,9 @@ async function onOrderPlaced() {
   await ordersStore.fetchOrders();
 }
 
-async function onCancelOrder(orderId: string) {
+async function onCancelOrder(order: Order) {
   try {
-    await ordersStore.cancelOrder(orderId);
+    await ordersStore.cancelOrder(order.order_id, order.symbol, order.exchange);
     message.success('Order cancelled');
   } catch {
     message.error('Failed to cancel order');

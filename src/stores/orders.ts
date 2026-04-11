@@ -36,9 +36,9 @@ export const useOrdersStore = defineStore('orders', () => {
     }
   }
 
-  async function cancelOrder(orderId: string) {
+  async function cancelOrder(orderId: string, symbol: string, exchange: string) {
     try {
-      await ordersApi.cancelOrder(orderId);
+      await ordersApi.cancelOrder(orderId, symbol, exchange);
       openOrders.value = openOrders.value.filter((o) => o.order_id !== orderId);
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : String(e);

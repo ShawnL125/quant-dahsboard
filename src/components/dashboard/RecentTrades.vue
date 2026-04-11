@@ -2,7 +2,7 @@
   <div class="trades-card">
     <div class="trades-header">
       <span class="trades-title">Recent Trades</span>
-      <span class="trades-link">View All →</span>
+      <router-link to="/orders" class="trades-link">View All →</router-link>
     </div>
     <table v-if="trades.length > 0" class="trades-table">
       <thead>

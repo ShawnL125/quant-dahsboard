@@ -31,13 +31,12 @@
 </template>
 
 <script setup lang="ts">
-import { inject, computed, type Ref } from 'vue';
+import { inject, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { SearchOutlined, BellOutlined } from '@ant-design/icons-vue';
 import SideMenu from './SideMenu.vue';
 
 const route = useRoute();
-const wsConnected = inject<Ref<boolean>>('wsConnected', { value: false } as Ref<boolean>);
 const paperTrading = inject<Ref<boolean>>('paperTrading', { value: false } as Ref<boolean>);
 
 const pageTitle: Record<string, string> = {

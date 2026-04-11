@@ -61,8 +61,6 @@ onUnmounted(() => {
 </script>
 
 <style>
-@import './assets/styles/theme.css';
-
 body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

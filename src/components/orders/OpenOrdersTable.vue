@@ -1,35 +1,45 @@
 <template>
-  <a-card title="Open Orders">
-    <a-table
-      :columns="columns"
-      :data-source="orders"
-      :pagination="false"
-      size="small"
-      row-key="order_id"
-    >
-      <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'side'">
-          <a-tag :color="record.side === 'BUY' ? 'green' : 'red'">
-            {{ record.side }}
-          </a-tag>
-        </template>
-        <template v-if="column.key === 'status'">
-          <a-tag>{{ record.status }}</a-tag>
-        </template>
-        <template v-if="column.key === 'time'">
-          {{ formatTime(record.created_at) }}
-        </template>
-        <template v-if="column.key === 'action'">
-          <a-popconfirm
-            title="Cancel this order?"
-            @confirm="emit('cancel', record.order_id)"
-          >
-            <a-button type="link" danger size="small">Cancel</a-button>
-          </a-popconfirm>
-        </template>
-      </template>
-    </a-table>
-  </a-card>
+  <div class="orders-card">
+    <div class="card-header">
+      <span class="card-title">Open Orders</span>
+      <span v-if="orders.length > 0" class="card-badge">{{ orders.length }}</span>
+    </div>
+    <table v-if="orders.length > 0" class="data-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Symbol</th>
+          <th>Side</th>
+          <th>Type</th>
+          <th>Qty</th>
+          <th>Price</th>
+          <th>Filled</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="order in orders" :key="order.order_id">
+          <td class="text-muted">{{ formatTime(order.created_at) }}</td>
+          <td class="text-bold">{{ order.symbol }}</td>
+          <td>
+            <span class="side-pill" :class="order.side === 'BUY' ? 'side-buy' : 'side-sell'">
+              {{ order.side }}
+            </span>
+          </td>
+          <td>{{ order.order_type }}</td>
+          <td>{{ order.quantity }}</td>
+          <td>{{ order.price || '-' }}</td>
+          <td>{{ order.filled_quantity || '0' }}</td>
+          <td>
+            <a-popconfirm title="Cancel this order?" @confirm="emit('cancel', order.order_id)">
+              <span class="cancel-btn">Cancel</span>
+            </a-popconfirm>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div v-else class="empty-state">No open orders</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -43,24 +53,100 @@ const emit = defineEmits<{
   cancel: [orderId: string];
 }>();
 
-const columns = [
-  { title: 'Order ID', dataIndex: 'order_id', key: 'order_id', ellipsis: true },
-  { title: 'Symbol', dataIndex: 'symbol', key: 'symbol' },
-  { title: 'Side', dataIndex: 'side', key: 'side' },
-  { title: 'Type', dataIndex: 'order_type', key: 'order_type' },
-  { title: 'Qty', dataIndex: 'quantity', key: 'quantity' },
-  { title: 'Price', dataIndex: 'price', key: 'price' },
-  { title: 'Status', dataIndex: 'status', key: 'status' },
-  { title: 'Time', key: 'time' },
-  { title: 'Action', key: 'action' },
-];
-
 function formatTime(dateStr?: string): string {
   if (!dateStr) return '-';
-  try {
-    return new Date(dateStr).toLocaleTimeString();
-  } catch {
-    return dateStr;
-  }
+  try { return new Date(dateStr).toLocaleTimeString(); }
+  catch { return dateStr; }
 }
 </script>
+
+<style scoped>
+.orders-card {
+  background: var(--q-card);
+  border-radius: var(--q-card-radius);
+  padding: var(--q-card-padding);
+  box-shadow: var(--q-card-shadow);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--q-primary-dark);
+}
+
+.card-badge {
+  background: var(--q-primary-light);
+  color: var(--q-primary);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.data-table th {
+  text-align: left;
+  color: var(--q-text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 6px 0;
+}
+
+.data-table td {
+  padding: 10px 0;
+  color: var(--q-text);
+  border-bottom: 1px solid var(--q-border);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover td {
+  background: var(--q-hover);
+}
+
+.text-muted { color: var(--q-text-muted); }
+.text-bold { font-weight: 600; }
+
+.side-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--q-tag-radius);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.side-buy { background: var(--q-success-light); color: var(--q-success); }
+.side-sell { background: var(--q-error-light); color: var(--q-error); }
+
+.cancel-btn {
+  color: var(--q-error);
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.cancel-btn:hover { text-decoration: underline; }
+
+.empty-state {
+  text-align: center;
+  color: var(--q-text-muted);
+  padding: 24px 0;
+  font-size: 13px;
+}
+</style>

@@ -82,7 +82,8 @@ onMounted(() => {
   gap: var(--q-card-gap);
 }
 
-.page-section { margin-top: 0; }
+.page-section { margin-top: var(--q-card-gap); }
+.page-section:first-child { margin-top: 0; }
 
 .config-card {
   background: var(--q-card);

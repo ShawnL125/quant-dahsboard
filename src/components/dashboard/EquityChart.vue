@@ -1,28 +1,29 @@
 <template>
-  <a-card title="Equity Curve">
+  <div class="chart-card">
+    <div class="chart-card-header">
+      <span class="chart-title">Equity Curve</span>
+      <span class="chart-range">Last 30 days</span>
+    </div>
     <v-chart
       v-if="values.length > 0"
       :option="chartOption"
-      style="height: 320px; width: 100%"
+      style="height: 280px; width: 100%"
       autoresize
     />
-    <a-empty v-else description="No equity data yet" />
-  </a-card>
+    <div v-else class="chart-empty">No equity data yet</div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import VChart from 'vue-echarts';
 import { LineChart } from 'echarts/charts';
-import {
-  GridComponent,
-  TooltipComponent,
-  LegendComponent,
-} from 'echarts/components';
+import { GridComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import { use } from 'echarts/core';
+import { LINE_SERIES_DEFAULTS, CHART_GRID, CHART_TOOLTIP } from '@/utils/chart-theme';
 
-use([LineChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer]);
+use([LineChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
 const props = defineProps<{
   timestamps: string[];
@@ -30,44 +31,64 @@ const props = defineProps<{
 }>();
 
 const chartOption = computed(() => ({
-  tooltip: {
-    trigger: 'axis' as const,
-  },
-  grid: {
-    left: '3%',
-    right: '4%',
-    bottom: '3%',
-    containLabel: true,
-  },
+  tooltip: CHART_TOOLTIP,
+  grid: CHART_GRID,
   xAxis: {
     type: 'category' as const,
     boundaryGap: false,
     data: props.timestamps,
+    axisLine: { show: false },
+    axisTick: { show: false },
+    axisLabel: { color: '#94a3b8', fontSize: 11 },
+    splitLine: { show: false },
   },
   yAxis: {
     type: 'value' as const,
-    axisLabel: {
-      formatter: '${value}',
-    },
+    show: false,
   },
   series: [
     {
       name: 'Equity',
       type: 'line' as const,
-      smooth: true,
+      ...LINE_SERIES_DEFAULTS,
       data: props.values,
-      lineStyle: { color: '#1890ff' },
-      areaStyle: {
-        color: {
-          type: 'linear' as const,
-          x: 0, y: 0, x2: 0, y2: 1,
-          colorStops: [
-            { offset: 0, color: 'rgba(24,144,255,0.3)' },
-            { offset: 1, color: 'rgba(24,144,255,0.02)' },
-          ],
-        },
-      },
     },
   ],
 }));
 </script>
+
+<style scoped>
+.chart-card {
+  background: var(--q-card);
+  border-radius: var(--q-card-radius);
+  padding: var(--q-card-padding);
+  box-shadow: var(--q-card-shadow);
+}
+
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.chart-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--q-primary-dark);
+}
+
+.chart-range {
+  font-size: 11px;
+  color: var(--q-text-muted);
+}
+
+.chart-empty {
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--q-text-muted);
+  font-size: 13px;
+}
+</style>

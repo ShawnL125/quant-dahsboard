@@ -1,9 +1,12 @@
 <template>
-  <div>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px">
-      <a-spin :spinning="store.loading" />
-      <a-button type="primary" @click="onReload">
-        Reload Strategies
+  <div class="strategies-page">
+    <div class="action-bar">
+      <div class="action-left">
+        <span class="active-count">{{ activeCount }} Active</span>
+        <span class="total-count">/ {{ store.strategies.length }} Total</span>
+      </div>
+      <a-button type="primary" :loading="store.loading" @click="onReload">
+        Reload
       </a-button>
     </div>
 
@@ -12,13 +15,14 @@
       :message="store.error"
       type="error"
       show-icon
-      style="margin-bottom: 16px"
+      class="page-section"
     />
 
     <StrategyList
       :strategies="store.strategies"
       @toggle="onToggle"
       @view="onView"
+      class="page-section"
     />
 
     <StrategyDetail
@@ -30,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useStrategiesStore } from '@/stores/strategies';
 import StrategyList from '@/components/strategies/StrategyList.vue';
 import StrategyDetail from '@/components/strategies/StrategyDetail.vue';
@@ -38,6 +42,8 @@ import { message } from 'ant-design-vue';
 
 const store = useStrategiesStore();
 const detailOpen = ref(false);
+
+const activeCount = computed(() => store.strategies.filter((s) => s.is_running).length);
 
 async function onToggle(id: string, enabled: boolean) {
   await store.toggleStrategy(id, enabled);
@@ -58,3 +64,36 @@ onMounted(() => {
   store.fetchStrategies();
 });
 </script>
+
+<style scoped>
+.strategies-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-card-gap);
+}
+
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.action-left {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.active-count {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--q-text);
+}
+
+.total-count {
+  font-size: 13px;
+  color: var(--q-text-muted);
+}
+
+.page-section { margin-top: 0; }
+</style>

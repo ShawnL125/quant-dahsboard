@@ -1,18 +1,25 @@
 <template>
-  <a-card title="Place Order">
-    <a-form
-      layout="inline"
-      :model="form"
-      @finish="handleSubmit"
-    >
+  <div class="order-form-card">
+    <div class="card-title">Place Order</div>
+    <a-form layout="inline" :model="form" @finish="handleSubmit">
       <a-form-item label="Symbol" name="symbol" :rules="[{ required: true, message: 'Required' }]">
         <a-input v-model:value="form.symbol" placeholder="BTC/USDT" style="width: 140px" />
       </a-form-item>
       <a-form-item label="Side" name="side" :rules="[{ required: true }]">
-        <a-select v-model:value="form.side" style="width: 100px">
-          <a-select-option value="BUY">BUY</a-select-option>
-          <a-select-option value="SELL">SELL</a-select-option>
-        </a-select>
+        <a-input-group compact>
+          <a-button
+            :type="form.side === 'BUY' ? 'primary' : 'default'"
+            :class="{ 'side-buy-active': form.side === 'BUY' }"
+            @click="form.side = 'BUY'"
+            style="width: 72px"
+          >BUY</a-button>
+          <a-button
+            :type="form.side === 'SELL' ? 'primary' : 'default'"
+            :class="{ 'side-sell-active': form.side === 'SELL' }"
+            @click="form.side = 'SELL'"
+            style="width: 72px"
+          >SELL</a-button>
+        </a-input-group>
       </a-form-item>
       <a-form-item label="Type" name="order_type" :rules="[{ required: true }]">
         <a-select v-model:value="form.order_type" style="width: 120px">
@@ -33,7 +40,7 @@
       </a-form-item>
     </a-form>
     <a-alert v-if="error" :message="error" type="error" show-icon style="margin-top: 12px" />
-  </a-card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -79,3 +86,31 @@ async function handleSubmit() {
   }
 }
 </script>
+
+<style scoped>
+.order-form-card {
+  background: var(--q-card);
+  border-radius: var(--q-card-radius);
+  padding: var(--q-card-padding);
+  box-shadow: var(--q-card-shadow);
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--q-primary-dark);
+  margin-bottom: 16px;
+}
+
+.side-buy-active {
+  background: var(--q-success) !important;
+  border-color: var(--q-success) !important;
+  color: #fff !important;
+}
+
+.side-sell-active {
+  background: var(--q-error) !important;
+  border-color: var(--q-error) !important;
+  color: #fff !important;
+}
+</style>

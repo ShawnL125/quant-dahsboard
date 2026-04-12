@@ -38,10 +38,14 @@ onMounted(async () => {
       case 'orders':
         ordersStore.updateOrderFromWS(msg.data as Record<string, unknown>);
         break;
+      case 'trades':
+      case 'system':
+        break;
     }
   });
 
   ws.connect();
+  ws.subscribe(['orders', 'positions', 'pnl', 'system', 'trades']);
   wsPollTimer = setInterval(() => {
     wsConnected.value = ws.isConnected.value;
   }, 1000);

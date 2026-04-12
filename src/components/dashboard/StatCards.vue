@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
   totalEquity: string;
@@ -40,21 +40,77 @@ const props = defineProps<{
 }>();
 
 const sparklineWidth = 120;
+const maxPoints = 50;
 
-function generateSparkline(seed: number): string {
-  const points: string[] = [];
-  let val = 20 + (seed % 10);
-  for (let i = 0; i < sparklineWidth; i += 8) {
-    val += Math.sin(i * 0.1 + seed) * 5 + (seed % 3 - 1);
-    val = Math.max(5, Math.min(35, val));
-    points.push(`${i},${val.toFixed(1)}`);
-  }
-  return points.join(' ');
+// ── Sparkline history buffers ────────────────────────────────────
+const equityHistory = ref<number[]>([]);
+const balanceHistory = ref<number[]>([]);
+const pnlHistory = ref<number[]>([]);
+const unrealizedHistory = ref<number[]>([]);
+
+function pushHistory(buffer: typeof equityHistory, value: number) {
+  const next = [...buffer.value, value].slice(-maxPoints);
+  buffer.value = next;
+}
+
+function buildSparklinePoints(values: number[]): string {
+  if (values.length < 2) return '';
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const height = 30; // 40 viewBox height minus padding
+  const step = sparklineWidth / (maxPoints - 1);
+  return values
+    .map((v, i) => {
+      const x = i * step;
+      const y = 5 + height - ((v - min) / range) * height;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(' ');
+}
+
+// ── Push current values into history on every change ─────────────
+watch(() => props.totalEquity, (v) => {
+  if (v) pushHistory(equityHistory, parseFloat(v));
+});
+watch(() => props.availableBalance, (v) => {
+  if (v) pushHistory(balanceHistory, parseFloat(v));
+});
+watch(() => props.realizedPnl, () => {
+  const total = parseFloat(props.realizedPnl || '0') + parseFloat(props.unrealizedPnl || '0');
+  pushHistory(pnlHistory, total);
+});
+watch(() => props.unrealizedPnl, (v) => {
+  if (v) pushHistory(unrealizedHistory, parseFloat(v));
+});
+
+// ── Track initial values for trend percentage ────────────────────
+const initialEquity = ref<number | null>(null);
+const initialBalance = ref<number | null>(null);
+
+watch(() => props.totalEquity, (v) => {
+  if (initialEquity.value === null && v) initialEquity.value = parseFloat(v);
+});
+watch(() => props.availableBalance, (v) => {
+  if (initialBalance.value === null && v) initialBalance.value = parseFloat(v);
+});
+
+function changePercent(current: number, initial: number | null): string {
+  if (initial === null || initial === 0) return '0.0%';
+  const pct = ((current - initial) / Math.abs(initial)) * 100;
+  return (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%';
+}
+
+function trendDir(current: number, initial: number | null): 'up' | 'down' | 'flat' {
+  if (initial === null) return 'flat';
+  return current >= initial ? 'up' : 'down';
 }
 
 const totalPnl = computed(
   () => parseFloat(props.realizedPnl || '0') + parseFloat(props.unrealizedPnl || '0'),
 );
+
+const unrealized = computed(() => parseFloat(props.unrealizedPnl || '0'));
 
 const cards = computed(() => [
   {
@@ -62,12 +118,12 @@ const cards = computed(() => [
     displayValue: formatMoney(props.totalEquity),
     prefix: '$',
     valueColor: 'var(--q-primary-dark)',
-    pillText: 'Today',
+    pillText: 'Session',
     pillClass: 'pill-blue',
-    trendIcon: parseFloat(props.totalEquity) >= 0 ? '↑' : '↓',
-    trendText: parseFloat(props.totalEquity) >= 0 ? '+' + pct(props.totalEquity) : pct(props.totalEquity),
-    trendClass: parseFloat(props.totalEquity) >= 0 ? 'trend-up' : 'trend-down',
-    sparklinePoints: generateSparkline(1),
+    trendIcon: trendDir(parseFloat(props.totalEquity || '0'), initialEquity.value) === 'down' ? '↓' : '↑',
+    trendText: changePercent(parseFloat(props.totalEquity || '0'), initialEquity.value),
+    trendClass: trendDir(parseFloat(props.totalEquity || '0'), initialEquity.value) === 'down' ? 'trend-down' : 'trend-up',
+    sparklinePoints: buildSparklinePoints(equityHistory.value),
     sparklineColor: 'var(--q-primary)',
   },
   {
@@ -75,12 +131,12 @@ const cards = computed(() => [
     displayValue: formatMoney(props.availableBalance),
     prefix: '$',
     valueColor: 'var(--q-primary-dark)',
-    pillText: 'Today',
+    pillText: 'Session',
     pillClass: 'pill-blue',
-    trendIcon: '↑',
-    trendText: '+1.8%',
-    trendClass: 'trend-up',
-    sparklinePoints: generateSparkline(2),
+    trendIcon: trendDir(parseFloat(props.availableBalance || '0'), initialBalance.value) === 'down' ? '↓' : '↑',
+    trendText: changePercent(parseFloat(props.availableBalance || '0'), initialBalance.value),
+    trendClass: trendDir(parseFloat(props.availableBalance || '0'), initialBalance.value) === 'down' ? 'trend-down' : 'trend-up',
+    sparklinePoints: buildSparklinePoints(balanceHistory.value),
     sparklineColor: 'var(--q-primary)',
   },
   {
@@ -89,25 +145,25 @@ const cards = computed(() => [
     prefix: totalPnl.value >= 0 ? '+$' : '-$',
     valueColor: totalPnl.value >= 0 ? 'var(--q-success)' : 'var(--q-error)',
     pillText: '30d',
-    pillClass: 'pill-blue',
+    pillClass: totalPnl.value >= 0 ? 'pill-blue' : 'pill-red',
     trendIcon: totalPnl.value >= 0 ? '↑' : '↓',
-    trendText: totalPnl.value >= 0 ? '+12%' : '-8%',
+    trendText: totalPnl.value >= 0 ? 'Profit' : 'Loss',
     trendClass: totalPnl.value >= 0 ? 'trend-up' : 'trend-down',
-    sparklinePoints: generateSparkline(3),
+    sparklinePoints: buildSparklinePoints(pnlHistory.value),
     sparklineColor: totalPnl.value >= 0 ? 'var(--q-success)' : 'var(--q-error)',
   },
   {
     label: 'Unrealized P&L',
     displayValue: formatMoney(props.unrealizedPnl),
-    prefix: parseFloat(props.unrealizedPnl) >= 0 ? '+$' : '-$',
-    valueColor: parseFloat(props.unrealizedPnl) >= 0 ? 'var(--q-success)' : 'var(--q-error)',
+    prefix: unrealized.value >= 0 ? '+$' : '-$',
+    valueColor: unrealized.value >= 0 ? 'var(--q-success)' : 'var(--q-error)',
     pillText: 'Open',
-    pillClass: parseFloat(props.unrealizedPnl) >= 0 ? 'pill-blue' : 'pill-red',
-    trendIcon: parseFloat(props.unrealizedPnl) >= 0 ? '↑' : '↓',
-    trendText: parseFloat(props.unrealizedPnl) >= 0 ? '+0.8%' : '-0.8%',
-    trendClass: parseFloat(props.unrealizedPnl) >= 0 ? 'trend-up' : 'trend-down',
-    sparklinePoints: generateSparkline(4),
-    sparklineColor: parseFloat(props.unrealizedPnl) >= 0 ? 'var(--q-success)' : 'var(--q-error)',
+    pillClass: unrealized.value >= 0 ? 'pill-blue' : 'pill-red',
+    trendIcon: unrealized.value >= 0 ? '↑' : '↓',
+    trendText: unrealized.value >= 0 ? 'Profit' : 'Loss',
+    trendClass: unrealized.value >= 0 ? 'trend-up' : 'trend-down',
+    sparklinePoints: buildSparklinePoints(unrealizedHistory.value),
+    sparklineColor: unrealized.value >= 0 ? 'var(--q-success)' : 'var(--q-error)',
   },
 ]);
 
@@ -115,12 +171,6 @@ function formatMoney(value: string): string {
   const num = Math.abs(parseFloat(value || '0'));
   if (isNaN(num)) return '0.00';
   return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function pct(value: string): string {
-  const num = parseFloat(value || '0');
-  if (isNaN(num) || num === 0) return '0.0%';
-  return (num / 10000).toFixed(1) + '%';
 }
 </script>
 

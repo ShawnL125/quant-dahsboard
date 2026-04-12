@@ -40,16 +40,30 @@ export const useTradingStore = defineStore('trading', () => {
   function updatePositionsFromWS(data: unknown) {
     if (Array.isArray(data)) {
       positions.value = data as Position[];
-    } else if (data && typeof data === 'object' && 'symbol' in data) {
-      const pos = data as Position;
-      const idx = positions.value.findIndex(
-        (p) => p.symbol === pos.symbol && p.exchange === pos.exchange,
-      );
-      if (idx >= 0) {
-        positions.value[idx] = { ...positions.value[idx], ...pos };
-      } else {
-        positions.value = [...positions.value, pos];
-      }
+      return;
+    }
+    if (!data || typeof data !== 'object') return;
+
+    // WS events wrap the position in an envelope: { event_type, action, data: {...} }
+    const envelope = data as Record<string, unknown>;
+    const action = envelope.action as string | undefined;
+    const posData = (envelope.data && typeof envelope.data === 'object')
+      ? envelope.data as Record<string, unknown>
+      : envelope;
+
+    const pos = posData as unknown as Position;
+    if (!pos.symbol) return;
+
+    const idx = positions.value.findIndex(
+      (p) => p.symbol === pos.symbol && p.exchange === pos.exchange,
+    );
+
+    if (action === 'DELETE' && idx >= 0) {
+      positions.value = positions.value.filter((_, i) => i !== idx);
+    } else if (idx >= 0) {
+      positions.value[idx] = { ...positions.value[idx], ...pos };
+    } else {
+      positions.value = [...positions.value, pos];
     }
   }
 

@@ -228,6 +228,7 @@ export interface RiskStatus {
 
 export interface RiskEvent {
   time: string;
+  received_at?: string;
   event_type: string;
   level: string;
   target: string;

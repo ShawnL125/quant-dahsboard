@@ -41,20 +41,24 @@ import type { RiskEvent } from '@/types';
 const props = defineProps<{
   events: RiskEvent[];
   total: number;
+  currentPage?: number;
   pageSize?: number;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   refresh: [];
   'page-change': [page: number];
 }>();
 
-const currentPage = computed(() => props.pageSize ?? 20);
+const pageSize = computed(() => props.pageSize ?? 20);
+const currentPage = computed(() => props.currentPage ?? 1);
 
 const pagination = computed(() => ({
-  pageSize: currentPage.value,
+  current: currentPage.value,
+  pageSize: pageSize.value,
   total: props.total,
   simple: true,
+  onChange: (page: number) => emit('page-change', page),
 }));
 
 const columns = [

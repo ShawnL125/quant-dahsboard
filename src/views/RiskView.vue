@@ -27,6 +27,8 @@
       <RiskEventsTable
         :events="riskStore.events"
         :total="riskStore.eventsTotal"
+        :current-page="currentEventsPage"
+        :page-size="eventsPageSize"
         @refresh="onRefreshEvents"
         @page-change="onPageChange"
         class="risk-cell"
@@ -46,13 +48,21 @@ import RiskEventsTable from '@/components/risk/RiskEventsTable.vue';
 
 const riskStore = useRiskStore();
 const wsConnected = inject<Ref<boolean>>('wsConnected', ref(false));
+const eventsPageSize = 20;
+const currentEventsPage = ref(1);
 
 let pollTimer: ReturnType<typeof setInterval> | null = null;
 
+function pollRiskData() {
+  return Promise.all([riskStore.fetchStatus(), riskStore.fetchExposure()]);
+}
+
 function startPolling() {
   if (pollTimer) return;
-  riskStore.fetchStatus();
-  pollTimer = setInterval(() => riskStore.fetchStatus(), 5000);
+  void pollRiskData();
+  pollTimer = setInterval(() => {
+    void pollRiskData();
+  }, 5000);
 }
 
 function stopPolling() {
@@ -71,12 +81,14 @@ async function onKillSwitchToggle(activate: boolean) {
 }
 
 async function onRefreshEvents() {
-  await riskStore.fetchEvents();
+  const offset = (currentEventsPage.value - 1) * eventsPageSize;
+  await riskStore.fetchEvents(eventsPageSize, offset);
 }
 
 async function onPageChange(page: number) {
-  const offset = (page - 1) * 20;
-  await riskStore.fetchEvents(20, offset);
+  currentEventsPage.value = page;
+  const offset = (page - 1) * eventsPageSize;
+  await riskStore.fetchEvents(eventsPageSize, offset);
 }
 
 watch(wsConnected, () => {

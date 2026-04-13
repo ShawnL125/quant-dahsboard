@@ -44,7 +44,7 @@ onMounted(async () => {
       case 'system':
         break;
       case 'risk':
-        riskStore.updateFromWS(msg.data as Record<string, unknown>);
+        riskStore.updateFromWS(msg.data as Record<string, unknown>, msg.timestamp);
         break;
     }
   });

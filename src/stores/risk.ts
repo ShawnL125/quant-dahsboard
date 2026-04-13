@@ -63,15 +63,17 @@ export const useRiskStore = defineStore('risk', () => {
   async function postKillSwitch(payload: { level: 'GLOBAL' | 'SYMBOL' | 'STRATEGY'; target?: string; reason?: string; activate: boolean }) {
     try {
       await riskApi.postKillSwitch(payload);
-      await fetchStatus();
+      await Promise.all([fetchStatus(), fetchExposure()]);
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : String(e);
     }
   }
 
-  function updateFromWS(data: Record<string, unknown>) {
+  function updateFromWS(data: Record<string, unknown>, timestamp?: string) {
+    const receivedAt = new Date().toISOString();
     const wsEvent: RiskEvent = {
-      time: new Date().toISOString(),
+      time: timestamp || receivedAt,
+      received_at: receivedAt,
       event_type: String(data.action || ''),
       level: String(data.level || ''),
       target: String(data.target || ''),
@@ -80,7 +82,7 @@ export const useRiskStore = defineStore('risk', () => {
     };
     events.value = [wsEvent, ...events.value];
     eventsTotal.value += 1;
-    fetchStatus();
+    void Promise.all([fetchStatus(), fetchExposure()]);
   }
 
   return {

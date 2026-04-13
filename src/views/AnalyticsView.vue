@@ -91,6 +91,38 @@
         </table>
         <div v-else class="empty-state">No round-trip trades</div>
       </div>
+
+      <div class="signals-section page-section">
+        <div class="section-header">
+          <span class="section-title">Signal History</span>
+          <span v-if="store.signalsTotal > 0" class="section-badge">{{ store.signalsTotal }}</span>
+        </div>
+        <table v-if="store.signals.length > 0" class="data-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Symbol</th>
+              <th>Direction</th>
+              <th>Strength</th>
+              <th>Strategy</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="sig in store.signals" :key="sig.signal_id">
+              <td class="text-muted">{{ formatTime(sig.time) }}</td>
+              <td class="text-bold">{{ sig.symbol }}</td>
+              <td>
+                <span class="side-pill" :class="sig.direction === 'long' ? 'side-long' : 'side-short'">{{ sig.direction }}</span>
+              </td>
+              <td class="text-mono">{{ parseFloat(sig.strength).toFixed(2) }}</td>
+              <td class="text-muted">{{ sig.strategy_id }}</td>
+              <td class="text-muted text-ellipsis" :title="sig.reason">{{ sig.reason }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div v-else class="empty-state">No signal history</div>
+      </div>
     </a-spin>
   </div>
 </template>
@@ -105,6 +137,14 @@ function formatDuration(seconds: number): string {
   if (seconds < 60) return `${seconds.toFixed(0)}s`;
   if (seconds < 3600) return `${(seconds / 60).toFixed(0)}m`;
   return `${(seconds / 3600).toFixed(1)}h`;
+}
+
+function formatTime(iso: string): string {
+  try {
+    return new Date(iso).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  } catch {
+    return iso;
+  }
 }
 
 onMounted(async () => {
@@ -127,7 +167,8 @@ onMounted(async () => {
 
 .stats-section,
 .quality-section,
-.trips-section {
+.trips-section,
+.signals-section {
   background: var(--q-card);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
@@ -279,6 +320,13 @@ onMounted(async () => {
 .text-bold { font-weight: 600; }
 .text-muted { color: var(--q-text-muted); font-size: 11px; }
 .text-mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
+
+.text-ellipsis {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .empty-state {
   text-align: center;

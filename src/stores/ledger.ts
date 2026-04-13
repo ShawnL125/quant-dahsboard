@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { ledgerApi } from '@/api/ledger';
-import type { LedgerEntry, DailySummary, LedgerConfigResponse } from '@/types';
+import type { LedgerEntry, DailySummary, LedgerConfigResponse, CashFlowRequest, CashFlowResponse } from '@/types';
 
 export const useLedgerStore = defineStore('ledger', () => {
   const balances = ref<Record<string, Record<string, string>>>({});
@@ -47,6 +47,11 @@ export const useLedgerStore = defineStore('ledger', () => {
     } catch { /* optional */ }
   }
 
+  async function postCashFlow(data: CashFlowRequest): Promise<CashFlowResponse> {
+    const result = await ledgerApi.postCashFlow(data);
+    return result;
+  }
+
   async function fetchAll() {
     loading.value = true;
     try {
@@ -59,6 +64,6 @@ export const useLedgerStore = defineStore('ledger', () => {
   return {
     balances, entries, entriesTotal, dailySummary, config,
     loading, error,
-    fetchBalances, fetchEntries, fetchDailySummary, fetchConfig, fetchAll,
+    fetchBalances, fetchEntries, fetchDailySummary, fetchConfig, postCashFlow, fetchAll,
   };
 });

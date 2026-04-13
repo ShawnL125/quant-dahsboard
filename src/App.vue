@@ -9,6 +9,7 @@ import { useWebSocket } from '@/composables/useWebSocket';
 import { systemApi } from '@/api/system';
 import { useTradingStore } from '@/stores/trading';
 import { useOrdersStore } from '@/stores/orders';
+import { useRiskStore } from '@/stores/risk';
 
 const wsConnected = ref(false);
 const paperTrading = ref(false);
@@ -26,6 +27,7 @@ let wsPollTimer: ReturnType<typeof setInterval> | null = null;
 onMounted(async () => {
   const tradingStore = useTradingStore();
   const ordersStore = useOrdersStore();
+  const riskStore = useRiskStore();
 
   ws.onMessage((msg) => {
     switch (msg.channel) {
@@ -41,11 +43,14 @@ onMounted(async () => {
       case 'trades':
       case 'system':
         break;
+      case 'risk':
+        riskStore.updateFromWS(msg.data as Record<string, unknown>, msg.timestamp);
+        break;
     }
   });
 
   ws.connect();
-  ws.subscribe(['orders', 'positions', 'pnl', 'system', 'trades']);
+  ws.subscribe(['orders', 'positions', 'pnl', 'system', 'trades', 'risk']);
   wsPollTimer = setInterval(() => {
     wsConnected.value = ws.isConnected.value;
   }, 1000);

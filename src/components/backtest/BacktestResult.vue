@@ -1,7 +1,9 @@
 <template>
   <div v-if="result">
     <MetricsCards :result="result" />
-    <div class="detail-card">
+    <EquityCurve v-if="equity.length > 0" :points="equity" class="page-section" />
+    <BacktestTrades v-if="trades.length > 0" :trades="trades" class="page-section" />
+    <div class="detail-card page-section">
       <div class="card-title">Detailed Metrics</div>
       <div class="detail-grid">
         <div class="detail-row">
@@ -42,20 +44,25 @@
 
 <script setup lang="ts">
 import MetricsCards from './MetricsCards.vue';
-import type { BacktestResult } from '@/types';
+import EquityCurve from './EquityCurve.vue';
+import BacktestTrades from './BacktestTrades.vue';
+import type { BacktestResult, BacktestEquityPoint, BacktestTrade } from '@/types';
 
 defineProps<{
   result: BacktestResult | null;
+  equity: BacktestEquityPoint[];
+  trades: BacktestTrade[];
 }>();
 </script>
 
 <style scoped>
+.page-section { margin-top: var(--q-card-gap); }
+
 .detail-card {
   background: var(--q-card);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
   box-shadow: var(--q-card-shadow);
-  margin-top: var(--q-card-gap);
 }
 
 .card-title {

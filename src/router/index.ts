@@ -9,6 +9,7 @@ const router = createRouter({
     { path: '/orders', name: 'Orders', component: () => import('@/views/OrdersView.vue') },
     { path: '/strategies', name: 'Strategies', component: () => import('@/views/StrategiesView.vue') },
     { path: '/backtest', name: 'Backtest', component: () => import('@/views/BacktestView.vue') },
+    { path: '/walkforward', name: 'Walk-Forward', component: () => import('@/views/WalkforwardView.vue') },
     { path: '/system', name: 'System', component: () => import('@/views/SystemView.vue') },
   ],
 });

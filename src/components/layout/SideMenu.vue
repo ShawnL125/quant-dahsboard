@@ -34,6 +34,7 @@ import {
   SettingOutlined,
   PieChartOutlined,
   SafetyOutlined,
+  ExperimentOutlined,
 } from '@ant-design/icons-vue';
 
 const router = useRouter();
@@ -47,6 +48,7 @@ const menuItems = [
   { path: '/orders', label: 'Orders', icon: SwapOutlined },
   { path: '/strategies', label: 'Strategies', icon: ThunderboltOutlined },
   { path: '/backtest', label: 'Backtest', icon: LineChartOutlined },
+  { path: '/walkforward', label: 'Walk-Forward', icon: ExperimentOutlined },
   { path: '/system', label: 'System', icon: SettingOutlined },
 ];
 </script>

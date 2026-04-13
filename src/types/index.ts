@@ -43,6 +43,14 @@ export interface OrderRequest {
   stop_price?: string | null;
 }
 
+export interface OrderEvent {
+  event_id: string;
+  order_id: string;
+  event_type: string;
+  timestamp: string;
+  data?: Record<string, unknown>;
+}
+
 // ── Strategy ───────────────────────────────────────────────────────
 export interface Strategy {
   strategy_id: string;

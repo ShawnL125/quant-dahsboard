@@ -42,7 +42,7 @@ import type { RiskEvent } from '@/types';
 const props = defineProps<{
   events: RiskEvent[];
   total: number;
-  currentPage: number;
+  currentPage?: number;
   pageSize?: number;
 }>();
 
@@ -52,12 +52,14 @@ const emit = defineEmits<{
 }>();
 
 const resolvedPageSize = computed(() => props.pageSize ?? 20);
+const resolvedCurrentPage = computed(() => props.currentPage ?? 1);
 
 const pagination = computed(() => ({
-  current: props.currentPage,
+  current: resolvedCurrentPage.value,
   pageSize: resolvedPageSize.value,
   total: props.total,
   simple: true,
+  onChange: (page: number) => emit('page-change', page),
 }));
 
 const columns = [
@@ -85,7 +87,7 @@ function rowClass(record: RiskEvent): string {
 }
 
 function onTableChange(pagination: { current?: number }) {
-  if (pagination.current && pagination.current !== props.currentPage) {
+  if (pagination.current && pagination.current !== resolvedCurrentPage.value) {
     emit('page-change', pagination.current);
   }
 }

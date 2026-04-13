@@ -112,7 +112,7 @@ onUnmounted(() => {
 .risk-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
+  grid-rows: auto auto;
   gap: var(--q-card-gap);
 }
 

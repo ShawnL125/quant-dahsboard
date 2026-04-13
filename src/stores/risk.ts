@@ -45,14 +45,15 @@ export const useRiskStore = defineStore('risk', () => {
     ].join(':');
   }
 
-  function normalizeRiskEvent(payload: RiskEvent | Record<string, unknown>): RiskEvent {
+  function normalizeRiskEvent(payload: RiskEvent | Record<string, unknown>, serverTimestamp?: string): RiskEvent {
     const rawPayload = isRecord(payload) ? payload : {};
     const time =
-      typeof rawPayload.time === 'string' && rawPayload.time.length > 0
+      serverTimestamp ??
+      (typeof rawPayload.time === 'string' && rawPayload.time.length > 0
         ? rawPayload.time
         : typeof rawPayload.timestamp === 'string' && rawPayload.timestamp.length > 0
           ? rawPayload.timestamp
-        : new Date().toISOString();
+          : new Date().toISOString());
     const metadata = isRecord(rawPayload.metadata) ? rawPayload.metadata : rawPayload;
 
     return {
@@ -170,14 +171,14 @@ export const useRiskStore = defineStore('risk', () => {
   async function postKillSwitch(payload: { level: 'GLOBAL' | 'SYMBOL' | 'STRATEGY'; target?: string; reason?: string; activate: boolean }) {
     try {
       await riskApi.postKillSwitch(payload);
-      await fetchStatus();
+      await Promise.all([fetchStatus(), fetchExposure()]);
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : String(e);
     }
   }
 
-  function updateFromWS(data: Record<string, unknown>) {
-    const wsEvent = normalizeRiskEvent(data);
+  function updateFromWS(data: Record<string, unknown>, serverTimestamp?: string) {
+    const wsEvent = normalizeRiskEvent(data, serverTimestamp);
     const isNewEvent = upsertEvent(wsEvent);
 
     mergeRealtimeEvent(wsEvent.event_id);
@@ -186,7 +187,7 @@ export const useRiskStore = defineStore('risk', () => {
       eventsTotal.value += 1;
     }
 
-    void fetchStatus();
+    void Promise.all([fetchStatus(), fetchExposure()]);
   }
 
   async function sampleDrawdown() {

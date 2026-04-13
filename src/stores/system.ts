@@ -55,6 +55,15 @@ export const useSystemStore = defineStore('system', () => {
     }
   }
 
+  async function reloadConfig() {
+    try {
+      await systemApi.reloadConfig();
+      await fetchConfig();
+    } catch {
+      /* ignore */
+    }
+  }
+
   return {
     status,
     liveness,
@@ -63,5 +72,6 @@ export const useSystemStore = defineStore('system', () => {
     eventStats,
     loading,
     fetchAll,
+    reloadConfig,
   };
 });

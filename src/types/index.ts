@@ -371,3 +371,171 @@ export interface SystemStatusResponse {
   };
   connectors: Record<string, ConnectorStatus>;
 }
+
+// ── Analytics ──────────────────────────────────────────────────────
+export interface AnalyticsSignal {
+  time: string;
+  signal_id: string;
+  strategy_id: string;
+  symbol: string;
+  exchange: string;
+  direction: string;
+  strength: string;
+  reason: string;
+  target_price?: string | null;
+  stop_price?: string | null;
+  metadata: Record<string, unknown>;
+}
+
+export interface AnalyticsSignalsResponse {
+  signals: AnalyticsSignal[];
+  total: number;
+}
+
+export interface RoundTrip {
+  time: string;
+  trade_id: string;
+  strategy_id: string;
+  signal_id: string | null;
+  close_signal_id: string | null;
+  symbol: string;
+  exchange: string;
+  side: string;
+  entry_time: string | null;
+  exit_time: string | null;
+  entry_price: string;
+  exit_price: string;
+  quantity: string;
+  gross_pnl: string;
+  fee: string;
+  net_pnl: string;
+  holding_duration_sec: number;
+  stop_triggered: boolean;
+  metadata: Record<string, unknown>;
+}
+
+export interface RoundTripsResponse {
+  round_trips: RoundTrip[];
+  total: number;
+}
+
+export interface StrategyStatsSnapshot {
+  time: string;
+  snapshot_id: string;
+  strategy_id: string;
+  total_trades: number;
+  winning_trades: number;
+  losing_trades: number;
+  win_rate: string;
+  avg_win: string;
+  avg_loss: string;
+  profit_factor: string;
+  total_pnl: string;
+  sharpe_ratio: string | null;
+  max_drawdown_pct: string;
+  consecutive_losses: number;
+  max_consecutive_losses: number;
+  avg_holding_sec: number;
+  signal_count: number;
+  signal_fill_rate: string;
+}
+
+export interface StrategyStatsResponse {
+  snapshots: StrategyStatsSnapshot[];
+}
+
+export interface StrategyStatsHistoryResponse {
+  history: StrategyStatsSnapshot[];
+}
+
+export interface ConsecutiveLossesResponse {
+  consecutive_losses: number;
+  max_consecutive_losses: number;
+  strategy_id: string | null;
+}
+
+export interface SignalQualityResponse {
+  signal_count: number;
+  trade_count: number;
+  fill_rate: string;
+}
+
+export interface AnalyticsConfigResponse {
+  enabled: boolean;
+  snapshot_interval_hours: number;
+  track_signals: boolean;
+  max_open_position_memory: number;
+}
+
+// ── Ledger ─────────────────────────────────────────────────────────
+export interface LedgerEntry {
+  entry_id: string;
+  timestamp: string;
+  account: string;
+  counter_account: string;
+  debit: string;
+  credit: string;
+  balance: string;
+  asset: string;
+  reference_type: string;
+  reference_id: string;
+  strategy_id?: string | null;
+  symbol?: string | null;
+  exchange?: string | null;
+  metadata?: Record<string, unknown> | null;
+}
+
+export interface LedgerEntriesResponse {
+  entries: LedgerEntry[];
+  total: number;
+}
+
+export interface DailySummary {
+  date: string;
+  account: string;
+  asset: string;
+  total_debit: string;
+  total_credit: string;
+  opening_balance: string;
+  closing_balance: string;
+  entry_count: number;
+}
+
+export interface CashFlowRequest {
+  flow_type: 'deposit' | 'withdrawal';
+  asset?: string;
+  amount: string;
+}
+
+export interface CashFlowResponse {
+  cash_flow_id: string;
+  flow_type: string;
+  asset: string;
+  amount: string;
+}
+
+export interface LedgerConfigResponse {
+  enabled: boolean;
+  track_funding: boolean;
+  snapshot_interval_hours: number;
+  daily_summary_hour_utc: number;
+}
+
+// ── Reconciliation ─────────────────────────────────────────────────
+export interface ReconciliationRunRequest {
+  backtest_run_id: string;
+}
+
+export interface ReconciliationRunResponse {
+  report_id: string;
+  trade_match_count: number;
+  alert_count: number;
+}
+
+export interface ReconAlert {
+  alert_id: string;
+  level: string;
+  alert_type: string;
+  message: string;
+  data: Record<string, unknown>;
+}

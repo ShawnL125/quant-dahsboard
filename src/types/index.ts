@@ -81,6 +81,45 @@ export interface BacktestResult {
   total_trades: number;
 }
 
+export interface BacktestRunRecord {
+  run_id: string;
+  symbol: string;
+  exchange: string;
+  timeframe: string;
+  start_time: string;
+  end_time: string;
+  group_id: string;
+  strategy_ids: string[];
+  initial_balance: string;
+  total_return_pct: string;
+  sharpe_ratio: string;
+  calmar_ratio: string;
+  max_drawdown_pct: string;
+  win_rate: string;
+  total_trades: number;
+  status: string;
+  created_at: string;
+}
+
+export interface BacktestEquityPoint {
+  run_id: string;
+  timestamp: string;
+  equity: string;
+}
+
+export interface BacktestTrade {
+  run_id: string;
+  symbol: string;
+  exchange: string;
+  side: string;
+  entry_time: string;
+  exit_time: string;
+  entry_price: string;
+  exit_price: string;
+  quantity: string;
+  pnl: string;
+}
+
 export interface BacktestHistoryItem {
   task_id: string;
   status: string;

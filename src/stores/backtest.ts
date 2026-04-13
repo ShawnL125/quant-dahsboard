@@ -1,11 +1,15 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { backtestApi } from '@/api/backtest';
-import type { BacktestHistoryItem, BacktestResult } from '@/types';
+import type { BacktestHistoryItem, BacktestResult, BacktestRunRecord, BacktestEquityPoint, BacktestTrade } from '@/types';
 
 export const useBacktestStore = defineStore('backtest', () => {
   const history = ref<BacktestHistoryItem[]>([]);
+  const runs = ref<BacktestRunRecord[]>([]);
   const currentResult = ref<BacktestResult | null>(null);
+  const currentRun = ref<BacktestRunRecord | null>(null);
+  const currentEquity = ref<BacktestEquityPoint[]>([]);
+  const currentTrades = ref<BacktestTrade[]>([]);
   const currentTaskId = ref<string | null>(null);
   const taskStatus = ref<string>('');
   const loading = ref(false);
@@ -15,6 +19,33 @@ export const useBacktestStore = defineStore('backtest', () => {
     try {
       loading.value = true;
       history.value = await backtestApi.getHistory();
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : String(e);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function fetchRuns() {
+    try {
+      runs.value = await backtestApi.getRuns();
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : String(e);
+    }
+  }
+
+  async function fetchRunDetails(runId: string) {
+    try {
+      loading.value = true;
+      const [run, equity, trades] = await Promise.all([
+        backtestApi.getRun(runId),
+        backtestApi.getEquity(runId),
+        backtestApi.getTrades(runId),
+      ]);
+      currentRun.value = run;
+      currentEquity.value = equity;
+      currentTrades.value = trades;
+      currentTaskId.value = runId;
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : String(e);
     } finally {
@@ -69,12 +100,18 @@ export const useBacktestStore = defineStore('backtest', () => {
 
   return {
     history,
+    runs,
     currentResult,
+    currentRun,
+    currentEquity,
+    currentTrades,
     currentTaskId,
     taskStatus,
     loading,
     error,
     fetchHistory,
+    fetchRuns,
+    fetchRunDetails,
     runBacktest,
     fetchResult,
   };

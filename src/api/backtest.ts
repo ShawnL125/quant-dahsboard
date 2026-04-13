@@ -1,5 +1,5 @@
 import apiClient from './client';
-import type { BacktestResult, BacktestHistoryItem } from '@/types';
+import type { BacktestResult, BacktestHistoryItem, BacktestRunRecord, BacktestEquityPoint, BacktestTrade } from '@/types';
 
 export const backtestApi = {
   runBacktest: (params?: Record<string, unknown>) =>
@@ -10,6 +10,14 @@ export const backtestApi = {
     apiClient.get<BacktestResult>(`/backtest/${taskId}/result`).then((r) => r.data),
   getHistory: () =>
     apiClient.get<BacktestHistoryItem[]>('/backtest/history').then((r) => r.data),
-  getRuns: () =>
-    apiClient.get('/backtest/runs').then((r) => r.data),
+  getRuns: (limit = 50, offset = 0) =>
+    apiClient.get<BacktestRunRecord[]>('/backtest/runs', { params: { limit, offset } }).then((r) => r.data),
+  getRun: (runId: string) =>
+    apiClient.get<BacktestRunRecord>(`/backtest/runs/${runId}`).then((r) => r.data),
+  getEquity: (runId: string) =>
+    apiClient.get<BacktestEquityPoint[]>(`/backtest/runs/${runId}/equity`).then((r) => r.data),
+  getTrades: (runId: string) =>
+    apiClient.get<BacktestTrade[]>(`/backtest/runs/${runId}/trades`).then((r) => r.data),
+  compare: (runIds: string[]) =>
+    apiClient.get('/backtest/compare', { params: { runs: runIds.join(',') } }).then((r) => r.data),
 };

@@ -46,6 +46,8 @@ const pageTitle: Record<string, string> = {
   Orders: 'Place and manage orders',
   Strategies: 'Manage trading strategies',
   Signals: 'Live strategy signal feed',
+  Analytics: 'Strategy performance and trade analytics',
+  Ledger: 'Account balances and ledger entries',
   Backtest: 'Run and review backtests',
   'Walk-Forward': 'Walk-Forward optimization analysis',
   System: 'System health and configuration',

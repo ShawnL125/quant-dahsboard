@@ -31,6 +31,9 @@
       <div class="config-card page-section">
         <a-collapse>
           <a-collapse-panel key="config" header="Configuration">
+            <div class="config-actions">
+              <a-button size="small" @click="onReloadConfig" :loading="reloading">Reload Config</a-button>
+            </div>
             <pre class="config-code">{{ formatJson(store.config) }}</pre>
           </a-collapse-panel>
         </a-collapse>
@@ -61,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useSystemStore } from '@/stores/system';
 import { useQualityStore } from '@/stores/quality';
 import HealthStatus from '@/components/system/HealthStatus.vue';
@@ -82,6 +85,12 @@ const eventRows = computed(() => {
 });
 
 let qualityTimer: ReturnType<typeof setInterval> | null = null;
+const reloading = ref(false);
+
+function onReloadConfig() {
+  reloading.value = true;
+  store.reloadConfig().finally(() => { reloading.value = false; });
+}
 
 function refreshQuality() {
   qualityStore.fetchAll();
@@ -158,6 +167,10 @@ onUnmounted(() => {
   border-radius: var(--q-card-radius);
   box-shadow: var(--q-card-shadow);
   overflow: hidden;
+}
+
+.config-actions {
+  margin-bottom: 12px;
 }
 
 .config-code {

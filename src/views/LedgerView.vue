@@ -4,7 +4,10 @@
       <div class="balances-section">
         <div class="section-header">
           <span class="section-title">Account Balances</span>
-          <a-button size="small" @click="onRefresh">Refresh</a-button>
+          <div class="header-actions">
+            <a-button size="small" @click="showCashFlow = true">Cash Flow</a-button>
+            <a-button size="small" @click="onRefresh">Refresh</a-button>
+          </div>
         </div>
         <div v-if="Object.keys(store.balances).length > 0" class="balances-grid">
           <div v-for="(assets, account) in store.balances" :key="account" class="balance-card">
@@ -16,6 +19,40 @@
           </div>
         </div>
         <div v-else class="empty-state">No balance data</div>
+      </div>
+
+      <div class="summary-section page-section">
+        <div class="section-header">
+          <span class="section-title">Daily Summary</span>
+          <div class="header-actions">
+            <a-date-picker v-model:value="summaryDate" size="small" format="YYYY-MM-DD" value-format="YYYY-MM-DD" @change="onDateChange" />
+          </div>
+        </div>
+        <table v-if="store.dailySummary.length > 0" class="data-table">
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th>Asset</th>
+              <th>Opening</th>
+              <th>Debit</th>
+              <th>Credit</th>
+              <th>Closing</th>
+              <th>Entries</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in store.dailySummary" :key="`${row.account}-${row.asset}`">
+              <td class="text-bold">{{ row.account }}</td>
+              <td class="text-mono">{{ row.asset }}</td>
+              <td class="text-mono">{{ row.opening_balance }}</td>
+              <td class="text-mono val-debit">{{ row.total_debit }}</td>
+              <td class="text-mono val-credit">{{ row.total_credit }}</td>
+              <td class="text-mono text-bold">{{ row.closing_balance }}</td>
+              <td>{{ row.entry_count }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div v-else class="empty-state">Select a date to view daily summary</div>
       </div>
 
       <div class="entries-section page-section">
@@ -49,15 +86,36 @@
         </table>
         <div v-else class="empty-state">No ledger entries</div>
       </div>
+
+      <a-modal v-model:open="showCashFlow" title="Record Cash Flow" @ok="onSubmitCashFlow" :confirm-loading="submitting">
+        <a-form layout="vertical">
+          <a-form-item label="Type">
+            <a-select v-model:value="cashFlow.flow_type">
+              <a-select-option value="deposit">Deposit</a-select-option>
+              <a-select-option value="withdrawal">Withdrawal</a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item label="Asset">
+            <a-input v-model:value="cashFlow.asset" placeholder="USDT" />
+          </a-form-item>
+          <a-form-item label="Amount">
+            <a-input v-model:value="cashFlow.amount" placeholder="0.00" />
+          </a-form-item>
+        </a-form>
+      </a-modal>
     </a-spin>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useLedgerStore } from '@/stores/ledger';
 
 const store = useLedgerStore();
+const summaryDate = ref(new Date().toISOString().slice(0, 10));
+const showCashFlow = ref(false);
+const submitting = ref(false);
+const cashFlow = ref({ flow_type: 'deposit' as 'deposit' | 'withdrawal', asset: 'USDT', amount: '' });
 
 function formatTime(iso: string): string {
   try {
@@ -69,10 +127,29 @@ function formatTime(iso: string): string {
 
 function onRefresh() {
   store.fetchAll();
+  store.fetchDailySummary(summaryDate.value);
+}
+
+function onDateChange(date: string | null) {
+  if (date) store.fetchDailySummary(date);
+}
+
+async function onSubmitCashFlow() {
+  if (!cashFlow.value.amount) return;
+  submitting.value = true;
+  try {
+    await store.postCashFlow(cashFlow.value);
+    showCashFlow.value = false;
+    cashFlow.value = { flow_type: 'deposit', asset: 'USDT', amount: '' };
+    store.fetchAll();
+  } finally {
+    submitting.value = false;
+  }
 }
 
 onMounted(() => {
   store.fetchAll();
+  store.fetchDailySummary(summaryDate.value);
 });
 </script>
 
@@ -86,6 +163,7 @@ onMounted(() => {
 .page-section { margin-top: var(--q-card-gap); }
 
 .balances-section,
+.summary-section,
 .entries-section {
   background: var(--q-card);
   border-radius: var(--q-card-radius);
@@ -98,6 +176,11 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .section-title {

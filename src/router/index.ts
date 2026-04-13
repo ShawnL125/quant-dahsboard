@@ -11,6 +11,8 @@ const router = createRouter({
     { path: '/signals', name: 'Signals', component: () => import('@/views/SignalsView.vue') },
     { path: '/backtest', name: 'Backtest', component: () => import('@/views/BacktestView.vue') },
     { path: '/walkforward', name: 'Walk-Forward', component: () => import('@/views/WalkforwardView.vue') },
+    { path: '/analytics', name: 'Analytics', component: () => import('@/views/AnalyticsView.vue') },
+    { path: '/ledger', name: 'Ledger', component: () => import('@/views/LedgerView.vue') },
     { path: '/system', name: 'System', component: () => import('@/views/SystemView.vue') },
   ],
 });

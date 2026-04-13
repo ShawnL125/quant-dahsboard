@@ -36,6 +36,8 @@ import {
   SafetyOutlined,
   ExperimentOutlined,
   RadarChartOutlined,
+  BarChartOutlined,
+  WalletOutlined,
 } from '@ant-design/icons-vue';
 
 const router = useRouter();
@@ -49,6 +51,8 @@ const menuItems = [
   { path: '/orders', label: 'Orders', icon: SwapOutlined },
   { path: '/strategies', label: 'Strategies', icon: ThunderboltOutlined },
   { path: '/signals', label: 'Signals', icon: RadarChartOutlined },
+  { path: '/analytics', label: 'Analytics', icon: BarChartOutlined },
+  { path: '/ledger', label: 'Ledger', icon: WalletOutlined },
   { path: '/backtest', label: 'Backtest', icon: LineChartOutlined },
   { path: '/walkforward', label: 'Walk-Forward', icon: ExperimentOutlined },
   { path: '/system', label: 'System', icon: SettingOutlined },

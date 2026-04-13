@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { ordersApi } from '@/api/orders';
-import type { Order, OrderRequest } from '@/types';
+import type { Order, OrderRequest, OrderEvent } from '@/types';
 
 export const useOrdersStore = defineStore('orders', () => {
   const openOrders = ref<Order[]>([]);
   const orderHistory = ref<Order[]>([]);
+  const orderEvents = ref<Record<string, OrderEvent[]>>({});
   const loading = ref(false);
   const error = ref<string | null>(null);
 
@@ -22,6 +23,23 @@ export const useOrdersStore = defineStore('orders', () => {
       error.value = e instanceof Error ? e.message : String(e);
     } finally {
       loading.value = false;
+    }
+  }
+
+  async function fetchOrderHistory(params?: { symbol?: string; exchange?: string; limit?: number }) {
+    try {
+      orderHistory.value = await ordersApi.getOrderHistory(params);
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : String(e);
+    }
+  }
+
+  async function fetchOrderEvents(orderId: string) {
+    try {
+      const events = await ordersApi.getOrderEvents(orderId);
+      orderEvents.value = { ...orderEvents.value, [orderId]: events };
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : String(e);
     }
   }
 
@@ -75,9 +93,12 @@ export const useOrdersStore = defineStore('orders', () => {
   return {
     openOrders,
     orderHistory,
+    orderEvents,
     loading,
     error,
     fetchOrders,
+    fetchOrderHistory,
+    fetchOrderEvents,
     placeOrder,
     cancelOrder,
     updateOrderFromWS,

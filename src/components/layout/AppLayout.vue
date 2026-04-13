@@ -41,10 +41,13 @@ const paperTrading = inject<Ref<boolean>>('paperTrading', { value: false } as Re
 
 const pageTitle: Record<string, string> = {
   Dashboard: 'Overview of key metrics',
+  Risk: 'Real-time risk monitoring and control',
   Positions: 'Open positions and P&L',
   Orders: 'Place and manage orders',
   Strategies: 'Manage trading strategies',
+  Signals: 'Live strategy signal feed',
   Backtest: 'Run and review backtests',
+  'Walk-Forward': 'Walk-Forward optimization analysis',
   System: 'System health and configuration',
 };
 </script>

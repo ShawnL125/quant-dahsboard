@@ -59,6 +59,32 @@
         </table>
         <div v-else class="empty-state">No event statistics available</div>
       </div>
+
+      <div class="recon-card page-section">
+        <div class="card-header">
+          <span class="card-title">Reconciliation Alerts</span>
+          <a-button size="small" @click="reconStore.fetchAll()">Refresh</a-button>
+        </div>
+        <table v-if="reconStore.alerts.length > 0" class="data-table">
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>Type</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="alert in reconStore.alerts" :key="alert.alert_id">
+              <td>
+                <span class="level-pill" :class="alert.level === 'critical' ? 'level-critical' : alert.level === 'warning' ? 'level-warning' : 'level-info'">{{ alert.level }}</span>
+              </td>
+              <td class="text-mono">{{ alert.alert_type }}</td>
+              <td>{{ alert.message }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div v-else class="empty-state">No reconciliation alerts</div>
+      </div>
     </a-spin>
   </div>
 </template>
@@ -67,6 +93,7 @@
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useSystemStore } from '@/stores/system';
 import { useQualityStore } from '@/stores/quality';
+import { useReconciliationStore } from '@/stores/reconciliation';
 import HealthStatus from '@/components/system/HealthStatus.vue';
 import ComponentStatus from '@/components/system/ComponentStatus.vue';
 import ConnectorHealthCards from '@/components/quality/ConnectorHealthCards.vue';
@@ -75,6 +102,7 @@ import type { EventStats } from '@/types';
 
 const store = useSystemStore();
 const qualityStore = useQualityStore();
+const reconStore = useReconciliationStore();
 
 const eventRows = computed(() => {
   if (!store.eventStats) return [];
@@ -108,6 +136,7 @@ function formatJson(data: unknown): string {
 onMounted(() => {
   store.fetchAll();
   qualityStore.fetchAll();
+  reconStore.fetchAll();
   qualityTimer = setInterval(() => qualityStore.fetchAll(), 15000);
 });
 
@@ -186,14 +215,20 @@ onUnmounted(() => {
   line-height: 1.6;
 }
 
-.events-card {
+.events-card,
+.recon-card {
   background: var(--q-card);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
   box-shadow: var(--q-card-shadow);
 }
 
-.card-header { margin-bottom: 12px; }
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
 
 .card-title {
   font-size: 14px;
@@ -228,6 +263,19 @@ onUnmounted(() => {
 
 .text-mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
 .text-bold { font-weight: 600; }
+
+.level-pill {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.level-critical { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+.level-warning { background: rgba(234, 179, 8, 0.12); color: #eab308; }
+.level-info { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
 
 .empty-state {
   text-align: center;

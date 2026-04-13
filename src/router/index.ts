@@ -8,6 +8,7 @@ const router = createRouter({
     { path: '/positions', name: 'Positions', component: () => import('@/views/PositionsView.vue') },
     { path: '/orders', name: 'Orders', component: () => import('@/views/OrdersView.vue') },
     { path: '/strategies', name: 'Strategies', component: () => import('@/views/StrategiesView.vue') },
+    { path: '/signals', name: 'Signals', component: () => import('@/views/SignalsView.vue') },
     { path: '/backtest', name: 'Backtest', component: () => import('@/views/BacktestView.vue') },
     { path: '/walkforward', name: 'Walk-Forward', component: () => import('@/views/WalkforwardView.vue') },
     { path: '/system', name: 'System', component: () => import('@/views/SystemView.vue') },

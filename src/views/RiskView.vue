@@ -26,9 +26,9 @@
       />
       <RiskEventsTable
         :events="riskStore.events"
+        :current-page="riskStore.currentEventsPage"
+        :page-size="riskStore.eventsPageSize"
         :total="riskStore.eventsTotal"
-        :current-page="currentEventsPage"
-        :page-size="eventsPageSize"
         @refresh="onRefreshEvents"
         @page-change="onPageChange"
         class="risk-cell"
@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, watch, onMounted, onUnmounted, type Ref } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { useRiskStore } from '@/stores/risk';
 import KillSwitchBar from '@/components/risk/KillSwitchBar.vue';
 import DrawdownChart from '@/components/risk/DrawdownChart.vue';
@@ -47,28 +47,21 @@ import RiskConfigCards from '@/components/risk/RiskConfigCards.vue';
 import RiskEventsTable from '@/components/risk/RiskEventsTable.vue';
 
 const riskStore = useRiskStore();
-const wsConnected = inject<Ref<boolean>>('wsConnected', ref(false));
-const eventsPageSize = 20;
-const currentEventsPage = ref(1);
 
-let pollTimer: ReturnType<typeof setInterval> | null = null;
+let drawdownSampler: ReturnType<typeof setInterval> | null = null;
 
-function pollRiskData() {
-  return Promise.all([riskStore.fetchStatus(), riskStore.fetchExposure()]);
-}
-
-function startPolling() {
-  if (pollTimer) return;
-  void pollRiskData();
-  pollTimer = setInterval(() => {
-    void pollRiskData();
+function startDrawdownSampler() {
+  if (drawdownSampler) return;
+  void riskStore.sampleDrawdown();
+  drawdownSampler = setInterval(() => {
+    void riskStore.sampleDrawdown();
   }, 5000);
 }
 
-function stopPolling() {
-  if (pollTimer) {
-    clearInterval(pollTimer);
-    pollTimer = null;
+function stopDrawdownSampler() {
+  if (drawdownSampler) {
+    clearInterval(drawdownSampler);
+    drawdownSampler = null;
   }
 }
 
@@ -81,27 +74,22 @@ async function onKillSwitchToggle(activate: boolean) {
 }
 
 async function onRefreshEvents() {
-  const offset = (currentEventsPage.value - 1) * eventsPageSize;
-  await riskStore.fetchEvents(eventsPageSize, offset);
+  const offset = (riskStore.currentEventsPage - 1) * riskStore.eventsPageSize;
+  await riskStore.fetchEvents(riskStore.eventsPageSize, offset);
 }
 
 async function onPageChange(page: number) {
-  currentEventsPage.value = page;
-  const offset = (page - 1) * eventsPageSize;
-  await riskStore.fetchEvents(eventsPageSize, offset);
+  const offset = (page - 1) * riskStore.eventsPageSize;
+  await riskStore.fetchEvents(riskStore.eventsPageSize, offset);
 }
-
-watch(wsConnected, () => {
-  // Always poll drawdown regardless of WS state
-});
 
 onMounted(async () => {
   await riskStore.fetchAll();
-  startPolling();
+  startDrawdownSampler();
 });
 
 onUnmounted(() => {
-  stopPolling();
+  stopDrawdownSampler();
 });
 </script>
 
@@ -124,7 +112,7 @@ onUnmounted(() => {
 .risk-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
+  grid-rows: auto auto;
   gap: var(--q-card-gap);
 }
 

@@ -11,8 +11,9 @@
       :data-source="events"
       :pagination="pagination"
       size="small"
-      row-key="time"
+      row-key="event_id"
       :row-class-name="rowClass"
+      @change="onTableChange"
     >
       <template #expandedRowRender="{ record }">
         <pre class="event-meta">{{ formatMeta(record.metadata) }}</pre>
@@ -50,12 +51,12 @@ const emit = defineEmits<{
   'page-change': [page: number];
 }>();
 
-const pageSize = computed(() => props.pageSize ?? 20);
-const currentPage = computed(() => props.currentPage ?? 1);
+const resolvedPageSize = computed(() => props.pageSize ?? 20);
+const resolvedCurrentPage = computed(() => props.currentPage ?? 1);
 
 const pagination = computed(() => ({
-  current: currentPage.value,
-  pageSize: pageSize.value,
+  current: resolvedCurrentPage.value,
+  pageSize: resolvedPageSize.value,
   total: props.total,
   simple: true,
   onChange: (page: number) => emit('page-change', page),
@@ -83,6 +84,12 @@ function rowClass(record: RiskEvent): string {
   if (record.event_type.includes('HALT') || record.event_type.includes('BLOCKED')) return 'row-critical';
   if (record.event_type.includes('WARNING') || record.event_type.includes('WARN')) return 'row-warning';
   return '';
+}
+
+function onTableChange(pagination: { current?: number }) {
+  if (pagination.current && pagination.current !== resolvedCurrentPage.value) {
+    emit('page-change', pagination.current);
+  }
 }
 
 function formatMeta(meta: Record<string, unknown>): string {

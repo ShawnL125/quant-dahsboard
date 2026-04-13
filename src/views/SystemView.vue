@@ -12,6 +12,22 @@
         class="page-section"
       />
 
+      <div class="quality-section page-section">
+        <div class="section-header">
+          <span class="section-title">Data Quality Monitoring</span>
+          <a-button size="small" @click="refreshQuality">Refresh</a-button>
+        </div>
+
+        <ConnectorHealthCards
+          :connectors="qualityStore.healthReady?.connectors || qualityStore.systemStatus?.connectors || null"
+          class="quality-block"
+        />
+
+        <div class="quality-alerts-card quality-block">
+          <QualityAlertsFeed :alerts="qualityStore.alerts" />
+        </div>
+      </div>
+
       <div class="config-card page-section">
         <a-collapse>
           <a-collapse-panel key="config" header="Configuration">
@@ -45,13 +61,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import { useSystemStore } from '@/stores/system';
+import { useQualityStore } from '@/stores/quality';
 import HealthStatus from '@/components/system/HealthStatus.vue';
 import ComponentStatus from '@/components/system/ComponentStatus.vue';
+import ConnectorHealthCards from '@/components/quality/ConnectorHealthCards.vue';
+import QualityAlertsFeed from '@/components/quality/QualityAlertsFeed.vue';
 import type { EventStats } from '@/types';
 
 const store = useSystemStore();
+const qualityStore = useQualityStore();
 
 const eventRows = computed(() => {
   if (!store.eventStats) return [];
@@ -60,6 +80,12 @@ const eventRows = computed(() => {
     count,
   }));
 });
+
+let qualityTimer: ReturnType<typeof setInterval> | null = null;
+
+function refreshQuality() {
+  qualityStore.fetchAll();
+}
 
 function formatJson(data: unknown): string {
   if (!data) return 'No configuration loaded';
@@ -72,6 +98,12 @@ function formatJson(data: unknown): string {
 
 onMounted(() => {
   store.fetchAll();
+  qualityStore.fetchAll();
+  qualityTimer = setInterval(() => qualityStore.fetchAll(), 15000);
+});
+
+onUnmounted(() => {
+  if (qualityTimer) clearInterval(qualityTimer);
 });
 </script>
 
@@ -84,6 +116,42 @@ onMounted(() => {
 
 .page-section { margin-top: var(--q-card-gap); }
 .page-section:first-child { margin-top: 0; }
+
+.quality-section {
+  background: var(--q-card);
+  border-radius: var(--q-card-radius);
+  padding: var(--q-card-padding);
+  box-shadow: var(--q-card-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--q-primary-dark);
+}
+
+.quality-block {
+  padding-top: 8px;
+  border-top: 1px solid var(--q-border);
+}
+
+.quality-block:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.quality-alerts-card {
+  background: transparent;
+}
 
 .config-card {
   background: var(--q-card);

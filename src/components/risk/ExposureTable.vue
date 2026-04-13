@@ -54,7 +54,7 @@ import { computed } from 'vue';
 import type { ExposureData, RiskConfig } from '@/types';
 
 const props = defineProps<{
-  exposure: ExposureData;
+  exposure: ExposureData | null;
   config: RiskConfig | null;
 }>();
 

@@ -120,6 +120,42 @@ export interface BacktestTrade {
   pnl: string;
 }
 
+// ── Walk-Forward ────────────────────────────────────────────────────
+export interface WalkForwardRun {
+  run_id: string;
+  strategy_id: string;
+  algorithm: string;
+  objective: string;
+  window_mode: string;
+  train_days: number;
+  test_days: number;
+  config: Record<string, unknown>;
+  status: string;
+  summary: Record<string, unknown> | null;
+  time: string;
+}
+
+export interface WalkForwardWindow {
+  run_id: string;
+  window_index: number;
+  train_start: string;
+  train_end: string;
+  test_start: string;
+  test_end: string;
+  best_params: Record<string, unknown>;
+  train_metrics: Record<string, unknown>;
+  test_metrics: Record<string, unknown>;
+  objective_score: number;
+  overfitting_ratio: number;
+}
+
+export interface WalkForwardBestParams {
+  window_index: number;
+  best_params: Record<string, unknown>;
+  objective_score: number;
+  overfitting_ratio: number;
+}
+
 export interface BacktestHistoryItem {
   task_id: string;
   status: string;
@@ -156,7 +192,7 @@ export interface EventStats {
 }
 
 // ── WebSocket ──────────────────────────────────────────────────────
-export type WSChannel = 'trades' | 'positions' | 'orders' | 'pnl' | 'system' | 'risk';
+export type WSChannel = 'trades' | 'positions' | 'orders' | 'pnl' | 'system' | 'risk' | 'signals' | 'quality';
 
 export interface WSMessage {
   channel: WSChannel;
@@ -264,4 +300,72 @@ export interface KillSwitchPayload {
 export interface DrawdownPoint {
   time: number;
   value: number;
+}
+
+// ── Signal Flow ────────────────────────────────────────────────────
+export interface SignalData {
+  strategy_id: string;
+  symbol: string;
+  exchange: string;
+  direction: 'LONG' | 'SHORT' | 'CLOSE';
+  strength: string;
+  reason: string;
+  target_price?: string | null;
+  stop_price?: string | null;
+  stop_loss_pct?: string | null;
+  take_profit_pct?: string | null;
+  trailing_stop_pct?: string | null;
+  metadata: Record<string, unknown>;
+}
+
+export interface SignalEvent {
+  event_id: string;
+  timestamp: string;
+  event_type: string;
+  priority: number;
+  signal: SignalData;
+}
+
+// ── Data Quality ───────────────────────────────────────────────────
+export interface QualityAlert {
+  alert_type: 'data_gap' | 'price_anomaly' | 'volume_spike' | 'high_latency' | 'validation_failure';
+  symbol: string;
+  exchange: string;
+  severity: 'warning' | 'critical';
+  metric_value: string;
+  threshold: string;
+  detected_at: string;
+  details: Record<string, unknown>;
+}
+
+export interface ConnectorStatus {
+  ready: boolean;
+  ws_connected: boolean;
+  ws_running: boolean;
+  reconnect_attempts: number | null;
+  market_data: {
+    last_event_at: string | null;
+    last_received_at: string | null;
+    last_event_age_s: number | null;
+    receiving: boolean;
+    events_received: number;
+  };
+}
+
+export interface HealthReadyResponse {
+  status: string;
+  connectors: Record<string, ConnectorStatus>;
+}
+
+export interface SystemStatusResponse {
+  service: { alive: boolean; ready: boolean; paper_trading: boolean };
+  frontend_ws: { connected_clients: number };
+  market_data: {
+    last_event_at: string | null;
+    last_received_at: string | null;
+    last_event_type: string | null;
+    last_event_age_s: number | null;
+    receiving: boolean;
+  };
+  connectors: Record<string, ConnectorStatus>;
 }

@@ -10,6 +10,8 @@ import { systemApi } from '@/api/system';
 import { useTradingStore } from '@/stores/trading';
 import { useOrdersStore } from '@/stores/orders';
 import { useRiskStore } from '@/stores/risk';
+import { useSignalsStore } from '@/stores/signals';
+import { useQualityStore } from '@/stores/quality';
 
 const wsConnected = ref(false);
 const paperTrading = ref(false);
@@ -28,6 +30,8 @@ onMounted(async () => {
   const tradingStore = useTradingStore();
   const ordersStore = useOrdersStore();
   const riskStore = useRiskStore();
+  const signalsStore = useSignalsStore();
+  const qualityStore = useQualityStore();
 
   ws.onMessage((msg) => {
     switch (msg.channel) {
@@ -46,11 +50,17 @@ onMounted(async () => {
       case 'risk':
         riskStore.updateFromWS(msg.data as Record<string, unknown>);
         break;
+      case 'signals':
+        signalsStore.addSignal(msg.data as import('@/types').SignalEvent);
+        break;
+      case 'quality':
+        qualityStore.addAlert(msg.data as import('@/types').QualityAlert);
+        break;
     }
   });
 
   ws.connect();
-  ws.subscribe(['orders', 'positions', 'pnl', 'system', 'trades', 'risk']);
+  ws.subscribe(['orders', 'positions', 'pnl', 'system', 'trades', 'risk', 'signals', 'quality']);
   wsPollTimer = setInterval(() => {
     wsConnected.value = ws.isConnected.value;
   }, 1000);

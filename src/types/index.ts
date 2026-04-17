@@ -192,7 +192,10 @@ export interface EventStats {
 }
 
 // ── WebSocket ──────────────────────────────────────────────────────
-export type WSChannel = 'trades' | 'positions' | 'orders' | 'pnl' | 'system' | 'risk' | 'signals' | 'quality';
+export type WSChannel =
+  | 'trades' | 'positions' | 'orders' | 'pnl' | 'system'
+  | 'risk' | 'signals' | 'quality'
+  | 'account' | 'margin' | 'reconcile' | 'funding' | 'params' | 'notifications';
 
 export interface WSMessage {
   channel: WSChannel;
@@ -538,4 +541,195 @@ export interface ReconAlert {
   alert_type: string;
   message: string;
   data: Record<string, unknown>;
+}
+
+// ── Algorithmic Orders (Phase 38) ─────────────────────────────────
+export interface AlgoOrder {
+  algo_id: string;
+  algo_type: 'twap' | 'vwap' | 'iceberg';
+  symbol: string;
+  exchange: string;
+  side: string;
+  total_quantity: string;
+  filled_quantity: string;
+  avg_fill_price?: string;
+  slice_count: number;
+  slices_completed: number;
+  status: string;
+  progress_pct?: string;
+  config?: Record<string, unknown>;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface AlgoOrderDetail extends AlgoOrder {
+  slices_pending: number;
+  slices_filled: number;
+}
+
+export interface SubmitAlgoBody {
+  symbol: string;
+  exchange: string;
+  side: string;
+  quantity: string;
+  algo_type: 'twap' | 'vwap' | 'iceberg';
+  config?: Record<string, unknown>;
+}
+
+// ── OMS State (Phase 31-32) ───────────────────────────────────────
+export interface TrackedOrder {
+  order_id: string;
+  strategy_id: string;
+  symbol: string;
+  exchange: string;
+  side: string;
+  order_type: string;
+  quantity: string;
+  price?: string;
+  stop_price?: string;
+  status: string;
+  filled_quantity: string;
+  exchange_order_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SLBinding {
+  exchange: string;
+  symbol: string;
+  strategy_id: string;
+  sl_order_id: string;
+  tp_order_id: string;
+}
+
+export interface TrailingStop {
+  exchange: string;
+  symbol: string;
+  strategy_id: string;
+  order_id: string;
+  activation_price: string;
+  callback_rate: string;
+  highest_price: string;
+  lowest_price: string;
+  current_stop: string;
+  step_bps: string;
+  is_long: boolean;
+}
+
+export interface AmendOrderBody {
+  price?: string;
+  quantity?: string;
+  stop_price?: string;
+}
+
+export interface TrailingStopBody {
+  callback_rate: string;
+  step_bps?: string;
+}
+
+// ── Strategy Parameters (Phase 33) ────────────────────────────────
+export interface ParamAuditEntry {
+  time: string;
+  param_name: string;
+  old_value: string;
+  new_value: string;
+  source: string;
+}
+
+// ── Account Sync (Phase 35) ───────────────────────────────────────
+export interface AccountSnapshot {
+  snapshot_id: string;
+  exchange: string;
+  snapshot_type: string;
+  balances: Record<string, string>;
+  total_equity: string;
+  margin_ratio?: string;
+  created_at: string;
+}
+
+export interface AccountReconciliation {
+  reconcile_id: string;
+  exchange: string;
+  matched: boolean;
+  total_diff_usd: string;
+  corrections_count: number;
+  created_at: string;
+}
+
+export interface MarginStatus {
+  exchange: string;
+  margin_ratio: string;
+  margin_balance: string;
+  total_equity: string;
+  total_position_value: string;
+  liquidation_risk: boolean;
+  updated_at: string;
+}
+
+// ── Auto-Tune (Phase 34) ──────────────────────────────────────────
+export interface AutoTuneRun {
+  run_id: string;
+  strategy_id: string;
+  status: string;
+  apply_mode: string;
+  created_at: string;
+  completed_at?: string;
+  [key: string]: unknown;
+}
+
+export interface AutoTuneSchedule {
+  schedule_id: string;
+  strategy_id: string;
+  cron_expr: string;
+  apply_mode: string;
+  train_days: number;
+  test_days: number;
+  [key: string]: unknown;
+}
+
+// ── Funding (Phase 29) ────────────────────────────────────────────
+export interface FundingRate {
+  symbol: string;
+  funding_rate: string;
+  funding_time: string;
+  mark_price?: string;
+}
+
+export interface FundingCostSummary {
+  strategy_id: string;
+  total_cost: string;
+  record_count: number;
+  [key: string]: unknown;
+}
+
+// ── Auth (Phase 36) ───────────────────────────────────────────────
+export interface LoginResponse {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+}
+
+export interface UserInfo {
+  user_id: string;
+  username: string;
+  role: string;
+  is_active: boolean;
+}
+
+export interface ApiKeyInfo {
+  id: string;
+  key_prefix: string;
+  name: string;
+  permissions: string;
+  expires_at?: string;
+  last_used_at?: string;
+  created_at: string;
+}
+
+export interface ApiKeyCreated {
+  id: string;
+  key: string;
+  key_prefix: string;
+  name: string;
+  created_at: string;
 }

@@ -13,6 +13,8 @@ const router = createRouter({
     { path: '/walkforward', name: 'Walk-Forward', component: () => import('@/views/WalkforwardView.vue') },
     { path: '/analytics', name: 'Analytics', component: () => import('@/views/AnalyticsView.vue') },
     { path: '/ledger', name: 'Ledger', component: () => import('@/views/LedgerView.vue') },
+    { path: '/account', name: 'Account', component: () => import('@/views/AccountView.vue') },
+    { path: '/auto-tune', name: 'Auto-Tune', component: () => import('@/views/AutoTuneView.vue') },
     { path: '/system', name: 'System', component: () => import('@/views/SystemView.vue') },
   ],
 });

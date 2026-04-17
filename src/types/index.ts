@@ -266,6 +266,7 @@ export interface RiskStatus {
 }
 
 export interface RiskEvent {
+  // Stable audit identifier used to merge REST and websocket events idempotently.
   event_id: string;
   time: string;
   received_at?: string;

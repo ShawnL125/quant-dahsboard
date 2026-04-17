@@ -6,6 +6,8 @@ import type { RiskStatus, ExposureData, RiskEvent, RiskConfig, DrawdownPoint } f
 const DEFAULT_EVENTS_PAGE_SIZE = 20;
 const MAX_DRAWDOWN_HISTORY = 600;
 const MAX_REALTIME_EVENT_IDS = 200;
+const DRAWDOWN_DEDUP_WINDOW_MS = 15_000;
+const DRAWDOWN_VALUE_EPSILON = 1e-6;
 
 export const useRiskStore = defineStore('risk', () => {
   const status = ref<RiskStatus | null>(null);
@@ -31,7 +33,8 @@ export const useRiskStore = defineStore('risk', () => {
   }
 
   function buildEventId(payload: Record<string, unknown>, time: string): string {
-    const rawEventId = payload.event_id ?? payload.id;
+    const metadata = isRecord(payload.metadata) ? payload.metadata : null;
+    const rawEventId = payload.event_id ?? payload.id ?? metadata?.event_id ?? metadata?.id;
     if ((typeof rawEventId === 'string' || typeof rawEventId === 'number') && String(rawEventId).length > 0) {
       return String(rawEventId);
     }
@@ -77,6 +80,23 @@ export const useRiskStore = defineStore('risk', () => {
     return existing === undefined;
   }
 
+  function mergeEvents(nextEvents: RiskEvent[]) {
+    const eventIds: string[] = [];
+    let insertedCount = 0;
+
+    nextEvents.forEach((event) => {
+      eventIds.push(event.event_id);
+      if (upsertEvent(event)) {
+        insertedCount += 1;
+      }
+    });
+
+    return {
+      eventIds: mergeUniqueIds(eventIds),
+      insertedCount,
+    };
+  }
+
   function updateEventPage(page: number, fetchedIds: string[], pageSize = eventsPageSize.value) {
     const nextPageIds =
       page === 1
@@ -100,15 +120,19 @@ export const useRiskStore = defineStore('risk', () => {
     updateEventPage(1, eventPageIds.value[1] ?? [], eventsPageSize.value);
   }
 
-  function appendDrawdownSample(value: number) {
+  function appendDrawdownSample(value: number, sampleTime = Date.now()) {
     const previousSample = drawdownHistory.value.at(-1);
-    if (previousSample?.value === value) {
+    if (
+      previousSample &&
+      Math.abs(previousSample.value - value) <= DRAWDOWN_VALUE_EPSILON &&
+      sampleTime - previousSample.time < DRAWDOWN_DEDUP_WINDOW_MS
+    ) {
       return;
     }
 
     drawdownHistory.value = [
       ...drawdownHistory.value,
-      { time: Date.now(), value },
+      { time: sampleTime, value },
     ].slice(-MAX_DRAWDOWN_HISTORY);
   }
 
@@ -136,15 +160,12 @@ export const useRiskStore = defineStore('risk', () => {
       const data = await riskApi.getEvents(limit, offset);
       const page = Math.floor(offset / limit) + 1;
       const normalizedEvents = data.events.map((event) => normalizeRiskEvent(event));
+      const { eventIds } = mergeEvents(normalizedEvents);
 
       currentEventsPage.value = page;
       eventsPageSize.value = limit;
 
-      normalizedEvents.forEach((event) => {
-        upsertEvent(event);
-      });
-
-      updateEventPage(page, normalizedEvents.map((event) => event.event_id), limit);
+      updateEventPage(page, eventIds, limit);
       eventsTotal.value = Math.max(eventsTotal.value, data.total);
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : String(e);
@@ -179,12 +200,12 @@ export const useRiskStore = defineStore('risk', () => {
 
   function updateFromWS(data: Record<string, unknown>, serverTimestamp?: string) {
     const wsEvent = normalizeRiskEvent(data, serverTimestamp);
-    const isNewEvent = upsertEvent(wsEvent);
+    const { insertedCount } = mergeEvents([wsEvent]);
 
     mergeRealtimeEvent(wsEvent.event_id);
 
-    if (isNewEvent) {
-      eventsTotal.value += 1;
+    if (insertedCount > 0) {
+      eventsTotal.value += insertedCount;
     }
 
     void Promise.all([fetchStatus(), fetchExposure()]);

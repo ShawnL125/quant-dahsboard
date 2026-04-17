@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
+- **Risk store robustness fix**: Separate drawdown sampling from status refreshes with 15s dedup window; event_id-based idempotent merge for WS and REST risk events; RiskEventsTable keyed by event_id instead of timestamp.
 - **Account sync (Phase 35)**: Exchange account snapshots, margin status monitoring with liquidation risk, manual sync/reconcile, reconciliation history table.
 - **Auto-Tune (Phase 34)**: Trigger optimization runs, confirm/rollback applied params, scheduled auto-tune with cron expressions.
 - **Funding rate (Phase 29)**: Current funding rates display, historical rates per symbol, per-strategy funding cost summary, backfill trigger.

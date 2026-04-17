@@ -11,7 +11,7 @@
       :data-source="events"
       :pagination="pagination"
       size="small"
-      row-key="event_id"
+      :row-key="rowKey"
       :row-class-name="rowClass"
       @change="onTableChange"
     >
@@ -84,6 +84,10 @@ function rowClass(record: RiskEvent): string {
   if (record.event_type.includes('HALT') || record.event_type.includes('BLOCKED')) return 'row-critical';
   if (record.event_type.includes('WARNING') || record.event_type.includes('WARN')) return 'row-warning';
   return '';
+}
+
+function rowKey(record: RiskEvent): string {
+  return record.event_id;
 }
 
 function onTableChange(pagination: { current?: number }) {

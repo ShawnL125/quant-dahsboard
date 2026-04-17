@@ -4,7 +4,7 @@
       <div class="stats-section">
         <div class="section-title">Strategy Performance</div>
         <div v-if="store.strategyStats.length > 0" class="stats-grid">
-          <div v-for="snap in store.strategyStats" :key="snap.snapshot_id" class="stat-card">
+          <div v-for="snap in store.strategyStats" :key="snap.snapshot_id" class="stat-card clickable" @click="onViewStatsHistory(snap.strategy_id)">
             <div class="stat-strategy">{{ snap.strategy_id }}</div>
             <div class="stat-metrics">
               <div class="metric">
@@ -73,7 +73,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="rt in store.roundTrips" :key="rt.trade_id">
+            <tr v-for="rt in store.roundTrips" :key="rt.trade_id" class="clickable-row" @click="onViewRoundTrip(rt.trade_id)">
               <td class="text-bold">{{ rt.symbol }}</td>
               <td>
                 <span class="side-pill" :class="rt.side === 'long' ? 'side-long' : 'side-short'">{{ rt.side }}</span>
@@ -123,15 +123,63 @@
         </table>
         <div v-else class="empty-state">No signal history</div>
       </div>
+
+      <!-- Round-Trip Detail Modal -->
+      <a-modal v-model:open="rtModalOpen" title="Round-Trip Detail" :footer="null" width="520px">
+        <template v-if="store.selectedRoundTrip">
+          <div class="detail-grid">
+            <div class="detail-row"><span class="detail-label">Trade ID</span><span class="text-mono">{{ store.selectedRoundTrip.trade_id }}</span></div>
+            <div class="detail-row"><span class="detail-label">Strategy</span><span>{{ store.selectedRoundTrip.strategy_id }}</span></div>
+            <div class="detail-row"><span class="detail-label">Symbol</span><span class="text-bold">{{ store.selectedRoundTrip.symbol }}</span></div>
+            <div class="detail-row"><span class="detail-label">Side</span><span class="side-pill" :class="store.selectedRoundTrip.side === 'long' ? 'side-long' : 'side-short'">{{ store.selectedRoundTrip.side }}</span></div>
+            <div class="detail-row"><span class="detail-label">Entry Price</span><span class="text-mono">{{ store.selectedRoundTrip.entry_price }}</span></div>
+            <div class="detail-row"><span class="detail-label">Exit Price</span><span class="text-mono">{{ store.selectedRoundTrip.exit_price }}</span></div>
+            <div class="detail-row"><span class="detail-label">Quantity</span><span class="text-mono">{{ store.selectedRoundTrip.quantity }}</span></div>
+            <div class="detail-row"><span class="detail-label">Gross P&L</span><span class="text-mono text-bold" :class="parseFloat(store.selectedRoundTrip.gross_pnl) >= 0 ? 'val-positive' : 'val-negative'">{{ store.selectedRoundTrip.gross_pnl }}</span></div>
+            <div class="detail-row"><span class="detail-label">Fee</span><span class="text-mono">{{ store.selectedRoundTrip.fee }}</span></div>
+            <div class="detail-row"><span class="detail-label">Net P&L</span><span class="text-mono text-bold" :class="parseFloat(store.selectedRoundTrip.net_pnl) >= 0 ? 'val-positive' : 'val-negative'">{{ store.selectedRoundTrip.net_pnl }}</span></div>
+            <div class="detail-row"><span class="detail-label">Duration</span><span>{{ formatDuration(store.selectedRoundTrip.holding_duration_sec) }}</span></div>
+            <div class="detail-row"><span class="detail-label">Stop Triggered</span><span>{{ store.selectedRoundTrip.stop_triggered ? 'Yes' : 'No' }}</span></div>
+            <div class="detail-row"><span class="detail-label">Entry Time</span><span class="text-muted">{{ store.selectedRoundTrip.entry_time || '-' }}</span></div>
+            <div class="detail-row"><span class="detail-label">Exit Time</span><span class="text-muted">{{ store.selectedRoundTrip.exit_time || '-' }}</span></div>
+          </div>
+        </template>
+      </a-modal>
+
+      <!-- Strategy Stats History -->
+      <div v-if="statsHistoryStrategy" class="page-section" style="background: var(--q-card); border-radius: var(--q-card-radius); padding: var(--q-card-padding); box-shadow: var(--q-card-shadow);">
+        <div class="section-header">
+          <span class="section-title">Stats History: {{ statsHistoryStrategy }}</span>
+          <a-button size="small" @click="statsHistoryStrategy = null">Close</a-button>
+        </div>
+        <table v-if="store.statsHistory.length > 0" class="data-table">
+          <thead>
+            <tr><th>Time</th><th>P&L</th><th>Win Rate</th><th>Sharpe</th><th>DD%</th><th>Trades</th></tr>
+          </thead>
+          <tbody>
+            <tr v-for="h in store.statsHistory" :key="h.snapshot_id">
+              <td class="text-muted">{{ formatTime(h.time) }}</td>
+              <td class="text-mono" :class="parseFloat(h.total_pnl) >= 0 ? 'val-positive' : 'val-negative'">{{ parseFloat(h.total_pnl).toFixed(2) }}</td>
+              <td>{{ (parseFloat(h.win_rate) * 100).toFixed(1) }}%</td>
+              <td>{{ h.sharpe_ratio ? parseFloat(h.sharpe_ratio).toFixed(2) : '-' }}</td>
+              <td class="val-negative">{{ parseFloat(h.max_drawdown_pct).toFixed(1) }}%</td>
+              <td>{{ h.total_trades }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div v-else class="empty-state">No history data</div>
+      </div>
     </a-spin>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useAnalyticsStore } from '@/stores/analytics';
 
 const store = useAnalyticsStore();
+const rtModalOpen = ref(false);
+const statsHistoryStrategy = ref<string | null>(null);
 
 function formatDuration(seconds: number): string {
   if (seconds < 60) return `${seconds.toFixed(0)}s`;
@@ -145,6 +193,16 @@ function formatTime(iso: string): string {
   } catch {
     return iso;
   }
+}
+
+async function onViewRoundTrip(tradeId: string) {
+  await store.fetchRoundTrip(tradeId);
+  rtModalOpen.value = true;
+}
+
+function onViewStatsHistory(strategyId: string) {
+  statsHistoryStrategy.value = strategyId;
+  store.fetchStatsHistory(strategyId);
 }
 
 onMounted(async () => {
@@ -212,6 +270,16 @@ onMounted(async () => {
   border-radius: 8px;
   padding: 12px;
 }
+
+.clickable { cursor: pointer; }
+.clickable:hover { border-color: var(--q-primary); }
+.clickable-row { cursor: pointer; }
+.clickable-row:hover td { background: var(--q-hover) !important; }
+
+.detail-grid { display: flex; flex-direction: column; gap: 8px; }
+.detail-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--q-border); }
+.detail-row:last-child { border-bottom: none; }
+.detail-label { font-size: 12px; color: var(--q-text-muted); }
 
 .stat-strategy {
   font-size: 13px;

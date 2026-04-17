@@ -5,6 +5,7 @@
         <div class="card-title">Walk-Forward Optimization</div>
         <div class="run-actions">
           <a-button type="primary" @click="store.submitRun({})">Run Optimization</a-button>
+          <a-button :disabled="selectedRuns.length < 2" @click="onCompare">Compare ({{ selectedRuns.length }})</a-button>
         </div>
         <a-alert v-if="store.error" :message="store.error" type="error" show-icon style="margin-top: 12px" />
       </div>
@@ -17,6 +18,7 @@
         <table v-if="store.runs.length > 0" class="data-table">
           <thead>
             <tr>
+              <th style="width: 30px"></th>
               <th style="width: 30px"></th>
               <th>Strategy</th>
               <th>Algorithm</th>
@@ -32,6 +34,7 @@
                 <td class="expand-cell">
                   <span class="expand-icon" :class="{ expanded: expandedId === run.run_id }">▶</span>
                 </td>
+                <td @click.stop><input type="checkbox" :checked="selectedRuns.includes(run.run_id)" @change="toggleRun(run.run_id)" /></td>
                 <td class="text-bold">{{ run.strategy_id }}</td>
                 <td>{{ run.algorithm }}</td>
                 <td>{{ run.objective }}</td>
@@ -56,6 +59,26 @@
         </table>
         <div v-else class="empty-state">No optimization runs</div>
       </div>
+
+      <!-- Compare Modal -->
+      <a-modal v-model:open="compareModalOpen" title="Compare Walk-Forward Runs" :footer="null" width="720px">
+        <table v-if="compareData.length > 0" class="data-table">
+          <thead>
+            <tr>
+              <th>Run</th>
+              <th v-for="(run, idx) in compareData" :key="idx">{{ String(run.run_id).slice(0, 8) }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="text-bold">Strategy</td><td v-for="(run, idx) in compareData" :key="idx + 'strat'">{{ run.strategy_id }}</td></tr>
+            <tr><td class="text-bold">Algorithm</td><td v-for="(run, idx) in compareData" :key="idx + 'algo'">{{ run.algorithm }}</td></tr>
+            <tr><td class="text-bold">Objective</td><td v-for="(run, idx) in compareData" :key="idx + 'obj'">{{ run.objective }}</td></tr>
+            <tr><td class="text-bold">Status</td><td v-for="(run, idx) in compareData" :key="idx + 'status'">{{ run.status }}</td></tr>
+            <tr><td class="text-bold">Windows</td><td v-for="(run, idx) in compareData" :key="idx + 'win'">{{ run.window_mode }}</td></tr>
+          </tbody>
+        </table>
+        <div v-else class="empty-state">No comparison data</div>
+      </a-modal>
     </a-spin>
   </div>
 </template>
@@ -63,10 +86,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useWalkforwardStore } from '@/stores/walkforward';
+import { walkforwardApi } from '@/api/walkforward';
 import WindowsTable from '@/components/walkforward/WindowsTable.vue';
+import { message } from 'ant-design-vue';
 
 const store = useWalkforwardStore();
 const expandedId = ref<string | null>(null);
+const selectedRuns = ref<string[]>([]);
+const compareModalOpen = ref(false);
+const compareData = ref<Record<string, unknown>[]>([]);
 
 async function toggleExpand(runId: string) {
   if (expandedId.value === runId) {
@@ -90,6 +118,23 @@ function formatTime(dateStr?: string): string {
   if (!dateStr) return '-';
   try { return new Date(dateStr).toLocaleString(); }
   catch { return dateStr; }
+}
+
+function toggleRun(runId: string) {
+  if (selectedRuns.value.includes(runId)) {
+    selectedRuns.value = selectedRuns.value.filter((id) => id !== runId);
+  } else {
+    selectedRuns.value = [...selectedRuns.value, runId];
+  }
+}
+
+async function onCompare() {
+  try {
+    compareData.value = await walkforwardApi.compare(selectedRuns.value);
+    compareModalOpen.value = true;
+  } catch {
+    message.error('Failed to compare runs');
+  }
 }
 
 onMounted(() => {

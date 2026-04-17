@@ -40,8 +40,14 @@ export const useFundingStore = defineStore('funding', () => {
     }
   }
 
+  function updateRatesFromWS(data: Record<string, unknown>) {
+    if (!data?.symbol || !data?.funding_rate) return;
+    const rate = data as unknown as FundingRate;
+    currentRates.value = { ...currentRates.value, [rate.symbol]: rate };
+  }
+
   return {
     currentRates, historyRates, costSummary, loading, error,
-    fetchCurrent, fetchHistory, fetchCost, fetchAll,
+    fetchCurrent, fetchHistory, fetchCost, fetchAll, updateRatesFromWS,
   };
 });

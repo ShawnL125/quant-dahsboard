@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Features
 
 - **Risk store robustness fix**: Separate drawdown sampling from status refreshes with 15s dedup window; event_id-based idempotent merge for WS and REST risk events; RiskEventsTable keyed by event_id instead of timestamp.
+- **WebSocket channel handlers**: Wire 6 subscribed channels to stores — account (snapshot updates), margin (real-time margin), reconcile (alert refresh), funding (rate updates), params (strategy param sync), notifications.
+- **Analytics enhancements**: Round-trip trade detail modal on click; strategy stats history table (click any strategy card); analytics config store support.
+- **Backtest import + compare**: Import JSON backtest results via modal; multi-run compare with checkbox selection and side-by-side metrics table.
+- **Walk-forward compare**: Multi-run comparison with checkbox selection and compare modal.
 - **Account sync (Phase 35)**: Exchange account snapshots, margin status monitoring with liquidation risk, manual sync/reconcile, reconciliation history table.
 - **Auto-Tune (Phase 34)**: Trigger optimization runs, confirm/rollback applied params, scheduled auto-tune with cron expressions.
 - **Funding rate (Phase 29)**: Current funding rates display, historical rates per symbol, per-strategy funding cost summary, backfill trigger.

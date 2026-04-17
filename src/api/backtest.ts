@@ -20,4 +20,6 @@ export const backtestApi = {
     apiClient.get<BacktestTrade[]>(`/backtest/runs/${runId}/trades`).then((r) => r.data),
   compare: (runIds: string[]) =>
     apiClient.get('/backtest/compare', { params: { runs: runIds.join(',') } }).then((r) => r.data),
+  importResults: (data: Record<string, unknown>) =>
+    apiClient.post('/backtest/import', data).then((r) => r.data),
 };

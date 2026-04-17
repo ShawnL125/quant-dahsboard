@@ -81,6 +81,14 @@ export const useStrategiesStore = defineStore('strategies', () => {
     }
   }
 
+  function updateParamsFromWS(data: Record<string, unknown>) {
+    if (!data?.strategy_id) return;
+    if (selectedStrategy.value?.strategy_id === data.strategy_id) {
+      params.value = { ...params.value, ...(data.params as Record<string, unknown>) };
+      paramsSource.value = (data.source as string) || paramsSource.value;
+    }
+  }
+
   return {
     strategies,
     selectedStrategy,
@@ -96,5 +104,6 @@ export const useStrategiesStore = defineStore('strategies', () => {
     fetchParams,
     updateParams,
     fetchParamsAudit,
+    updateParamsFromWS,
   };
 });

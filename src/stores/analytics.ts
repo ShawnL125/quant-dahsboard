@@ -7,6 +7,7 @@ import type {
   StrategyStatsSnapshot,
   ConsecutiveLossesResponse,
   SignalQualityResponse,
+  AnalyticsConfigResponse,
 } from '@/types';
 
 export const useAnalyticsStore = defineStore('analytics', () => {
@@ -17,6 +18,9 @@ export const useAnalyticsStore = defineStore('analytics', () => {
   const strategyStats = ref<StrategyStatsSnapshot[]>([]);
   const consecutiveLosses = ref<ConsecutiveLossesResponse | null>(null);
   const signalQuality = ref<SignalQualityResponse | null>(null);
+  const selectedRoundTrip = ref<RoundTrip | null>(null);
+  const statsHistory = ref<StrategyStatsSnapshot[]>([]);
+  const config = ref<AnalyticsConfigResponse | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
@@ -67,6 +71,25 @@ export const useAnalyticsStore = defineStore('analytics', () => {
     } catch { /* optional endpoint */ }
   }
 
+  async function fetchRoundTrip(tradeId: string) {
+    try {
+      selectedRoundTrip.value = await analyticsApi.getRoundTrip(tradeId);
+    } catch { selectedRoundTrip.value = null; }
+  }
+
+  async function fetchStatsHistory(strategyId: string) {
+    try {
+      const data = await analyticsApi.getStrategyStatsHistory(strategyId);
+      statsHistory.value = data.history;
+    } catch { statsHistory.value = []; }
+  }
+
+  async function fetchConfig() {
+    try {
+      config.value = await analyticsApi.getConfig();
+    } catch { config.value = null; }
+  }
+
   async function fetchAll() {
     loading.value = true;
     try {
@@ -86,8 +109,10 @@ export const useAnalyticsStore = defineStore('analytics', () => {
     strategyStats,
     consecutiveLosses,
     signalQuality,
+    selectedRoundTrip, statsHistory, config,
     loading, error,
     fetchSignals, fetchRoundTrips, fetchStrategyStats,
     fetchConsecutiveLosses, fetchSignalQuality, fetchAll,
+    fetchRoundTrip, fetchStatsHistory, fetchConfig,
   };
 });

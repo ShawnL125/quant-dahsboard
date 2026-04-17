@@ -1,11 +1,14 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { strategiesApi } from '@/api/strategies';
-import type { Strategy } from '@/types';
+import type { Strategy, ParamAuditEntry } from '@/types';
 
 export const useStrategiesStore = defineStore('strategies', () => {
   const strategies = ref<Strategy[]>([]);
   const selectedStrategy = ref<Strategy | null>(null);
+  const params = ref<Record<string, unknown>>({});
+  const paramsSource = ref('');
+  const paramsAudit = ref<ParamAuditEntry[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
@@ -49,14 +52,49 @@ export const useStrategiesStore = defineStore('strategies', () => {
     }
   }
 
+  async function fetchParams(strategyId: string) {
+    try {
+      const data = await strategiesApi.getParams(strategyId);
+      params.value = data.params;
+      paramsSource.value = data.source;
+    } catch {
+      params.value = {};
+      paramsSource.value = '';
+    }
+  }
+
+  async function updateParams(strategyId: string, newParams: Record<string, unknown>) {
+    const result = await strategiesApi.updateParams(strategyId, newParams);
+    if (result.errors && result.errors.length > 0) {
+      throw new Error(result.errors.join(', '));
+    }
+    params.value = { ...params.value, ...newParams };
+    await fetchParamsAudit(strategyId);
+  }
+
+  async function fetchParamsAudit(strategyId: string, limit?: number) {
+    try {
+      const data = await strategiesApi.getParamsAudit(strategyId, limit);
+      paramsAudit.value = data.audit;
+    } catch {
+      paramsAudit.value = [];
+    }
+  }
+
   return {
     strategies,
     selectedStrategy,
+    params,
+    paramsSource,
+    paramsAudit,
     loading,
     error,
     fetchStrategies,
     toggleStrategy,
     reloadStrategies,
     selectStrategy,
+    fetchParams,
+    updateParams,
+    fetchParamsAudit,
   };
 });

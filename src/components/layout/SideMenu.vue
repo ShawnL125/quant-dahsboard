@@ -39,6 +39,7 @@ import {
   BarChartOutlined,
   WalletOutlined,
   BankOutlined,
+  DollarOutlined,
   ThunderboltFilled,
 } from '@ant-design/icons-vue';
 
@@ -55,6 +56,7 @@ const menuItems = [
   { path: '/signals', label: 'Signals', icon: RadarChartOutlined },
   { path: '/analytics', label: 'Analytics', icon: BarChartOutlined },
   { path: '/ledger', label: 'Ledger', icon: WalletOutlined },
+  { path: '/funding', label: 'Funding', icon: DollarOutlined },
   { path: '/account', label: 'Account', icon: BankOutlined },
   { path: '/auto-tune', label: 'Auto-Tune', icon: ThunderboltFilled },
   { path: '/backtest', label: 'Backtest', icon: LineChartOutlined },

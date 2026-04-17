@@ -6,9 +6,17 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
+- **Account sync (Phase 35)**: Exchange account snapshots, margin status monitoring with liquidation risk, manual sync/reconcile, reconciliation history table.
+- **Auto-Tune (Phase 34)**: Trigger optimization runs, confirm/rollback applied params, scheduled auto-tune with cron expressions.
+- **Funding rate (Phase 29)**: Current funding rates display, historical rates per symbol, per-strategy funding cost summary, backfill trigger.
+- **Algo orders (Phase 38)**: TWAP/VWAP/Iceberg algorithmic order submission, status tracking, pause/resume/cancel controls.
+- **OMS state (Phase 31-32)**: Tracked orders view, SL/TP bindings, trailing stop monitoring, order amend support, strategy-scoped order queries.
+- **Strategy parameter hot-reload (Phase 33)**: View/update strategy parameters at runtime, parameter change audit log.
+- **Auth & user management (Phase 36)**: JWT login/refresh, API key CRUD, user management (admin only) — API clients ready for login page.
+- **WebSocket enhancement (Phase 37)**: 6 new channels — account, margin, reconcile, funding, params, notifications.
 - **Analytics module**: Strategy performance cards (P&L, win rate, Sharpe, profit factor, max drawdown), consecutive losses and signal quality indicators, round-trip trades table with color-coded P&L.
-- **Ledger module**: Account balances grid with per-asset breakdowns, double-entry ledger table with debit/credit color coding and running balances.
-- **Reconciliation API client**: Frontend client for run/reports/alerts endpoints (backend partially stubbed).
+- **Ledger module**: Account balances grid with per-asset breakdowns, double-entry ledger table with debit/credit color coding and running balances, daily summary with date picker, cash flow recording (deposit/withdrawal).
+- **Reconciliation**: API client + store for run/reports/alerts, alerts table in System page.
 - **Data API client**: Client for symbols and candles endpoints ready for future charting.
 - **Admin reload-config**: Reload Config button in System page triggers backend config reload.
 - **Real-time sparklines**: Dashboard stat cards now display live data-driven sparkline charts tracking equity, balance, total P&L, and unrealized P&L over time, replacing the previous static generated curves.

@@ -6,6 +6,8 @@
         <a-button type="primary" :loading="store.loading" @click="store.runBacktest()">
           Run
         </a-button>
+        <a-button @click="importModalOpen = true">Import</a-button>
+        <a-button :disabled="selectedRuns.length < 2" @click="onCompare">Compare ({{ selectedRuns.length }})</a-button>
         <span v-if="store.taskStatus" class="status-pill" :class="statusClass">
           {{ store.taskStatus }}
         </span>
@@ -31,6 +33,7 @@
           <table v-if="store.runs.length > 0" class="data-table">
             <thead>
               <tr>
+                <th><input type="checkbox" :checked="allRunsSelected" @change="toggleAllRuns" /></th>
                 <th>Symbol</th>
                 <th>Strategy</th>
                 <th>Return</th>
@@ -43,6 +46,7 @@
             </thead>
             <tbody>
               <tr v-for="run in store.runs" :key="run.run_id">
+                <td><input type="checkbox" :checked="selectedRuns.includes(run.run_id)" @change="toggleRun(run.run_id)" /></td>
                 <td class="text-bold">{{ run.symbol }}</td>
                 <td class="text-muted">{{ (run.strategy_ids || []).join(', ') || '-' }}</td>
                 <td :class="parseFloat(run.total_return_pct) >= 0 ? 'text-success' : 'text-error'">
@@ -109,16 +113,67 @@
         </div>
       </a-tab-pane>
     </a-tabs>
+
+    <!-- Import Modal -->
+    <a-modal v-model:open="importModalOpen" title="Import Backtest Results" @ok="onImport" :confirm-loading="importing">
+      <a-form layout="vertical">
+        <a-form-item label="JSON Data">
+          <a-textarea v-model:value="importJson" :rows="8" placeholder="Paste backtest results JSON..." />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+
+    <!-- Compare Modal -->
+    <a-modal v-model:open="compareModalOpen" title="Compare Runs" :footer="null" width="720px">
+      <table v-if="compareData.length > 0" class="data-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th v-for="run in compareData" :key="run.run_id">{{ run.symbol }} ({{ run.run_id.slice(0, 8) }})</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="metric in compareMetrics" :key="metric.key">
+            <td class="text-bold">{{ metric.label }}</td>
+            <td v-for="run in compareData" :key="run.run_id + metric.key" class="text-mono">
+              {{ metric.format(run) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div v-else class="empty-state">No comparison data</div>
+    </a-modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useBacktestStore } from '@/stores/backtest';
+import { backtestApi } from '@/api/backtest';
 import BacktestResult from '@/components/backtest/BacktestResult.vue';
+import { message } from 'ant-design-vue';
 
 const store = useBacktestStore();
 const activeTab = ref('runs');
+const selectedRuns = ref<string[]>([]);
+const importModalOpen = ref(false);
+const importJson = ref('');
+const importing = ref(false);
+const compareModalOpen = ref(false);
+const compareData = ref<Record<string, string>[]>([]);
+
+const allRunsSelected = computed(() =>
+  store.runs.length > 0 && store.runs.every((r) => selectedRuns.value.includes(r.run_id))
+);
+
+const compareMetrics = [
+  { key: 'return', label: 'Return %', format: (r: Record<string, string>) => parseFloat(r.total_return_pct || '0').toFixed(2) + '%' },
+  { key: 'sharpe', label: 'Sharpe', format: (r: Record<string, string>) => parseFloat(r.sharpe_ratio || '0').toFixed(2) },
+  { key: 'calmar', label: 'Calmar', format: (r: Record<string, string>) => parseFloat(r.calmar_ratio || '0').toFixed(2) },
+  { key: 'dd', label: 'Max DD %', format: (r: Record<string, string>) => parseFloat(r.max_drawdown_pct || '0').toFixed(2) + '%' },
+  { key: 'winrate', label: 'Win Rate', format: (r: Record<string, string>) => (parseFloat(r.win_rate || '0') * 100).toFixed(1) + '%' },
+  { key: 'trades', label: 'Trades', format: (r: Record<string, string>) => String(r.total_trades || '0') },
+];
 
 const statusClass = computed(() => {
   switch (store.taskStatus) {
@@ -163,6 +218,47 @@ function formatTime(dateStr?: string): string {
   if (!dateStr) return '-';
   try { return new Date(dateStr).toLocaleString(); }
   catch { return dateStr; }
+}
+
+function toggleRun(runId: string) {
+  if (selectedRuns.value.includes(runId)) {
+    selectedRuns.value = selectedRuns.value.filter((id) => id !== runId);
+  } else {
+    selectedRuns.value = [...selectedRuns.value, runId];
+  }
+}
+
+function toggleAllRuns() {
+  if (allRunsSelected.value) {
+    selectedRuns.value = [];
+  } else {
+    selectedRuns.value = store.runs.map((r) => r.run_id);
+  }
+}
+
+async function onCompare() {
+  try {
+    compareData.value = await backtestApi.compare(selectedRuns.value);
+    compareModalOpen.value = true;
+  } catch {
+    message.error('Failed to compare runs');
+  }
+}
+
+async function onImport() {
+  importing.value = true;
+  try {
+    const data = JSON.parse(importJson.value);
+    await backtestApi.importResults(data);
+    message.success('Backtest results imported');
+    importModalOpen.value = false;
+    importJson.value = '';
+    store.fetchRuns();
+  } catch {
+    message.error('Invalid JSON or import failed');
+  } finally {
+    importing.value = false;
+  }
 }
 
 onMounted(() => {

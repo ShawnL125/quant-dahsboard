@@ -16,6 +16,10 @@ import { useOrdersStore } from '@/stores/orders';
 import { useRiskStore } from '@/stores/risk';
 import { useSignalsStore } from '@/stores/signals';
 import { useQualityStore } from '@/stores/quality';
+import { useAccountStore } from '@/stores/account';
+import { useFundingStore } from '@/stores/funding';
+import { useStrategiesStore } from '@/stores/strategies';
+import { useReconciliationStore } from '@/stores/reconciliation';
 
 const route = useRoute();
 const wsConnected = ref(false);
@@ -41,25 +45,41 @@ onMounted(async () => {
   const riskStore = useRiskStore();
   const signalsStore = useSignalsStore();
   const qualityStore = useQualityStore();
+  const accountStore = useAccountStore();
+  const fundingStore = useFundingStore();
+  const strategiesStore = useStrategiesStore();
+  const reconStore = useReconciliationStore();
 
   ws.onMessage((msg) => {
+    const data = msg.data as Record<string, unknown>;
     switch (msg.channel) {
       case 'positions':
         tradingStore.updatePositionsFromWS(msg.data);
         break;
       case 'pnl':
-        tradingStore.updatePortfolioFromWS(msg.data as Record<string, unknown>);
+        tradingStore.updatePortfolioFromWS(data);
         break;
       case 'orders':
-        ordersStore.updateOrderFromWS(msg.data as Record<string, unknown>);
+        ordersStore.updateOrderFromWS(data);
         break;
       case 'trades':
       case 'system':
+        break;
       case 'account':
+        accountStore.updateSnapshotFromWS(data);
+        break;
       case 'margin':
+        accountStore.updateMarginFromWS(data);
+        break;
       case 'reconcile':
+        reconStore.fetchAlerts();
+        break;
       case 'funding':
+        fundingStore.updateRatesFromWS(data);
+        break;
       case 'params':
+        strategiesStore.updateParamsFromWS(data);
+        break;
       case 'notifications':
         break;
       case 'risk':

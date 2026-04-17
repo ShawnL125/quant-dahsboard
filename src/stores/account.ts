@@ -48,8 +48,31 @@ export const useAccountStore = defineStore('account', () => {
     }
   }
 
+  function updateMarginFromWS(data: Record<string, unknown>) {
+    if (!data?.exchange) return;
+    const incoming = data as unknown as MarginStatus;
+    const idx = margins.value.findIndex((m) => m.exchange === incoming.exchange);
+    if (idx >= 0) {
+      margins.value[idx] = incoming;
+    } else {
+      margins.value = [...margins.value, incoming];
+    }
+  }
+
+  function updateSnapshotFromWS(data: Record<string, unknown>) {
+    if (!data?.snapshot_id) return;
+    const incoming = data as unknown as AccountSnapshot;
+    const idx = snapshots.value.findIndex((s) => s.snapshot_id === incoming.snapshot_id);
+    if (idx >= 0) {
+      snapshots.value[idx] = incoming;
+    } else {
+      snapshots.value = [incoming, ...snapshots.value];
+    }
+  }
+
   return {
     snapshots, reconciliations, margins, loading, error,
     fetchSnapshots, fetchReconciliations, fetchMargin, syncAll, reconcile, fetchAll,
+    updateMarginFromWS, updateSnapshotFromWS,
   };
 });

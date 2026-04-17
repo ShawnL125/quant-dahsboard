@@ -1,12 +1,16 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { ordersApi } from '@/api/orders';
-import type { Order, OrderRequest, OrderEvent } from '@/types';
+import type { Order, OrderRequest, OrderEvent, TrackedOrder, SLBinding, TrailingStop, AmendOrderBody, TrailingStopBody, AlgoOrder, SubmitAlgoBody } from '@/types';
 
 export const useOrdersStore = defineStore('orders', () => {
   const openOrders = ref<Order[]>([]);
   const orderHistory = ref<Order[]>([]);
   const orderEvents = ref<Record<string, OrderEvent[]>>({});
+  const trackedOrders = ref<TrackedOrder[]>([]);
+  const slBindings = ref<SLBinding[]>([]);
+  const trailingStops = ref<TrailingStop[]>([]);
+  const algoOrders = ref<AlgoOrder[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
@@ -64,6 +68,63 @@ export const useOrdersStore = defineStore('orders', () => {
     }
   }
 
+  // OMS (Phase 31-32)
+  async function fetchTrackedOrders() {
+    try { trackedOrders.value = await ordersApi.getTrackedOrders(); }
+    catch { trackedOrders.value = []; }
+  }
+
+  async function fetchSLBindings() {
+    try { slBindings.value = await ordersApi.getSLBindings(); }
+    catch { slBindings.value = []; }
+  }
+
+  async function fetchTrailingStops() {
+    try { trailingStops.value = await ordersApi.getTrailingStops(); }
+    catch { trailingStops.value = []; }
+  }
+
+  async function amendOrder(orderId: string, data: AmendOrderBody) {
+    await ordersApi.amendOrder(orderId, data);
+    await fetchOrders();
+  }
+
+  async function activateTrailingStop(orderId: string, data: TrailingStopBody) {
+    await ordersApi.activateTrailingStop(orderId, data);
+    await fetchTrailingStops();
+  }
+
+  async function deactivateTrailingStop(orderId: string) {
+    await ordersApi.deactivateTrailingStop(orderId);
+    await fetchTrailingStops();
+  }
+
+  // Algo Orders (Phase 38)
+  async function fetchAlgoOrders() {
+    try { algoOrders.value = await ordersApi.getAlgoOrders(); }
+    catch { algoOrders.value = []; }
+  }
+
+  async function submitAlgoOrder(data: SubmitAlgoBody) {
+    await ordersApi.submitAlgoOrder(data);
+    await fetchAlgoOrders();
+  }
+
+  async function cancelAlgoOrder(algoId: string) {
+    await ordersApi.cancelAlgoOrder(algoId);
+    await fetchAlgoOrders();
+  }
+
+  async function pauseAlgoOrder(algoId: string) {
+    await ordersApi.pauseAlgoOrder(algoId);
+    await fetchAlgoOrders();
+  }
+
+  async function resumeAlgoOrder(algoId: string) {
+    await ordersApi.resumeAlgoOrder(algoId);
+    await fetchAlgoOrders();
+  }
+
   function updateOrderFromWS(data: Record<string, unknown>) {
     if (!data?.order_id) return;
     const orderId = data.order_id as string;
@@ -94,6 +155,10 @@ export const useOrdersStore = defineStore('orders', () => {
     openOrders,
     orderHistory,
     orderEvents,
+    trackedOrders,
+    slBindings,
+    trailingStops,
+    algoOrders,
     loading,
     error,
     fetchOrders,
@@ -102,5 +167,16 @@ export const useOrdersStore = defineStore('orders', () => {
     placeOrder,
     cancelOrder,
     updateOrderFromWS,
+    fetchTrackedOrders,
+    fetchSLBindings,
+    fetchTrailingStops,
+    amendOrder,
+    activateTrailingStop,
+    deactivateTrailingStop,
+    fetchAlgoOrders,
+    submitAlgoOrder,
+    cancelAlgoOrder,
+    pauseAlgoOrder,
+    resumeAlgoOrder,
   };
 });

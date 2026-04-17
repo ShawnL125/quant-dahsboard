@@ -21,6 +21,13 @@
             <BellOutlined style="font-size: 18px; color: var(--q-text-secondary); cursor: pointer;" />
           </a-badge>
           <a-tag v-if="paperTrading" color="orange" style="margin: 0; font-size: 11px;">PAPER</a-tag>
+          <div v-if="authStore.isAuthenticated" class="header-user">
+            <UserOutlined style="font-size: 14px; color: var(--q-text-secondary);" />
+            <span class="user-name">{{ authStore.user?.username || 'User' }}</span>
+            <a-button type="text" size="small" @click="onLogout">
+              <LogoutOutlined style="font-size: 14px; color: var(--q-text-muted);" />
+            </a-button>
+          </div>
         </div>
       </header>
       <main class="app-content">
@@ -33,11 +40,20 @@
 <script setup lang="ts">
 import { inject, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { SearchOutlined, BellOutlined } from '@ant-design/icons-vue';
+import { SearchOutlined, BellOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons-vue';
 import SideMenu from './SideMenu.vue';
+import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
 const paperTrading = inject<Ref<boolean>>('paperTrading', { value: false } as Ref<boolean>);
+
+function onLogout() {
+  authStore.logout();
+  router.push('/login');
+}
 
 const pageTitle: Record<string, string> = {
   Dashboard: 'Overview of key metrics',
@@ -48,6 +64,7 @@ const pageTitle: Record<string, string> = {
   Signals: 'Live strategy signal feed',
   Analytics: 'Strategy performance and trade analytics',
   Ledger: 'Account balances and ledger entries',
+  Funding: 'Current and historical funding rates',
   Account: 'Exchange account sync, snapshots, and margin',
   'Auto-Tune': 'Automated strategy parameter optimization',
   Backtest: 'Run and review backtests',
@@ -125,6 +142,17 @@ const pageTitle: Record<string, string> = {
   background: var(--q-bg);
   border: none;
   font-size: 13px;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.user-name {
+  font-size: 12px;
+  color: var(--q-text-secondary);
 }
 
 .app-content {

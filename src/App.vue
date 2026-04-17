@@ -1,9 +1,13 @@
 <template>
-  <AppLayout />
+  <router-view v-if="isPublicRoute" />
+  <template v-else>
+    <AppLayout />
+  </template>
 </template>
 
 <script setup lang="ts">
-import { provide, ref, onMounted, onUnmounted } from 'vue';
+import { provide, ref, computed, onMounted, onUnmounted } from 'vue';
+import { useRoute } from 'vue-router';
 import AppLayout from '@/components/layout/AppLayout.vue';
 import { useWebSocket } from '@/composables/useWebSocket';
 import { systemApi } from '@/api/system';
@@ -13,11 +17,14 @@ import { useRiskStore } from '@/stores/risk';
 import { useSignalsStore } from '@/stores/signals';
 import { useQualityStore } from '@/stores/quality';
 
+const route = useRoute();
 const wsConnected = ref(false);
 const paperTrading = ref(false);
 
 provide('wsConnected', wsConnected);
 provide('paperTrading', paperTrading);
+
+const isPublicRoute = computed(() => route.meta?.public === true);
 
 const ws = useWebSocket({
   url: import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws',
@@ -27,6 +34,8 @@ const ws = useWebSocket({
 let wsPollTimer: ReturnType<typeof setInterval> | null = null;
 
 onMounted(async () => {
+  if (isPublicRoute.value) return;
+
   const tradingStore = useTradingStore();
   const ordersStore = useOrdersStore();
   const riskStore = useRiskStore();
@@ -46,6 +55,12 @@ onMounted(async () => {
         break;
       case 'trades':
       case 'system':
+      case 'account':
+      case 'margin':
+      case 'reconcile':
+      case 'funding':
+      case 'params':
+      case 'notifications':
         break;
       case 'risk':
         riskStore.updateFromWS(msg.data as Record<string, unknown>, msg.timestamp);

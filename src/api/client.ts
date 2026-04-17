@@ -2,17 +2,26 @@ import axios from 'axios';
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api/v1',
-  headers: {
-    'X-API-Key': import.meta.env.VITE_API_KEY || '',
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
+});
+
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    const apiKey = import.meta.env.VITE_API_KEY || '';
+    if (apiKey) config.headers['X-API-Key'] = apiKey;
+  }
+  return config;
 });
 
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      console.error('API Key authentication failed. Set VITE_API_KEY in .env');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
     }
     return Promise.reject(error);
   },

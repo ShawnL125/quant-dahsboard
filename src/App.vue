@@ -60,7 +60,7 @@ onMounted(async () => {
   });
 
   ws.connect();
-  ws.subscribe(['orders', 'positions', 'pnl', 'system', 'trades', 'risk', 'signals', 'quality']);
+  ws.subscribe(['orders', 'positions', 'pnl', 'system', 'trades', 'risk', 'signals', 'quality', 'account', 'margin', 'reconcile', 'funding', 'params', 'notifications']);
   wsPollTimer = setInterval(() => {
     wsConnected.value = ws.isConnected.value;
   }, 1000);

@@ -48,6 +48,8 @@ const pageTitle: Record<string, string> = {
   Signals: 'Live strategy signal feed',
   Analytics: 'Strategy performance and trade analytics',
   Ledger: 'Account balances and ledger entries',
+  Account: 'Exchange account sync, snapshots, and margin',
+  'Auto-Tune': 'Automated strategy parameter optimization',
   Backtest: 'Run and review backtests',
   'Walk-Forward': 'Walk-Forward optimization analysis',
   System: 'System health and configuration',

@@ -178,9 +178,12 @@ export interface SystemStatus {
   subscribed_symbols: Record<string, string[]>;
 }
 
+export type TradingMode = 'live' | 'testnet' | 'paper';
+
 export interface HealthStatus {
   status: string;
   uptime_seconds: number;
+  trading_mode?: TradingMode;
 }
 
 export interface ConfigView {

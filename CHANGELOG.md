@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
+- **Testing infrastructure**: Vitest unit tests (413 tests, 19 files) + Playwright E2E tests with Page Object Model. Coverage targets: utils 100%, api/client 90%, core stores 85%+, overall 80%.
+- **TradingMode safety guard**: E2E global-setup checks `/health` `trading_mode` field and aborts if backend is in `live` mode. Only `paper` and `testnet` backends are allowed.
+- **E2E destructive test opt-in**: Kill-switch E2E spec gated behind `E2E_ALLOW_DESTRUCTIVE=true`. Default `test:e2e` skips it; `test:e2e:destructive` script enables it.
+- **SystemView connector filter**: Connected exchanges now filtered by `ws_connected`/`ready` status instead of showing all configured connectors.
+
+### Features
+
 - **Risk store robustness fix**: Separate drawdown sampling from status refreshes with 15s dedup window; event_id-based idempotent merge for WS and REST risk events; RiskEventsTable keyed by event_id instead of timestamp.
 - **WebSocket channel handlers**: Wire 6 subscribed channels to stores — account (snapshot updates), margin (real-time margin), reconcile (alert refresh), funding (rate updates), params (strategy param sync), notifications.
 - **Analytics enhancements**: Round-trip trade detail modal on click; strategy stats history table (click any strategy card); analytics config store support.

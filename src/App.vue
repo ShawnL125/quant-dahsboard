@@ -23,10 +23,10 @@ import { useReconciliationStore } from '@/stores/reconciliation';
 
 const route = useRoute();
 const wsConnected = ref(false);
-const paperTrading = ref(false);
+const tradingMode = ref<import('@/types').TradingMode>('live');
 
 provide('wsConnected', wsConnected);
-provide('paperTrading', paperTrading);
+provide('tradingMode', tradingMode);
 
 const isPublicRoute = computed(() => route.meta?.public === true);
 
@@ -101,8 +101,10 @@ onMounted(async () => {
   }, 1000);
 
   try {
-    const status = await systemApi.getPaperStatus();
-    paperTrading.value = status.paper_trading === true;
+    const health = await systemApi.getLiveness();
+    if (health.trading_mode) {
+      tradingMode.value = health.trading_mode;
+    }
   } catch {
     /* Backend not running */
   }

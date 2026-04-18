@@ -11,7 +11,6 @@ vi.mock('@/api/system', () => ({
     getStatus: vi.fn(),
     getConfig: vi.fn(),
     getEventStats: vi.fn(),
-    getPaperStatus: vi.fn(),
     reloadConfig: vi.fn(),
   },
 }));

@@ -212,11 +212,6 @@ export interface WSCommand {
 }
 
 // ── Paper Trading ──────────────────────────────────────────────────
-export interface PaperStatus {
-  paper_trading: boolean;
-  message?: string;
-}
-
 // ── Risk ───────────────────────────────────────────────────────────
 export interface KillSwitchState {
   global: { active: boolean; reason: string };

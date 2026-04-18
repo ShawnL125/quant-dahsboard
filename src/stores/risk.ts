@@ -1,13 +1,26 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { riskApi } from '@/api/risk';
-import type { RiskStatus, ExposureData, RiskEvent, RiskConfig, DrawdownPoint } from '@/types';
+import type {
+  RiskStatus,
+  ExposureData,
+  RiskEvent,
+  RiskConfig,
+  DrawdownPoint,
+  KillSwitchExpectedState,
+  KillSwitchPayload,
+} from '@/types';
 
 const DEFAULT_EVENTS_PAGE_SIZE = 20;
 const MAX_DRAWDOWN_HISTORY = 600;
 const MAX_REALTIME_EVENT_IDS = 200;
 const DRAWDOWN_DEDUP_WINDOW_MS = 15_000;
 const DRAWDOWN_VALUE_EPSILON = 1e-6;
+
+type KillSwitchRequest = Omit<KillSwitchPayload, 'expected_state' | 'idempotency_key'> & {
+  expected_state?: KillSwitchExpectedState;
+  idempotency_key?: string;
+};
 
 export const useRiskStore = defineStore('risk', () => {
   const status = ref<RiskStatus | null>(null);
@@ -189,9 +202,39 @@ export const useRiskStore = defineStore('risk', () => {
     }
   }
 
-  async function postKillSwitch(payload: { level: 'GLOBAL' | 'SYMBOL' | 'STRATEGY'; target?: string; reason?: string; activate: boolean }) {
+  function getKillSwitchActive(level: KillSwitchPayload['level'], target?: string): boolean {
+    if (!status.value) {
+      return false;
+    }
+
+    switch (level) {
+      case 'GLOBAL':
+        return status.value.kill_switch.global.active;
+      case 'SYMBOL':
+        return target !== undefined && target.length > 0 ? target in status.value.kill_switch.symbols : false;
+      case 'STRATEGY':
+        return target !== undefined && target.length > 0 ? target in status.value.kill_switch.strategies : false;
+    }
+  }
+
+  function buildKillSwitchPayload(payload: KillSwitchRequest): KillSwitchPayload {
+    const reason = payload.reason.trim();
+    if (reason.length === 0) {
+      throw new Error('Kill-switch reason is required');
+    }
+
+    return {
+      ...payload,
+      reason,
+      expected_state: payload.expected_state ?? { active: getKillSwitchActive(payload.level, payload.target) },
+      idempotency_key: payload.idempotency_key ?? crypto.randomUUID(),
+    };
+  }
+
+  async function postKillSwitch(payload: KillSwitchRequest) {
     try {
-      await riskApi.postKillSwitch(payload);
+      const request = buildKillSwitchPayload(payload);
+      await riskApi.postKillSwitch(request);
       await Promise.all([fetchStatus(), fetchExposure()]);
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : String(e);

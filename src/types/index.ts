@@ -178,9 +178,12 @@ export interface SystemStatus {
   subscribed_symbols: Record<string, string[]>;
 }
 
+export type TradingMode = 'live' | 'testnet' | 'paper';
+
 export interface HealthStatus {
   status: string;
   uptime_seconds: number;
+  trading_mode?: TradingMode;
 }
 
 export interface ConfigView {
@@ -209,11 +212,6 @@ export interface WSCommand {
 }
 
 // ── Paper Trading ──────────────────────────────────────────────────
-export interface PaperStatus {
-  paper_trading: boolean;
-  message?: string;
-}
-
 // ── Risk ───────────────────────────────────────────────────────────
 export interface KillSwitchState {
   global: { active: boolean; reason: string };
@@ -296,11 +294,18 @@ export interface RiskConfig {
   max_correlated_exposure_pct: number;
 }
 
+export interface KillSwitchExpectedState {
+  active: boolean;
+  version?: string | number;
+}
+
 export interface KillSwitchPayload {
   level: 'GLOBAL' | 'SYMBOL' | 'STRATEGY';
   target?: string;
-  reason?: string;
+  reason: string;
   activate: boolean;
+  expected_state: KillSwitchExpectedState;
+  idempotency_key: string;
 }
 
 export interface DrawdownPoint {

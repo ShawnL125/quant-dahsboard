@@ -20,7 +20,9 @@
           <a-badge :dot="false">
             <BellOutlined style="font-size: 18px; color: var(--q-text-secondary); cursor: pointer;" />
           </a-badge>
-          <a-tag v-if="paperTrading" color="orange" style="margin: 0; font-size: 11px;">PAPER</a-tag>
+          <a-tag v-if="tradingMode === 'paper'" color="orange" style="margin: 0; font-size: 11px;">PAPER</a-tag>
+          <a-tag v-else-if="tradingMode === 'testnet'" color="blue" style="margin: 0; font-size: 11px;">TESTNET</a-tag>
+          <a-tag v-else-if="tradingMode === 'live'" color="red" style="margin: 0; font-size: 11px;">LIVE</a-tag>
           <div v-if="authStore.isAuthenticated" class="header-user">
             <UserOutlined style="font-size: 14px; color: var(--q-text-secondary);" />
             <span class="user-name">{{ authStore.user?.username || 'User' }}</span>
@@ -48,7 +50,7 @@ import { useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
-const paperTrading = inject<Ref<boolean>>('paperTrading', { value: false } as Ref<boolean>);
+const tradingMode = inject<Ref<import('@/types').TradingMode>>('tradingMode', { value: 'live' } as Ref<import('@/types').TradingMode>);
 
 function onLogout() {
   authStore.logout();

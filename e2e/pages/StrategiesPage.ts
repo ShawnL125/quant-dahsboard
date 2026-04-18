@@ -50,7 +50,7 @@ export class StrategiesPage {
     // Drawer (Ant Design drawer)
     this.drawer = page.locator('.ant-drawer');
     this.drawerTitle = page.locator('.ant-drawer-header .ant-drawer-title');
-    this.drawerClose = page.locator('.ant-drawer-close');
+    this.drawerClose = page.locator('.ant-drawer-header-close, .ant-drawer-close, .ant-drawer .anticon-close').first();
 
     // Parameters
     this.paramsSection = page.locator('.detail-section:has(.section-title:text("Parameters"))');
@@ -96,8 +96,14 @@ export class StrategiesPage {
   }
 
   async closeDrawer(): Promise<void> {
-    await this.drawerClose.click();
-    await this.drawer.waitFor({ state: 'hidden' });
+    await this.page.keyboard.press('Escape');
+
+    try {
+      await this.drawer.waitFor({ state: 'hidden', timeout: 5000 });
+    } catch {
+      await this.drawerClose.click();
+      await this.drawer.waitFor({ state: 'hidden', timeout: 5000 });
+    }
   }
 
   async startEditParams(): Promise<void> {

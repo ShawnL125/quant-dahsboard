@@ -48,7 +48,7 @@ export class OrdersPage {
 
     // Tables
     this.openOrdersTable = page.locator('.orders-page .data-table').first();
-    this.historyTable = page.locator('.ant-tabpane-active .data-table');
+    this.historyTable = page.locator('.ant-tabs-tabpane-active .data-table');
 
     // Error
     this.errorAlert = page.locator('.orders-page .ant-alert-error');
@@ -73,9 +73,11 @@ export class OrdersPage {
       await this.sellButton.click();
     }
 
-    // Select LIMIT type
+    // Select LIMIT type — wait for dropdown to open, then select
     await this.typeSelect.click();
-    await this.page.getByRole('option', { name: 'LIMIT' }).click();
+    const limitOption = this.page.locator('.ant-select-item-option').filter({ hasText: 'LIMIT' });
+    await limitOption.waitFor({ state: 'visible', timeout: 5000 });
+    await limitOption.click();
 
     await this.quantityInput.fill(String(quantity));
     await this.priceInput.fill(String(price));

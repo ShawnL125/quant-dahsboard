@@ -53,12 +53,12 @@ export class BacktestPage {
     this.tabs = page.locator('.ant-tabs');
 
     // Run history
-    this.runHistoryTable = page.locator('.ant-tabpane-active .data-table').first();
-    this.runHistoryEmpty = page.locator('.ant-tabpane-active .empty-state').first();
+    this.runHistoryTable = page.locator('.ant-tabs-tabpane-active .data-table').first();
+    this.runHistoryEmpty = page.locator('.ant-tabs-tabpane-active .empty-state').first();
 
     // Task history (second tab pane)
-    this.taskHistoryTable = page.locator('.ant-tabpane-active .data-table').nth(1);
-    this.taskHistoryEmpty = page.locator('.ant-tabpane-active .empty-state').nth(1);
+    this.taskHistoryTable = page.locator('.ant-tabs-tabpane-active .data-table').nth(1);
+    this.taskHistoryEmpty = page.locator('.ant-tabs-tabpane-active .empty-state').nth(1);
 
     // Result component
     this.backtestResult = page.locator('.backtest-result');

@@ -6,8 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
-- **Testing infrastructure**: Vitest unit tests (413 tests, 19 files) + Playwright E2E tests with Page Object Model. Coverage targets: utils 100%, api/client 90%, core stores 85%+, overall 80%.
-- **TradingMode safety guard**: E2E global-setup checks `/health` `trading_mode` field and aborts if backend is in `live` mode. Only `paper` and `testnet` backends are allowed.
+- **Testing infrastructure**: Vitest unit tests (482 tests, 25 files) + Playwright E2E tests (48 tests) with Page Object Model (7 page objects, 7 flow specs). Coverage targets: utils 100%, api/client 90%, core stores 85%+, overall 80%.
+- **Vue component tests (P1)**: 7 component test files with 80 test cases — KillSwitchBar, StatCards, SystemStatusBar, HealthStatus, OrderForm, StrategyList, SideMenu. Uses @vue/test-utils with Ant Design stubs.
+- **E2E real backend run (P3)**: All 48 Playwright tests passing against live paper-trading backend. Navigation (14 routes), login, backtest run/history, order placement/tab navigation, strategy drawer/params/audit, account sync/reconcile.
+- **TradingMode safety guard**: E2E global-setup checks `/health` `trading_mode` field and aborts if backend is in `live` mode. Unverified backends log warnings; destructive tests blocked when safety cannot be confirmed.
 - **E2E destructive test opt-in**: Kill-switch E2E spec gated behind `E2E_ALLOW_DESTRUCTIVE=true`. Default `test:e2e` skips it; `test:e2e:destructive` script enables it.
 - **SystemView connector filter**: Connected exchanges now filtered by `ws_connected`/`ready` status instead of showing all configured connectors.
 

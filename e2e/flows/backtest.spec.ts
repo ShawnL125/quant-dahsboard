@@ -34,36 +34,28 @@ test.describe('Backtest', () => {
   test('run a backtest', async ({ page }) => {
     await backtestPage.runBacktest();
 
-    // A status pill should appear indicating the task was submitted
-    // (could be PENDING, RUNNING, or COMPLETED depending on backend speed)
-    await page.waitForTimeout(3000);
-
-    // Either a status pill appears or an error alert
-    const hasStatus = (await backtestPage.taskStatusPill.count()) > 0;
-    const hasError = (await backtestPage.errorAlert.count()) > 0;
-    expect(hasStatus || hasError).toBe(true);
+    await expect(backtestPage.taskStatusPill.or(backtestPage.errorAlert)).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test('view run history', async ({ page }) => {
-    await backtestPage.clickTab('Run History');
-    await page.waitForTimeout(2000);
+    const activePane = page.locator('.ant-tabs-tabpane-active');
+    const historyCard = activePane.locator('.history-card');
 
-    // Run history table or empty state should be visible
-    const hasTable = (await page.locator('.ant-tabpane-active .data-table').count()) > 0;
-    const hasEmpty = (await page.locator('.ant-tabpane-active .empty-state').count()) > 0;
-    expect(hasTable || hasEmpty).toBe(true);
+    await expect(historyCard).toBeVisible();
+    await expect(historyCard.locator('.card-title')).toContainText('DB Runs');
+    await expect(historyCard.locator('.data-table, .empty-state')).toBeVisible();
   });
 
   test('view task history tab', async ({ page }) => {
     await backtestPage.clickTab('Task History');
-    await page.waitForTimeout(2000);
 
-    const activeTab = page.locator('.ant-tabs-tabpane-active');
-    await expect(activeTab).toBeVisible();
+    const activePane = page.locator('.ant-tabs-tabpane-active');
+    const historyCard = activePane.locator('.history-card');
 
-    // Task history table or empty state
-    const hasTable = (await page.locator('.ant-tabpane-active .data-table').count()) > 0;
-    const hasEmpty = (await page.locator('.ant-tabpane-active .empty-state').count()) > 0;
-    expect(hasTable || hasEmpty).toBe(true);
+    await expect(historyCard).toBeVisible();
+    await expect(historyCard.locator('.card-title')).toContainText('Task History');
+    await expect(historyCard.locator('.data-table, .empty-state')).toBeVisible();
   });
 });

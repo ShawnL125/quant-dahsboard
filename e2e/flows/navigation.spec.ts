@@ -16,7 +16,7 @@ const routes = [
   { label: 'Ledger', path: '/ledger', selector: '.ledger-page' },
   { label: 'Funding', path: '/funding', selector: '.funding-page' },
   { label: 'Account', path: '/account', selector: '.account-page' },
-  { label: 'Auto-Tune', path: '/auto-tune', selector: '.auto-tune-page' },
+  { label: 'Auto-Tune', path: '/auto-tune', selector: '.autotune-page' },
   { label: 'Backtest', path: '/backtest', selector: '.backtest-page' },
   { label: 'Walk-Forward', path: '/walkforward', selector: '.walkforward-page' },
   { label: 'System', path: '/system', selector: '.system-page' },
@@ -35,7 +35,7 @@ test.describe('Navigation', () => {
       await dashboardPage.navigateTo(route.label);
 
       // Verify URL changed
-      await expect(page).toHaveURL(new RegExp(route.path === '/' ? '^/$' : route.path));
+      await expect(page).toHaveURL(new RegExp(route.path === '/' ? '/$' : route.path));
 
       // Verify the page container is visible
       await expect(page.locator(route.selector)).toBeVisible({ timeout: 10000 });

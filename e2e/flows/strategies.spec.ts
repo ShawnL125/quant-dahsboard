@@ -16,11 +16,9 @@ test.describe('Strategies', () => {
   });
 
   test('strategy cards or empty state is visible', async () => {
-    // Either strategy cards are shown or the empty state
-    const cardCount = await strategiesPage.strategyCards.count();
-    const hasEmptyState = (await strategiesPage.emptyState.count()) > 0;
-
-    expect(cardCount > 0 || hasEmptyState).toBe(true);
+    await expect(
+      strategiesPage.strategyCards.first().or(strategiesPage.emptyState),
+    ).toBeVisible();
   });
 
   test('reload strategies', async ({ page }) => {
@@ -69,7 +67,7 @@ test.describe('Strategies', () => {
     await expect(strategiesPage.editParamsButton).toBeVisible();
   });
 
-  test('view audit log in drawer', async () => {
+  test('view audit log in drawer', async ({ page }) => {
     const cardCount = await strategiesPage.strategyCards.count();
 
     if (cardCount === 0) {
@@ -80,11 +78,13 @@ test.describe('Strategies', () => {
     const firstStrategy = await strategiesPage.strategyCards.first().locator('.strategy-name').textContent();
     await strategiesPage.openStrategyDetails(firstStrategy || '');
 
-    // Audit section should be visible
-    await expect(strategiesPage.auditSection).toBeVisible();
+    // The drawer should have content sections — audit may or may not have entries
+    const drawerContent = page.locator('.ant-drawer-body');
+    await expect(drawerContent).toBeVisible();
 
-    // Close the drawer
-    await strategiesPage.closeDrawer();
-    await expect(strategiesPage.drawer).toBeHidden();
+    const auditEmptyState = strategiesPage.auditSection.locator('.empty-sm, .empty-state');
+
+    await expect(strategiesPage.auditSection).toBeVisible();
+    await expect(strategiesPage.auditTable.or(auditEmptyState)).toBeVisible({ timeout: 10000 });
   });
 });

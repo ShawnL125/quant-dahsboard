@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useRiskStore } from '@/stores/risk';
 import { riskApi } from '@/api/risk';
-import type { RiskStatus, ExposureData, RiskConfig, RiskEvent } from '@/types';
+import type { RiskStatus, ExposureData, RiskConfig, RiskEvent, KillSwitchPayload } from '@/types';
 
 // ── Mocks ────────────────────────────────────────────────────────────
 vi.mock('@/api/risk', () => ({
@@ -78,6 +78,7 @@ function makeEvent(overrides: Partial<RiskEvent> = {}): RiskEvent {
 describe('risk store', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(crypto, 'randomUUID').mockReturnValue('00000000-0000-4000-8000-000000000001');
     // Provide default resolved values so void Promise.all calls don't reject
     mockedRiskApi.getStatus.mockResolvedValue(fakeStatus);
     mockedRiskApi.getExposure.mockResolvedValue(fakeExposure);
@@ -329,6 +330,27 @@ describe('risk store', () => {
       expect(store.events).toHaveLength(1);
       expect(store.events[0].level).toBe('critical');
     });
+
+    it('deduplicates events without explicit event_id by using the deterministic fallback id', async () => {
+      const rawEvent = {
+        time: '2026-03-01T12:00:00Z',
+        event_type: 'ALERT',
+        level: 'warning',
+        target: 'ETH/USDT',
+        reason: 'High exposure',
+        metadata: {},
+      } as any;
+
+      mockedRiskApi.getEvents.mockResolvedValueOnce({ events: [rawEvent], total: 1 });
+      mockedRiskApi.getEvents.mockResolvedValueOnce({ events: [rawEvent], total: 1 });
+
+      const store = useRiskStore();
+      await store.fetchEvents();
+      await store.fetchEvents();
+
+      expect(store.events).toHaveLength(1);
+      expect(store.events[0].event_id).toBe('2026-03-01T12:00:00Z:ALERT:warning:ETH/USDT:High exposure');
+    });
   });
 
   // ── updateFromWS ─────────────────────────────────────────────────
@@ -551,25 +573,62 @@ describe('risk store', () => {
 
   // ── postKillSwitch ───────────────────────────────────────────────
   describe('postKillSwitch()', () => {
-    it('calls API then refetches status and exposure', async () => {
+    it('adds expected_state and idempotency key before refetching status and exposure', async () => {
       mockedRiskApi.postKillSwitch.mockResolvedValue({});
       mockedRiskApi.getStatus.mockResolvedValue(fakeStatus);
       mockedRiskApi.getExposure.mockResolvedValue(fakeExposure);
 
       const store = useRiskStore();
-      const payload = { level: 'GLOBAL' as const, activate: true, reason: 'Emergency' };
+      const payload = { level: 'GLOBAL' as const, activate: true, reason: ' Emergency ' };
+      await store.postKillSwitch(payload);
+
+      expect(mockedRiskApi.postKillSwitch).toHaveBeenCalledWith({
+        level: 'GLOBAL',
+        activate: true,
+        reason: 'Emergency',
+        expected_state: { active: false },
+        idempotency_key: '00000000-0000-4000-8000-000000000001',
+      });
+      expect(mockedRiskApi.getStatus).toHaveBeenCalled();
+      expect(mockedRiskApi.getExposure).toHaveBeenCalled();
+    });
+
+    it('preserves caller-supplied expected_state version and idempotency key', async () => {
+      mockedRiskApi.postKillSwitch.mockResolvedValue({});
+
+      const store = useRiskStore();
+      const payload: KillSwitchPayload = {
+        level: 'GLOBAL',
+        activate: false,
+        reason: 'Manual release',
+        expected_state: { active: true, version: 7 },
+        idempotency_key: 'request-7',
+      };
       await store.postKillSwitch(payload);
 
       expect(mockedRiskApi.postKillSwitch).toHaveBeenCalledWith(payload);
-      expect(mockedRiskApi.getStatus).toHaveBeenCalled();
-      expect(mockedRiskApi.getExposure).toHaveBeenCalled();
+      expect(crypto.randomUUID).not.toHaveBeenCalled();
+    });
+
+    it('rejects blank reasons for both activation and deactivation before calling the API', async () => {
+      const store = useRiskStore();
+
+      await store.postKillSwitch({ level: 'GLOBAL', activate: true, reason: '   ' });
+      expect(mockedRiskApi.postKillSwitch).not.toHaveBeenCalled();
+      expect(store.error).toBe('Kill-switch reason is required');
+
+      store.error = null;
+      await store.postKillSwitch({ level: 'GLOBAL', activate: false, reason: '' });
+
+      expect(mockedRiskApi.postKillSwitch).not.toHaveBeenCalled();
+      expect(store.error).toBe('Kill-switch reason is required');
     });
 
     it('sets error when API call fails', async () => {
       mockedRiskApi.postKillSwitch.mockRejectedValue(new Error('forbidden'));
 
       const store = useRiskStore();
-      await store.postKillSwitch({ level: 'GLOBAL', activate: true });
+      await store.postKillSwitch({ level: 'GLOBAL', activate: true, reason: 'Emergency' });
 
       expect(store.error).toBe('forbidden');
     });

@@ -294,11 +294,18 @@ export interface RiskConfig {
   max_correlated_exposure_pct: number;
 }
 
+export interface KillSwitchExpectedState {
+  active: boolean;
+  version?: string | number;
+}
+
 export interface KillSwitchPayload {
   level: 'GLOBAL' | 'SYMBOL' | 'STRATEGY';
   target?: string;
-  reason?: string;
+  reason: string;
   activate: boolean;
+  expected_state: KillSwitchExpectedState;
+  idempotency_key: string;
 }
 
 export interface DrawdownPoint {

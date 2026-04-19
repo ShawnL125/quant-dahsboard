@@ -82,9 +82,11 @@ async function pollData() {
   updateEquitySnapshot();
 }
 
-function startPolling() {
+function startPolling(immediate = true) {
   if (pollTimer) return;
-  pollData();
+  if (immediate) {
+    pollData();
+  }
   pollTimer = setInterval(pollData, 5000);
 }
 
@@ -115,7 +117,7 @@ onMounted(async () => {
 
   // 如果 WS 没连上，启动轮询兜底
   if (!wsConnected.value) {
-    startPolling();
+    startPolling(false);
   }
 });
 

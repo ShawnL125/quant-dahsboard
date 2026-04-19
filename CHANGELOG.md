@@ -6,8 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
-- **Testing infrastructure**: Vitest unit tests (482 tests, 25 files) + Playwright E2E tests (48 tests) with Page Object Model (7 page objects, 7 flow specs). Coverage targets: utils 100%, api/client 90%, core stores 85%+, overall 80%.
-- **Vue component tests (P1)**: 7 component test files with 80 test cases — KillSwitchBar, StatCards, SystemStatusBar, HealthStatus, OrderForm, StrategyList, SideMenu. Uses @vue/test-utils with Ant Design stubs.
+- **Testing infrastructure**: Vitest unit tests (1242 tests, 66 files) + Playwright E2E tests (48 tests) with Page Object Model (7 page objects, 7 flow specs). Coverage: 91% statements, 86% branches, 89% functions, 91% lines.
+- **API module tests**: 106 tests covering all 15 API clients — HTTP method, URL path, and parameter structure verification.
+- **Pinia store tests**: 185 tests covering all 15 stores — state mutations, async actions, WebSocket handlers, deduplication, pagination.
+- **Vue component tests (P1 + P2)**: 30 component test files with 281 test cases covering all UI components — props rendering, event emission, conditional rendering, CSS class binding.
+- **View page tests**: 15 view test files with 664 tests covering all pages — user interactions, computed properties, lifecycle hooks, timer-based polling (RiskView/SystemView), form validation, modal workflows, table rendering, pagination.
+- **Utils tests**: formatMoney, formatPct, formatQty, formatTime, formatUptime edge cases; chart theme and constants coverage.
+- **WebSocket composable tests**: connect/disconnect, subscribe, reconnect, message parsing.
 - **E2E real backend run (P3)**: All 48 Playwright tests passing against live paper-trading backend. Navigation (14 routes), login, backtest run/history, order placement/tab navigation, strategy drawer/params/audit, account sync/reconcile.
 - **TradingMode safety guard**: E2E global-setup checks `/health` `trading_mode` field and aborts if backend is in `live` mode. Unverified backends log warnings; destructive tests blocked when safety cannot be confirmed.
 - **E2E destructive test opt-in**: Kill-switch E2E spec gated behind `E2E_ALLOW_DESTRUCTIVE=true`. Default `test:e2e` skips it; `test:e2e:destructive` script enables it.

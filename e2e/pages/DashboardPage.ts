@@ -21,6 +21,18 @@ export class DashboardPage {
   readonly headerSearch: Locator;
   readonly paperTradingBadge: Locator;
 
+  // StatCards section
+  readonly statCards: Locator;
+  readonly statCardItems: Locator;
+
+  // Charts
+  readonly equityChart: Locator;
+  readonly positionsDonut: Locator;
+
+  // Recent trades
+  readonly tradesCard: Locator;
+  readonly tradesTable: Locator;
+
   constructor(page: Page) {
     this.page = page;
 
@@ -38,6 +50,18 @@ export class DashboardPage {
     this.headerTitle = page.locator('.header-title');
     this.headerSearch = page.locator('.header-search input');
     this.paperTradingBadge = page.locator('.header-right .ant-tag');
+
+    // StatCards section
+    this.statCards = page.locator('.stat-cards');
+    this.statCardItems = page.locator('.stat-card');
+
+    // Charts
+    this.equityChart = page.locator('.chart-equity');
+    this.positionsDonut = page.locator('.chart-positions');
+
+    // Recent trades
+    this.tradesCard = page.locator('.trades-card');
+    this.tradesTable = page.locator('.trades-table');
   }
 
   async goto(): Promise<void> {
@@ -55,5 +79,10 @@ export class DashboardPage {
 
   getActiveSidebarItem(): Locator {
     return this.sidebar.locator('.sidebar-item.active');
+  }
+
+  async getStatCardValue(label: string): Promise<string> {
+    const card = this.statCardItems.filter({ hasText: label });
+    return card.locator('.stat-value').innerText();
   }
 }

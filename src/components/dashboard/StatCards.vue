@@ -76,8 +76,8 @@ watch(() => props.totalEquity, (v) => {
 watch(() => props.availableBalance, (v) => {
   if (v) pushHistory(balanceHistory, parseFloat(v));
 });
-watch(() => props.realizedPnl, () => {
-  const total = parseFloat(props.realizedPnl || '0') + parseFloat(props.unrealizedPnl || '0');
+watch([() => props.realizedPnl, () => props.unrealizedPnl], ([realizedPnl, unrealizedPnl]) => {
+  const total = parseFloat(realizedPnl || '0') + parseFloat(unrealizedPnl || '0');
   pushHistory(pnlHistory, total);
 });
 watch(() => props.unrealizedPnl, (v) => {

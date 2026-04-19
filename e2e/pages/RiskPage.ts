@@ -20,6 +20,14 @@ export class RiskPage {
   // Risk grid sections
   readonly riskGrid: Locator;
 
+  // Risk grid detail sections
+  readonly drawdownChart: Locator;
+  readonly exposureCard: Locator;
+  readonly configCard: Locator;
+  readonly eventsCard: Locator;
+  readonly eventsTable: Locator;
+  readonly eventsEmpty: Locator;
+
   constructor(page: Page) {
     this.page = page;
 
@@ -32,6 +40,13 @@ export class RiskPage {
     this.popconfirm = page.locator('.ant-popconfirm');
     this.popconfirmOk = page.locator('.ant-popconfirm .ant-btn-primary');
     this.riskGrid = page.locator('.risk-grid');
+
+    this.drawdownChart = this.riskGrid.locator('.risk-cell').first();
+    this.exposureCard = this.riskGrid.locator('.risk-cell').nth(1);
+    this.configCard = this.riskGrid.locator('.risk-cell').nth(2);
+    this.eventsCard = this.riskGrid.locator('.risk-cell').nth(3);
+    this.eventsTable = this.eventsCard.locator('.data-table');
+    this.eventsEmpty = this.eventsCard.locator('.empty-state, .empty-inline');
   }
 
   async goto(): Promise<void> {

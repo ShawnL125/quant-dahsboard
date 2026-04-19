@@ -164,6 +164,16 @@ describe('backtest store', () => {
       expect(store.error).toBe('Server error');
       expect(store.loading).toBe(false);
     });
+
+    it('handles non-Error rejection in catch', async () => {
+      mockedBacktestApi.getHistory.mockRejectedValue('string error');
+
+      const store = useBacktestStore();
+      await store.fetchHistory();
+
+      expect(store.error).toBe('string error');
+      expect(store.loading).toBe(false);
+    });
   });
 
   // ── fetchRuns ────────────────────────────────────────────────────
@@ -377,6 +387,42 @@ describe('backtest store', () => {
 
       await vi.advanceTimersByTimeAsync(0);
 
+      expect(store.loading).toBe(false);
+    });
+
+    it('treats UNKNOWN status as a terminal polling failure', async () => {
+      mockedBacktestApi.runBacktest.mockResolvedValue({ task_id: 'task-unk' });
+      mockedBacktestApi.getStatus.mockResolvedValue({}); // no status, no state
+
+      const store = useBacktestStore();
+      await store.runBacktest();
+
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(store.taskStatus).toBe('UNKNOWN');
+      expect(store.error).toBe('Backtest status unknown');
+      expect(store.loading).toBe(false);
+
+      await vi.advanceTimersByTimeAsync(10000);
+      expect(mockedBacktestApi.getStatus).toHaveBeenCalledTimes(1);
+    });
+
+    it('retries polling when status is RUNNING', async () => {
+      mockedBacktestApi.runBacktest.mockResolvedValue({ task_id: 'task-run' });
+      mockedBacktestApi.getStatus
+        .mockResolvedValueOnce({ status: 'RUNNING' })
+        .mockResolvedValueOnce({ status: 'COMPLETED' });
+      mockedBacktestApi.getResult.mockResolvedValue(fakeResult);
+      mockedBacktestApi.getHistory.mockResolvedValue(fakeHistory);
+
+      const store = useBacktestStore();
+      await store.runBacktest();
+
+      await vi.advanceTimersByTimeAsync(0);
+      expect(store.taskStatus).toBe('RUNNING');
+
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(store.taskStatus).toBe('COMPLETED');
       expect(store.loading).toBe(false);
     });
   });

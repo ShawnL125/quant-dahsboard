@@ -79,6 +79,9 @@ export const useBacktestStore = defineStore('backtest', () => {
         } else if (taskStatus.value === 'FAILED') {
           error.value = 'Backtest failed';
           loading.value = false;
+        } else if (taskStatus.value === 'UNKNOWN') {
+          error.value = 'Backtest status unknown';
+          loading.value = false;
         } else {
           setTimeout(poll, 2000);
         }

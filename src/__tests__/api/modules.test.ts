@@ -1000,3 +1000,94 @@ describe('securityApi', () => {
     expect(mockGet).toHaveBeenCalledWith('/security/audit/summary');
   });
 });
+
+// ── Admin API ────────────────────────────────────────────────────
+describe('adminApi', () => {
+  it('getConfig calls GET /admin/config', async () => {
+    const { adminApi } = await import('@/api/admin');
+    await adminApi.getConfig();
+    expect(mockGet).toHaveBeenCalledWith('/admin/config');
+  });
+  it('getEventsStats calls GET /admin/events/stats', async () => {
+    const { adminApi } = await import('@/api/admin');
+    await adminApi.getEventsStats();
+    expect(mockGet).toHaveBeenCalledWith('/admin/events/stats');
+  });
+  it('reloadConfig calls POST /admin/reload-config', async () => {
+    const { adminApi } = await import('@/api/admin');
+    await adminApi.reloadConfig();
+    expect(mockPost).toHaveBeenCalledWith('/admin/reload-config');
+  });
+});
+
+// ── Warmup API ───────────────────────────────────────────────────
+describe('warmupApi', () => {
+  it('getStatus calls GET /warmup/status', async () => {
+    const { warmupApi } = await import('@/api/warmup');
+    await warmupApi.getStatus();
+    expect(mockGet).toHaveBeenCalledWith('/warmup/status');
+  });
+  it('getResults calls GET /warmup/results with params', async () => {
+    const { warmupApi } = await import('@/api/warmup');
+    await warmupApi.getResults({ symbol: 'BTC/USDT', timeframe: '1h' });
+    expect(mockGet).toHaveBeenCalledWith('/warmup/results', { params: { symbol: 'BTC/USDT', timeframe: '1h' } });
+  });
+});
+
+// ── Accounts API ─────────────────────────────────────────────────
+describe('accountsApi', () => {
+  it('list calls GET /accounts', async () => {
+    const { accountsApi } = await import('@/api/accounts');
+    await accountsApi.list();
+    expect(mockGet).toHaveBeenCalledWith('/accounts');
+  });
+  it('get calls GET with accountId path', async () => {
+    const { accountsApi } = await import('@/api/accounts');
+    await accountsApi.get('acc1');
+    expect(mockGet).toHaveBeenCalledWith('/accounts/acc1');
+  });
+  it('kill calls POST with accountId path', async () => {
+    const { accountsApi } = await import('@/api/accounts');
+    await accountsApi.kill('acc1');
+    expect(mockPost).toHaveBeenCalledWith('/accounts/acc1/kill');
+  });
+  it('unkill calls DELETE with accountId path', async () => {
+    const { accountsApi } = await import('@/api/accounts');
+    await accountsApi.unkill('acc1');
+    expect(mockDelete).toHaveBeenCalledWith('/accounts/acc1/kill');
+  });
+});
+
+// ── Archive API ──────────────────────────────────────────────────
+describe('archiveApi', () => {
+  it('archiveRun calls POST with runId path', async () => {
+    const { archiveApi } = await import('@/api/archive');
+    await archiveApi.archiveRun('r1', { strategy_id: 's1', tag: 'v1' });
+    expect(mockPost).toHaveBeenCalledWith('/archive/runs/r1', { strategy_id: 's1', tag: 'v1' });
+  });
+  it('getVersions calls GET /archive/versions with strategy_id', async () => {
+    const { archiveApi } = await import('@/api/archive');
+    await archiveApi.getVersions('s1');
+    expect(mockGet).toHaveBeenCalledWith('/archive/versions', { params: { strategy_id: 's1' } });
+  });
+  it('compareVersions calls GET with strategy path and version params', async () => {
+    const { archiveApi } = await import('@/api/archive');
+    await archiveApi.compareVersions('s1', 'v1', 'v2');
+    expect(mockGet).toHaveBeenCalledWith('/archive/versions/s1/compare', { params: { version_a: 'v1', version_b: 'v2' } });
+  });
+  it('getEntries calls GET /archive/entries with params', async () => {
+    const { archiveApi } = await import('@/api/archive');
+    await archiveApi.getEntries({ strategy_id: 's1', limit: 20 });
+    expect(mockGet).toHaveBeenCalledWith('/archive/entries', { params: { strategy_id: 's1', limit: 20 } });
+  });
+  it('getEntry calls GET with runId path', async () => {
+    const { archiveApi } = await import('@/api/archive');
+    await archiveApi.getEntry('r1');
+    expect(mockGet).toHaveBeenCalledWith('/archive/entries/r1');
+  });
+  it('updateTag calls PATCH with runId path', async () => {
+    const { archiveApi } = await import('@/api/archive');
+    await archiveApi.updateTag('r1', 'production');
+    expect(mockPatch).toHaveBeenCalledWith('/archive/entries/r1/tag', { tag: 'production' });
+  });
+});

@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - **TradingMode safety guard**: E2E global-setup checks `/health` `trading_mode` field and aborts if backend is in `live` mode. Unverified backends log warnings; destructive tests blocked when safety cannot be confirmed.
 - **E2E destructive test opt-in**: Kill-switch E2E spec gated behind `E2E_ALLOW_DESTRUCTIVE=true`. Default `test:e2e` skips it; `test:e2e:destructive` script enables it.
 - **SystemView connector filter**: Connected exchanges now filtered by `ws_connected`/`ready` status instead of showing all configured connectors.
+- **Adversarial review fixes**: Cancel order button upgraded to proper Ant Design component; `playwright-report/` added to `.gitignore`.
 
 ### Features
 

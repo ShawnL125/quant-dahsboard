@@ -32,7 +32,7 @@
           <td>{{ order.filled_quantity || '0' }}</td>
           <td>
             <a-popconfirm title="Cancel this order?" @confirm="emit('cancel', order)">
-              <span class="cancel-btn">Cancel</span>
+              <a-button size="small" type="link" danger class="cancel-btn">Cancel</a-button>
             </a-popconfirm>
           </td>
         </tr>
@@ -135,10 +135,9 @@ function formatTime(dateStr?: string): string {
 .side-sell { background: var(--q-error-light); color: var(--q-error); }
 
 .cancel-btn {
-  color: var(--q-error);
   font-size: 12px;
-  cursor: pointer;
   font-weight: 500;
+  padding: 0;
 }
 
 .cancel-btn:hover { text-decoration: underline; }

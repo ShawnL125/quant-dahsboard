@@ -101,6 +101,11 @@
           </table>
           <div v-else class="empty-sm">No audit entries</div>
         </div>
+
+        <!-- Rebalance Section -->
+        <div class="detail-section">
+          <RebalanceSection :strategy-id="store.selectedStrategy.strategy_id" />
+        </div>
       </template>
     </a-drawer>
   </div>
@@ -110,6 +115,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useStrategiesStore } from '@/stores/strategies';
 import StrategyList from '@/components/strategies/StrategyList.vue';
+import RebalanceSection from '@/components/strategies/RebalanceSection.vue';
 import { message } from 'ant-design-vue';
 
 const store = useStrategiesStore();

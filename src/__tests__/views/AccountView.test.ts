@@ -16,6 +16,16 @@ vi.mock('@/stores/account', () => ({
   useAccountStore: () => mockStore,
 }));
 
+const mockFetchAccounts = vi.fn();
+vi.mock('@/stores/accounts', () => ({
+  useAccountsStore: () => ({
+    accounts: [],
+    loading: false,
+    error: null,
+    fetchAccounts: mockFetchAccounts,
+  }),
+}));
+
 // ── Ant Design Vue stubs ──────────────────────────────────────────────
 
 const antStubs = {
@@ -29,6 +39,10 @@ const antStubs = {
     template: '<button class="a-button-stub" @click="$emit(\'click\')"><slot /></button>',
     props: ['size', 'type'],
     emits: ['click'],
+  },
+  AccountsList: {
+    name: 'AccountsList',
+    template: '<div class="accounts-list-stub">Accounts</div>',
   },
 };
 

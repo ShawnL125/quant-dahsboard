@@ -23,6 +23,16 @@ All notable changes to this project will be documented in this file.
 - **E2E destructive test opt-in**: Kill-switch E2E spec gated behind `E2E_ALLOW_DESTRUCTIVE=true`. Default `test:e2e` skips it; `test:e2e:destructive` script enables it.
 - **SystemView connector filter**: Connected exchanges now filtered by `ws_connected`/`ready` status instead of showing all configured connectors.
 - **Adversarial review fixes**: Cancel order button upgraded to proper Ant Design component; `playwright-report/` added to `.gitignore`.
+- **Portfolio Rebalance API**: Frontend integration for `/portfolio/rebalance` endpoints — trigger rebalance with target weights, monitor status, view history, check drift, update targets. Pinia store with 5 actions.
+- **Journal API**: Frontend integration for `/journal` endpoints — entry listing with filters, entry update/review/dismiss, report generation, pending count tracking. Pinia store with review and dismiss workflow.
+- **Replay API**: Frontend integration for `/replay` endpoints — async replay run with task tracking, scenario CRUD, step-by-step playback, summary, multi-run compare, trade context lookup. Pinia store with 10 API methods.
+- **Data Governance API**: Frontend integration for `/governance` endpoints — quality scores/symbols, quality evaluation, archive status/run/runs, lifecycle dry-run/execute, governance status. Pinia store with 9 actions.
+- **Walkforward Extensions**: 4 new methods added to existing walkforward API — batch optimization, sensitivity analysis, overfitting detection, cross-validation with fold results.
+- **Exchange Health API**: Frontend integration for `/exchange-health` endpoints — per-exchange health status, failover history, health check history, manual check trigger. Pinia store with auto-refresh on trigger.
+- **Feature Store API**: Frontend integration for `/features` endpoints — definition CRUD, value query/get, precompute trigger, status. Pinia store with register/delete lifecycle.
+- **Security Audit API**: Frontend integration for `/security/audit` endpoints — audit entries with category/severity filters, summary with breakdown. Pinia store with fetch actions.
+- **API module tests expansion**: 45 new API tests covering all 8 new modules — rebalance (5), journal (7), replay (10), governance (9), exchange-health (4), features (8), security (2), walkforward extensions. Total: 1555 tests in 78 files.
+- **Pinia store tests expansion**: 135 new store tests covering all 7 new stores + walkforward extensions — rebalance (18), journal (17), replay (20), governance (23), exchange-health (11), features (20), security (12), walkforward (14 existing pass).
 
 ### Features
 

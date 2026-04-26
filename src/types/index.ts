@@ -904,3 +904,259 @@ export interface AlertFiring {
   fired_at: string | null;
   resolved_at: string | null;
 }
+
+// ── Exchange Health ──────────────────────────────────
+export interface ExchangeHealthStatus {
+  exchange: string;
+  is_healthy: boolean;
+  latency_ms: number;
+  error_rate_pct: number;
+  last_check_at: string | null;
+  consecutive_failures: number;
+}
+
+export interface HealthCheckResult {
+  exchange: string;
+  latency_ms: number;
+  success: boolean;
+  error_message: string | null;
+  checked_at: string | null;
+}
+
+export interface FailoverAction {
+  action_id: string;
+  from_exchange: string;
+  to_exchange: string;
+  reason: string;
+  triggered_at: string | null;
+}
+
+// ── Feature Store ────────────────────────────────────
+export interface FeatureDefinition {
+  name: string;
+  feature_type: string;
+  source: string;
+  min_periods: number;
+  output_keys: string[];
+  params: Record<string, unknown>;
+  description: string;
+}
+
+export interface FeatureValue {
+  symbol: string;
+  timeframe: string;
+  feature_name: string;
+  timestamp: string;
+  values: Record<string, unknown>;
+  candle_count: number;
+}
+
+// ── Security Audit ───────────────────────────────────
+export interface SecurityAuditEntry {
+  audit_id: string;
+  category: string;
+  severity: string;
+  finding: string;
+  recommendation: string;
+  detected_at: string;
+  resolved_at: string | null;
+  metadata: Record<string, unknown>;
+}
+
+export interface SecurityAuditSummary {
+  total_findings: number;
+  by_severity: Record<string, number>;
+  by_category: Record<string, number>;
+  unresolved_count: number;
+  last_audit_at: string | null;
+}
+
+// ── Replay ──────────────────────────────────────────
+export interface ReplayTask {
+  task_id: string;
+  scenario_id: string;
+  strategy_id: string;
+  symbol: string;
+  status: string;
+  progress_pct: string;
+  created_at: string;
+  completed_at: string | null;
+}
+
+export interface ReplayScenario {
+  scenario_id: string;
+  name: string;
+  description: string;
+  symbol: string;
+  start_time: string;
+  end_time: string;
+  config: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface ReplayStep {
+  step_index: number;
+  timestamp: string;
+  action: string;
+  price: string;
+  quantity: string;
+  pnl: string;
+  metadata: Record<string, unknown>;
+}
+
+export interface ReplaySummary {
+  task_id: string;
+  total_steps: number;
+  total_pnl: string;
+  max_drawdown_pct: string;
+  sharpe_ratio: string | null;
+  win_rate: string;
+  trade_count: number;
+}
+
+export interface ReplayTradeContext {
+  trade_id: string;
+  entry_step: number;
+  exit_step: number;
+  entry_price: string;
+  exit_price: string;
+  side: string;
+  quantity: string;
+  pnl: string;
+  context: Record<string, unknown>;
+}
+
+// ── Data Governance ─────────────────────────────────
+export interface QualityScore {
+  symbol: string;
+  overall_score: string;
+  completeness_pct: string;
+  freshness_score: string;
+  anomaly_count: number;
+  last_evaluated_at: string;
+}
+
+export interface ArchiveRun {
+  run_id: string;
+  symbols: string[];
+  start_time: string;
+  end_time: string;
+  status: string;
+  records_archived: number;
+  created_at: string;
+}
+
+export interface LifecycleResult {
+  symbol: string;
+  timeframe: string;
+  action: string;
+  dry_run: boolean;
+  affected_records: number;
+  warnings: string[];
+  executed: boolean;
+}
+
+// ── Walkforward Extensions ──────────────────────────
+export interface WalkforwardBatchResult {
+  task_ids: string[];
+  strategy_id: string;
+  symbols: string[];
+  status: string;
+}
+
+export interface SensitivityPoint {
+  param_name: string;
+  param_value: string;
+  pnl: string;
+  sharpe: string | null;
+  win_rate: string;
+}
+
+export interface OverfittingResult {
+  run_id: string;
+  is_score: string;
+  oos_score: string;
+  degradation_pct: string;
+  likely_overfit: boolean;
+  details: Record<string, unknown>;
+}
+
+export interface CrossValidateResult {
+  fold_results: Array<{
+    fold: number;
+    train_pnl: string;
+    test_pnl: string;
+    degradation_pct: string;
+  }>;
+  avg_degradation_pct: string;
+  max_degradation_pct: string;
+  is_stable: boolean;
+}
+
+// ── Portfolio Rebalance ─────────────────────────────
+export interface RebalanceRequest {
+  strategy_id: string;
+  target_weights: Record<string, number>;
+  rebalance_mode?: string;
+}
+
+export interface RebalanceResult {
+  rebalance_id: string;
+  strategy_id: string;
+  status: string;
+  target_weights: Record<string, number>;
+  actual_weights: Record<string, number>;
+  drift_pct: string;
+  orders_planned: number;
+  orders_executed: number;
+  created_at: string;
+}
+
+export interface RebalanceStatus {
+  strategy_id: string;
+  current_weights: Record<string, number>;
+  target_weights: Record<string, number>;
+  drift_pct: string;
+  last_rebalance_at: string | null;
+  status: string;
+}
+
+export interface RebalanceDrift {
+  strategy_id: string;
+  total_drift_pct: string;
+  asset_drift: Record<string, { target_pct: string; actual_pct: string; drift_pct: string }>;
+}
+
+// ── Journal ─────────────────────────────────────────
+export interface JournalEntry {
+  entry_id: string;
+  strategy_id: string;
+  symbol: string;
+  exchange: string;
+  side: string;
+  entry_time: string;
+  exit_time: string | null;
+  entry_price: string;
+  exit_price: string | null;
+  quantity: string;
+  realized_pnl: string;
+  notes: string;
+  tags: string[];
+  rating: number | null;
+  status: string;
+  review_notes: string;
+  action_items: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface JournalReport {
+  strategy_id: string;
+  period_days: number;
+  total_entries: number;
+  reviewed_count: number;
+  pending_count: number;
+  avg_rating: string;
+  top_tags: string[];
+  pnl_summary: Record<string, unknown>;
+}

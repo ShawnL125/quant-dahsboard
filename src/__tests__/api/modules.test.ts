@@ -747,3 +747,256 @@ describe('alertsApi', () => {
     expect(mockPost).toHaveBeenCalledWith('/alerts/rules/r1/evaluate');
   });
 });
+
+// ── Rebalance API ────────────────────────────────────────────────
+describe('rebalanceApi', () => {
+  it('triggerRebalance calls POST /portfolio/rebalance', async () => {
+    const { rebalanceApi } = await import('@/api/rebalance');
+    await rebalanceApi.triggerRebalance({ strategy_id: 's1', target_weights: { BTC: 0.5 } });
+    expect(mockPost).toHaveBeenCalledWith('/portfolio/rebalance', { strategy_id: 's1', target_weights: { BTC: 0.5 } });
+  });
+  it('getStatus calls GET with strategy_id param', async () => {
+    const { rebalanceApi } = await import('@/api/rebalance');
+    await rebalanceApi.getStatus('s1');
+    expect(mockGet).toHaveBeenCalledWith('/portfolio/rebalance/status', { params: { strategy_id: 's1' } });
+  });
+  it('getHistory calls GET with params', async () => {
+    const { rebalanceApi } = await import('@/api/rebalance');
+    await rebalanceApi.getHistory({ strategy_id: 's1', limit: 10 });
+    expect(mockGet).toHaveBeenCalledWith('/portfolio/rebalance/history', { params: { strategy_id: 's1', limit: 10 } });
+  });
+  it('getDrift calls GET with strategy_id param', async () => {
+    const { rebalanceApi } = await import('@/api/rebalance');
+    await rebalanceApi.getDrift('s1');
+    expect(mockGet).toHaveBeenCalledWith('/portfolio/rebalance/drift', { params: { strategy_id: 's1' } });
+  });
+  it('updateTargets calls PUT /portfolio/rebalance/targets', async () => {
+    const { rebalanceApi } = await import('@/api/rebalance');
+    await rebalanceApi.updateTargets({ strategy_id: 's1', target_weights: { BTC: 0.6 } });
+    expect(mockPut).toHaveBeenCalledWith('/portfolio/rebalance/targets', { strategy_id: 's1', target_weights: { BTC: 0.6 } });
+  });
+});
+
+// ── Journal API ──────────────────────────────────────────────────
+describe('journalApi', () => {
+  it('getEntries calls GET /journal/entries', async () => {
+    const { journalApi } = await import('@/api/journal');
+    await journalApi.getEntries({ strategy_id: 's1', limit: 20 });
+    expect(mockGet).toHaveBeenCalledWith('/journal/entries', { params: { strategy_id: 's1', limit: 20 } });
+  });
+  it('getEntry calls GET with entryId path', async () => {
+    const { journalApi } = await import('@/api/journal');
+    await journalApi.getEntry('e1');
+    expect(mockGet).toHaveBeenCalledWith('/journal/entries/e1');
+  });
+  it('updateEntry calls PATCH with entryId', async () => {
+    const { journalApi } = await import('@/api/journal');
+    await journalApi.updateEntry('e1', { notes: 'test' });
+    expect(mockPatch).toHaveBeenCalledWith('/journal/entries/e1', { notes: 'test' });
+  });
+  it('reviewEntry calls POST review endpoint', async () => {
+    const { journalApi } = await import('@/api/journal');
+    await journalApi.reviewEntry('e1', { review_notes: 'ok' });
+    expect(mockPost).toHaveBeenCalledWith('/journal/entries/e1/review', { review_notes: 'ok' });
+  });
+  it('dismissEntry calls POST dismiss endpoint', async () => {
+    const { journalApi } = await import('@/api/journal');
+    await journalApi.dismissEntry('e1');
+    expect(mockPost).toHaveBeenCalledWith('/journal/entries/e1/dismiss');
+  });
+  it('getReport calls GET /journal/report', async () => {
+    const { journalApi } = await import('@/api/journal');
+    await journalApi.getReport({ strategy_id: 's1', days: 30 });
+    expect(mockGet).toHaveBeenCalledWith('/journal/report', { params: { strategy_id: 's1', days: 30 } });
+  });
+  it('getPendingCount calls GET /journal/pending-count', async () => {
+    const { journalApi } = await import('@/api/journal');
+    await journalApi.getPendingCount();
+    expect(mockGet).toHaveBeenCalledWith('/journal/pending-count');
+  });
+});
+
+// ── Replay API ───────────────────────────────────────────────────
+describe('replayApi', () => {
+  it('run calls POST /replay/run', async () => {
+    const { replayApi } = await import('@/api/replay');
+    await replayApi.run({ strategy_id: 's1', symbol: 'BTC/USDT' });
+    expect(mockPost).toHaveBeenCalledWith('/replay/run', { strategy_id: 's1', symbol: 'BTC/USDT' });
+  });
+  it('getTask calls GET with taskId path', async () => {
+    const { replayApi } = await import('@/api/replay');
+    await replayApi.getTask('t1');
+    expect(mockGet).toHaveBeenCalledWith('/replay/tasks/t1');
+  });
+  it('getScenarios calls GET /replay/scenarios', async () => {
+    const { replayApi } = await import('@/api/replay');
+    await replayApi.getScenarios({ limit: 10 });
+    expect(mockGet).toHaveBeenCalledWith('/replay/scenarios', { params: { limit: 10 } });
+  });
+  it('getScenario calls GET with scenarioId path', async () => {
+    const { replayApi } = await import('@/api/replay');
+    await replayApi.getScenario('sc1');
+    expect(mockGet).toHaveBeenCalledWith('/replay/scenarios/sc1');
+  });
+  it('deleteScenario calls DELETE with scenarioId', async () => {
+    const { replayApi } = await import('@/api/replay');
+    await replayApi.deleteScenario('sc1');
+    expect(mockDelete).toHaveBeenCalledWith('/replay/scenarios/sc1');
+  });
+  it('getSteps calls GET steps path', async () => {
+    const { replayApi } = await import('@/api/replay');
+    await replayApi.getSteps('sc1');
+    expect(mockGet).toHaveBeenCalledWith('/replay/scenarios/sc1/steps');
+  });
+  it('getStep calls GET step index path', async () => {
+    const { replayApi } = await import('@/api/replay');
+    await replayApi.getStep(5);
+    expect(mockGet).toHaveBeenCalledWith('/replay/steps/5');
+  });
+  it('getSummary calls GET /replay/summary', async () => {
+    const { replayApi } = await import('@/api/replay');
+    await replayApi.getSummary('t1');
+    expect(mockGet).toHaveBeenCalledWith('/replay/summary', { params: { task_id: 't1' } });
+  });
+  it('compare calls POST /replay/compare', async () => {
+    const { replayApi } = await import('@/api/replay');
+    await replayApi.compare(['t1', 't2']);
+    expect(mockPost).toHaveBeenCalledWith('/replay/compare', { task_ids: ['t1', 't2'] });
+  });
+  it('getTradeContext calls GET trade-context path', async () => {
+    const { replayApi } = await import('@/api/replay');
+    await replayApi.getTradeContext('tr1');
+    expect(mockGet).toHaveBeenCalledWith('/replay/trade-context/tr1');
+  });
+});
+
+// ── Governance API ───────────────────────────────────────────────
+describe('governanceApi', () => {
+  it('getQualityScores calls GET /governance/quality/scores', async () => {
+    const { governanceApi } = await import('@/api/governance');
+    await governanceApi.getQualityScores({ symbol: 'BTC/USDT' });
+    expect(mockGet).toHaveBeenCalledWith('/governance/quality/scores', { params: { symbol: 'BTC/USDT' } });
+  });
+  it('getQualitySymbols calls GET /governance/quality/symbols', async () => {
+    const { governanceApi } = await import('@/api/governance');
+    await governanceApi.getQualitySymbols();
+    expect(mockGet).toHaveBeenCalledWith('/governance/quality/symbols');
+  });
+  it('evaluateQuality calls POST evaluate', async () => {
+    const { governanceApi } = await import('@/api/governance');
+    await governanceApi.evaluateQuality({ symbol: 'BTC/USDT', timeframe: '1h' });
+    expect(mockPost).toHaveBeenCalledWith('/governance/quality/evaluate', { symbol: 'BTC/USDT', timeframe: '1h' });
+  });
+  it('getArchiveStatus calls GET archive/status', async () => {
+    const { governanceApi } = await import('@/api/governance');
+    await governanceApi.getArchiveStatus();
+    expect(mockGet).toHaveBeenCalledWith('/governance/archive/status');
+  });
+  it('runArchive calls POST archive/run', async () => {
+    const { governanceApi } = await import('@/api/governance');
+    await governanceApi.runArchive({ symbols: ['BTC'], start_time: '2026-01-01', end_time: '2026-01-31' });
+    expect(mockPost).toHaveBeenCalledWith('/governance/archive/run', { symbols: ['BTC'], start_time: '2026-01-01', end_time: '2026-01-31' });
+  });
+  it('getArchiveRuns calls GET archive/runs', async () => {
+    const { governanceApi } = await import('@/api/governance');
+    await governanceApi.getArchiveRuns({ limit: 10 });
+    expect(mockGet).toHaveBeenCalledWith('/governance/archive/runs', { params: { limit: 10 } });
+  });
+  it('lifecycleDryRun calls POST lifecycle/dry-run', async () => {
+    const { governanceApi } = await import('@/api/governance');
+    await governanceApi.lifecycleDryRun({ symbol: 'BTC/USDT', timeframe: '1h', action: 'archive' });
+    expect(mockPost).toHaveBeenCalledWith('/governance/lifecycle/dry-run', { symbol: 'BTC/USDT', timeframe: '1h', action: 'archive' });
+  });
+  it('lifecycleExecute calls POST lifecycle/execute', async () => {
+    const { governanceApi } = await import('@/api/governance');
+    await governanceApi.lifecycleExecute({ symbol: 'BTC/USDT', timeframe: '1h', action: 'archive', confirmed: true });
+    expect(mockPost).toHaveBeenCalledWith('/governance/lifecycle/execute', { symbol: 'BTC/USDT', timeframe: '1h', action: 'archive', confirmed: true });
+  });
+  it('getStatus calls GET /governance/status', async () => {
+    const { governanceApi } = await import('@/api/governance');
+    await governanceApi.getStatus();
+    expect(mockGet).toHaveBeenCalledWith('/governance/status');
+  });
+});
+
+// ── Exchange Health API ──────────────────────────────────────────
+describe('exchangeHealthApi', () => {
+  it('getStatus calls GET /exchange-health/status', async () => {
+    const { exchangeHealthApi } = await import('@/api/exchange_health');
+    await exchangeHealthApi.getStatus();
+    expect(mockGet).toHaveBeenCalledWith('/exchange-health/status');
+  });
+  it('getFailovers calls GET with limit param', async () => {
+    const { exchangeHealthApi } = await import('@/api/exchange_health');
+    await exchangeHealthApi.getFailovers(20);
+    expect(mockGet).toHaveBeenCalledWith('/exchange-health/failovers', { params: { limit: 20 } });
+  });
+  it('getHistory calls GET with exchange path', async () => {
+    const { exchangeHealthApi } = await import('@/api/exchange_health');
+    await exchangeHealthApi.getHistory('binance', 10);
+    expect(mockGet).toHaveBeenCalledWith('/exchange-health/binance/history', { params: { limit: 10 } });
+  });
+  it('triggerCheck calls POST with exchange path', async () => {
+    const { exchangeHealthApi } = await import('@/api/exchange_health');
+    await exchangeHealthApi.triggerCheck('binance');
+    expect(mockPost).toHaveBeenCalledWith('/exchange-health/binance/check');
+  });
+});
+
+// ── Features API ─────────────────────────────────────────────────
+describe('featuresApi', () => {
+  it('registerDefinition calls POST /features/definitions', async () => {
+    const { featuresApi } = await import('@/api/features');
+    await featuresApi.registerDefinition({ name: 'sma' });
+    expect(mockPost).toHaveBeenCalledWith('/features/definitions', { name: 'sma' });
+  });
+  it('listDefinitions calls GET with params', async () => {
+    const { featuresApi } = await import('@/api/features');
+    await featuresApi.listDefinitions({ feature_type: 'indicator' });
+    expect(mockGet).toHaveBeenCalledWith('/features/definitions', { params: { feature_type: 'indicator' } });
+  });
+  it('getDefinition calls GET with name path', async () => {
+    const { featuresApi } = await import('@/api/features');
+    await featuresApi.getDefinition('sma');
+    expect(mockGet).toHaveBeenCalledWith('/features/definitions/sma');
+  });
+  it('deleteDefinition calls DELETE with name path', async () => {
+    const { featuresApi } = await import('@/api/features');
+    await featuresApi.deleteDefinition('sma');
+    expect(mockDelete).toHaveBeenCalledWith('/features/definitions/sma');
+  });
+  it('queryValues calls GET /features/values', async () => {
+    const { featuresApi } = await import('@/api/features');
+    await featuresApi.queryValues({ symbol: 'BTC', limit: 50 });
+    expect(mockGet).toHaveBeenCalledWith('/features/values', { params: { symbol: 'BTC', limit: 50 } });
+  });
+  it('getValue calls GET with symbol/tf/name path', async () => {
+    const { featuresApi } = await import('@/api/features');
+    await featuresApi.getValue('BTC', '1h', 'sma');
+    expect(mockGet).toHaveBeenCalledWith('/features/values/BTC/1h/sma');
+  });
+  it('precompute calls POST /features/precompute', async () => {
+    const { featuresApi } = await import('@/api/features');
+    await featuresApi.precompute({ symbol: 'BTC', timeframe: '1h' });
+    expect(mockPost).toHaveBeenCalledWith('/features/precompute', { symbol: 'BTC', timeframe: '1h' });
+  });
+  it('getStatus calls GET /features/status', async () => {
+    const { featuresApi } = await import('@/api/features');
+    await featuresApi.getStatus();
+    expect(mockGet).toHaveBeenCalledWith('/features/status');
+  });
+});
+
+// ── Security API ─────────────────────────────────────────────────
+describe('securityApi', () => {
+  it('getAudit calls GET /security/audit', async () => {
+    const { securityApi } = await import('@/api/security');
+    await securityApi.getAudit({ severity: 'critical' });
+    expect(mockGet).toHaveBeenCalledWith('/security/audit', { params: { severity: 'critical' } });
+  });
+  it('getSummary calls GET /security/audit/summary', async () => {
+    const { securityApi } = await import('@/api/security');
+    await securityApi.getSummary();
+    expect(mockGet).toHaveBeenCalledWith('/security/audit/summary');
+  });
+});

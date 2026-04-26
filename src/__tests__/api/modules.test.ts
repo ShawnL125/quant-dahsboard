@@ -600,3 +600,150 @@ describe('walkforwardApi', () => {
     expect(mockGet).toHaveBeenCalledWith('/walkforward/compare', { params: { runs: 'r1,r2' } });
   });
 });
+
+describe('strategyMgmtApi', () => {
+  it('listStrategies calls GET /strategy-mgmt/strategies', async () => {
+    const { strategyMgmtApi } = await import('@/api/strategy_management');
+    await strategyMgmtApi.listStrategies();
+    expect(mockGet).toHaveBeenCalledWith('/strategy-mgmt/strategies');
+  });
+  it('loadStrategy calls POST with path', async () => {
+    const { strategyMgmtApi } = await import('@/api/strategy_management');
+    await strategyMgmtApi.loadStrategy('plugins/test.py');
+    expect(mockPost).toHaveBeenCalledWith('/strategy-mgmt/strategies/load', { path: 'plugins/test.py' });
+  });
+  it('startStrategy calls POST with strategyId', async () => {
+    const { strategyMgmtApi } = await import('@/api/strategy_management');
+    await strategyMgmtApi.startStrategy('s1');
+    expect(mockPost).toHaveBeenCalledWith('/strategy-mgmt/strategies/s1/start');
+  });
+  it('stopStrategy calls POST with strategyId', async () => {
+    const { strategyMgmtApi } = await import('@/api/strategy_management');
+    await strategyMgmtApi.stopStrategy('s1');
+    expect(mockPost).toHaveBeenCalledWith('/strategy-mgmt/strategies/s1/stop');
+  });
+  it('reloadStrategy calls POST with strategyId', async () => {
+    const { strategyMgmtApi } = await import('@/api/strategy_management');
+    await strategyMgmtApi.reloadStrategy('s1');
+    expect(mockPost).toHaveBeenCalledWith('/strategy-mgmt/strategies/s1/reload');
+  });
+  it('unloadStrategy calls DELETE with strategyId', async () => {
+    const { strategyMgmtApi } = await import('@/api/strategy_management');
+    await strategyMgmtApi.unloadStrategy('s1');
+    expect(mockDelete).toHaveBeenCalledWith('/strategy-mgmt/strategies/s1');
+  });
+});
+
+describe('feesApi', () => {
+  it('getSummary calls GET /fees/summary', async () => {
+    const { feesApi } = await import('@/api/fees');
+    await feesApi.getSummary();
+    expect(mockGet).toHaveBeenCalledWith('/fees/summary', { params: undefined });
+  });
+  it('getSummary passes params', async () => {
+    const { feesApi } = await import('@/api/fees');
+    await feesApi.getSummary({ exchange: 'binance', start: '2026-01-01' });
+    expect(mockGet).toHaveBeenCalledWith('/fees/summary', { params: { exchange: 'binance', start: '2026-01-01' } });
+  });
+  it('getBreakdown calls GET /fees/breakdown', async () => {
+    const { feesApi } = await import('@/api/fees');
+    await feesApi.getBreakdown();
+    expect(mockGet).toHaveBeenCalledWith('/fees/breakdown', { params: undefined });
+  });
+  it('getVipProgress calls GET /fees/vip-progress', async () => {
+    const { feesApi } = await import('@/api/fees');
+    await feesApi.getVipProgress({ exchange: 'binance' });
+    expect(mockGet).toHaveBeenCalledWith('/fees/vip-progress', { params: { exchange: 'binance' } });
+  });
+  it('getDeviation calls GET /fees/deviation', async () => {
+    const { feesApi } = await import('@/api/fees');
+    await feesApi.getDeviation();
+    expect(mockGet).toHaveBeenCalledWith('/fees/deviation', { params: undefined });
+  });
+  it('getStrategyReport calls GET /fees/strategy', async () => {
+    const { feesApi } = await import('@/api/fees');
+    await feesApi.getStrategyReport({ strategy_id: 's1' });
+    expect(mockGet).toHaveBeenCalledWith('/fees/strategy', { params: { strategy_id: 's1' } });
+  });
+});
+
+describe('attributionApi', () => {
+  it('computeReport calls POST /attribution/report', async () => {
+    const { attributionApi } = await import('@/api/attribution');
+    await attributionApi.computeReport({ strategy_id: 's1', start: '2026-01-01', end: '2026-02-01' });
+    expect(mockPost).toHaveBeenCalledWith('/attribution/report', { strategy_id: 's1', start: '2026-01-01', end: '2026-02-01' });
+  });
+  it('listReports calls GET /attribution/reports', async () => {
+    const { attributionApi } = await import('@/api/attribution');
+    await attributionApi.listReports();
+    expect(mockGet).toHaveBeenCalledWith('/attribution/reports', { params: undefined });
+  });
+  it('getReport calls GET with reportId', async () => {
+    const { attributionApi } = await import('@/api/attribution');
+    await attributionApi.getReport('r1');
+    expect(mockGet).toHaveBeenCalledWith('/attribution/reports/r1');
+  });
+  it('deleteReport calls DELETE with reportId', async () => {
+    const { attributionApi } = await import('@/api/attribution');
+    await attributionApi.deleteReport('r1');
+    expect(mockDelete).toHaveBeenCalledWith('/attribution/reports/r1');
+  });
+  it('getContributions calls GET with params', async () => {
+    const { attributionApi } = await import('@/api/attribution');
+    await attributionApi.getContributions({ strategy_id: 's1', start: '2026-01-01', end: '2026-02-01', top_n: 10 });
+    expect(mockGet).toHaveBeenCalledWith('/attribution/contributions', { params: { strategy_id: 's1', start: '2026-01-01', end: '2026-02-01', top_n: 10 } });
+  });
+  it('getRollforward calls GET with params', async () => {
+    const { attributionApi } = await import('@/api/attribution');
+    await attributionApi.getRollforward({ strategy_id: 's1', start: '2026-01-01', end: '2026-02-01' });
+    expect(mockGet).toHaveBeenCalledWith('/attribution/rollforward', { params: { strategy_id: 's1', start: '2026-01-01', end: '2026-02-01' } });
+  });
+  it('getRegime calls GET with params', async () => {
+    const { attributionApi } = await import('@/api/attribution');
+    await attributionApi.getRegime({ strategy_id: 's1', start: '2026-01-01', end: '2026-02-01' });
+    expect(mockGet).toHaveBeenCalledWith('/attribution/regime', { params: { strategy_id: 's1', start: '2026-01-01', end: '2026-02-01' } });
+  });
+  it('compareBenchmark calls GET with params', async () => {
+    const { attributionApi } = await import('@/api/attribution');
+    await attributionApi.compareBenchmark({ strategy_id: 's1', start: '2026-01-01', end: '2026-02-01' });
+    expect(mockGet).toHaveBeenCalledWith('/attribution/compare-benchmark', { params: { strategy_id: 's1', start: '2026-01-01', end: '2026-02-01' } });
+  });
+});
+
+describe('alertsApi', () => {
+  it('listRules calls GET /alerts/rules', async () => {
+    const { alertsApi } = await import('@/api/alerts');
+    await alertsApi.listRules();
+    expect(mockGet).toHaveBeenCalledWith('/alerts/rules', { params: undefined });
+  });
+  it('createRule calls POST /alerts/rules', async () => {
+    const { alertsApi } = await import('@/api/alerts');
+    await alertsApi.createRule({ rule_id: 'r1', name: 'test', alert_type: 'threshold' });
+    expect(mockPost).toHaveBeenCalledWith('/alerts/rules', { rule_id: 'r1', name: 'test', alert_type: 'threshold' });
+  });
+  it('updateRule calls PATCH with ruleId', async () => {
+    const { alertsApi } = await import('@/api/alerts');
+    await alertsApi.updateRule('r1', { enabled: false });
+    expect(mockPatch).toHaveBeenCalledWith('/alerts/rules/r1', { enabled: false });
+  });
+  it('deleteRule calls DELETE with ruleId', async () => {
+    const { alertsApi } = await import('@/api/alerts');
+    await alertsApi.deleteRule('r1');
+    expect(mockDelete).toHaveBeenCalledWith('/alerts/rules/r1');
+  });
+  it('listFirings calls GET /alerts/firings', async () => {
+    const { alertsApi } = await import('@/api/alerts');
+    await alertsApi.listFirings({ status: 'active', limit: 50 });
+    expect(mockGet).toHaveBeenCalledWith('/alerts/firings', { params: { status: 'active', limit: 50 } });
+  });
+  it('getActiveAlerts calls GET /alerts/active', async () => {
+    const { alertsApi } = await import('@/api/alerts');
+    await alertsApi.getActiveAlerts();
+    expect(mockGet).toHaveBeenCalledWith('/alerts/active');
+  });
+  it('manualEvaluate calls POST with ruleId', async () => {
+    const { alertsApi } = await import('@/api/alerts');
+    await alertsApi.manualEvaluate('r1');
+    expect(mockPost).toHaveBeenCalledWith('/alerts/rules/r1/evaluate');
+  });
+});

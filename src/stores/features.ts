@@ -24,7 +24,15 @@ export const useFeaturesStore = defineStore('features', () => {
     } catch { values.value = []; }
   }
 
-  async function registerDefinition(data: { name: string; feature_type?: string; source?: string }) {
+  async function registerDefinition(data: {
+    name: string;
+    feature_type?: string;
+    source?: string;
+    min_periods?: number;
+    output_keys?: string[];
+    params?: Record<string, unknown>;
+    description?: string;
+  }) {
     try {
       const result = await featuresApi.registerDefinition(data);
       await fetchDefinitions();

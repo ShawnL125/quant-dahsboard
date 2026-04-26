@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils';
 import { ref, type Ref } from 'vue';
 import { createRouter, createMemoryHistory } from 'vue-router';
 import SideMenu from '@/components/layout/SideMenu.vue';
+import { useAuthStore } from '@/stores/auth';
 
 // Stub all @ant-design/icons-vue components
 const iconStubs = {
@@ -20,6 +21,10 @@ const iconStubs = {
   BankOutlined: { template: '<span class="icon">bank</span>' },
   DollarOutlined: { template: '<span class="icon">dollar</span>' },
   ThunderboltFilled: { template: '<span class="icon">thunderbolt-filled</span>' },
+  EditOutlined: { template: '<span class="icon">edit</span>' },
+  PlayCircleOutlined: { template: '<span class="icon">play-circle</span>' },
+  AuditOutlined: { template: '<span class="icon">audit</span>' },
+  AppstoreOutlined: { template: '<span class="icon">appstore</span>' },
 };
 
 function createTestRouter(initialPath: string = '/') {
@@ -39,13 +44,25 @@ function createTestRouter(initialPath: string = '/') {
       { path: '/auto-tune', component: { template: '<div>Auto-Tune</div>' } },
       { path: '/backtest', component: { template: '<div>Backtest</div>' } },
       { path: '/walkforward', component: { template: '<div>Walk-Forward</div>' } },
+      { path: '/journal', component: { template: '<div>Journal</div>' } },
+      { path: '/replay', component: { template: '<div>Replay</div>' } },
+      { path: '/governance', component: { template: '<div>Governance</div>' } },
+      { path: '/features', component: { template: '<div>Features</div>' } },
       { path: '/system', component: { template: '<div>System</div>' } },
     ],
   });
 }
 
-async function mountComponent(wsConnected: Ref<boolean> = ref(false), initialPath: string = '/') {
+async function mountComponent(
+  wsConnected: Ref<boolean> = ref(false),
+  initialPath: string = '/',
+  role: 'admin' | 'user' = 'user',
+) {
   const router = createTestRouter(initialPath);
+  const authStore = useAuthStore();
+  authStore.$patch({
+    user: { username: role, role } as any,
+  });
   router.push(initialPath);
   await router.isReady();
 
@@ -63,10 +80,18 @@ async function mountComponent(wsConnected: Ref<boolean> = ref(false), initialPat
 }
 
 describe('SideMenu', () => {
-  it('renders all navigation items', async () => {
-    const { wrapper } = await mountComponent();
+  it('renders all navigation items for admins', async () => {
+    const { wrapper } = await mountComponent(ref(false), '/', 'admin');
     const items = wrapper.findAll('.sidebar-item');
-    expect(items).toHaveLength(14);
+    expect(items).toHaveLength(18);
+  });
+
+  it('hides operational pages for non-admin users', async () => {
+    const { wrapper } = await mountComponent();
+    expect(wrapper.text()).not.toContain('Journal');
+    expect(wrapper.text()).not.toContain('Replay');
+    expect(wrapper.text()).not.toContain('Governance');
+    expect(wrapper.text()).not.toContain('Features');
   });
 
   it('renders Dashboard label', async () => {
@@ -80,11 +105,12 @@ describe('SideMenu', () => {
   });
 
   it('renders all expected navigation labels', async () => {
-    const { wrapper } = await mountComponent();
+    const { wrapper } = await mountComponent(ref(false), '/', 'admin');
     const expectedLabels = [
       'Dashboard', 'Risk', 'Positions', 'Orders', 'Strategies',
-      'Signals', 'Analytics', 'Ledger', 'Funding', 'Account',
-      'Auto-Tune', 'Backtest', 'Walk-Forward', 'System',
+      'Signals', 'Analytics', 'Journal', 'Ledger', 'Funding', 'Account',
+      'Auto-Tune', 'Backtest', 'Replay', 'Walk-Forward', 'Governance',
+      'Features', 'System',
     ];
     expectedLabels.forEach((label) => {
       expect(wrapper.text()).toContain(label);

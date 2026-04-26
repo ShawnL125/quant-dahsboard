@@ -38,6 +38,7 @@ All notable changes to this project will be documented in this file.
 - **Multi-Account API**: Frontend integration for `/accounts` endpoints — account listing, detail, kill/unkill switches. Pinia store with optimistic updates.
 - **Backtest Archive API**: Frontend integration for `/archive` endpoints — archive run with metadata, version listing, version comparison with diff, entry browsing with pagination, tag management. Pinia store with 5 actions.
 - **Final API test expansion**: 15 new API tests — admin (3), warmup (2), accounts (4), archive (6). Total: 1610 tests in 82 files. All 31 backend API modules now fully integrated.
+- **UI pages for 11 backend modules**: 4 new views (Journal, Replay, Governance, Features) + 4 existing view extensions (SystemView tabs, AccountView accounts, BacktestView archive, StrategiesView rebalance) + 17 new components. Admin-gated navigation for operational pages. Adversarial review fixes: lifecycle dry-run payload freeze, rebalance weight unit normalization, feature registration field preservation. Total: 1611 tests in 82 files.
 
 ### Features
 

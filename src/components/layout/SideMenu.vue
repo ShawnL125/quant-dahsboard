@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, type Ref } from 'vue';
+import { computed, inject, type Component, type Ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import {
   DashboardOutlined,
@@ -41,13 +41,26 @@ import {
   BankOutlined,
   DollarOutlined,
   ThunderboltFilled,
+  EditOutlined,
+  PlayCircleOutlined,
+  AuditOutlined,
+  AppstoreOutlined,
 } from '@ant-design/icons-vue';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 const route = useRoute();
 const wsConnected = inject<Ref<boolean>>('wsConnected', { value: false } as Ref<boolean>);
+const authStore = useAuthStore();
 
-const menuItems = [
+type MenuItem = {
+  path: string;
+  label: string;
+  icon: Component;
+  adminOnly?: boolean;
+};
+
+const allMenuItems: MenuItem[] = [
   { path: '/', label: 'Dashboard', icon: DashboardOutlined },
   { path: '/risk', label: 'Risk', icon: SafetyOutlined },
   { path: '/positions', label: 'Positions', icon: PieChartOutlined },
@@ -55,14 +68,21 @@ const menuItems = [
   { path: '/strategies', label: 'Strategies', icon: ThunderboltOutlined },
   { path: '/signals', label: 'Signals', icon: RadarChartOutlined },
   { path: '/analytics', label: 'Analytics', icon: BarChartOutlined },
+  { path: '/journal', label: 'Journal', icon: EditOutlined, adminOnly: true },
   { path: '/ledger', label: 'Ledger', icon: WalletOutlined },
   { path: '/funding', label: 'Funding', icon: DollarOutlined },
   { path: '/account', label: 'Account', icon: BankOutlined },
   { path: '/auto-tune', label: 'Auto-Tune', icon: ThunderboltFilled },
   { path: '/backtest', label: 'Backtest', icon: LineChartOutlined },
+  { path: '/replay', label: 'Replay', icon: PlayCircleOutlined, adminOnly: true },
   { path: '/walkforward', label: 'Walk-Forward', icon: ExperimentOutlined },
+  { path: '/governance', label: 'Governance', icon: AuditOutlined, adminOnly: true },
+  { path: '/features', label: 'Features', icon: AppstoreOutlined, adminOnly: true },
   { path: '/system', label: 'System', icon: SettingOutlined },
 ];
+
+const canViewOperationalPages = computed(() => authStore.isAdmin);
+const menuItems = computed(() => allMenuItems.filter((item) => !item.adminOnly || canViewOperationalPages.value));
 </script>
 
 <style scoped>

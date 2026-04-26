@@ -112,6 +112,9 @@
           <div v-else class="empty-state">No task history</div>
         </div>
       </a-tab-pane>
+      <a-tab-pane key="archive" tab="Archive">
+        <ArchiveSection />
+      </a-tab-pane>
     </a-tabs>
 
     <!-- Import Modal -->
@@ -151,6 +154,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useBacktestStore } from '@/stores/backtest';
 import { backtestApi } from '@/api/backtest';
 import BacktestResult from '@/components/backtest/BacktestResult.vue';
+import ArchiveSection from '@/components/backtest/ArchiveSection.vue';
 import { message } from 'ant-design-vue';
 
 const store = useBacktestStore();

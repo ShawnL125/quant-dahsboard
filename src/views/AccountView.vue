@@ -1,6 +1,7 @@
 <template>
   <div class="account-page">
     <a-spin :spinning="store.loading">
+      <AccountsList />
       <div class="margin-section">
         <div class="section-header">
           <span class="section-title">Margin Status</span>
@@ -86,8 +87,11 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useAccountStore } from '@/stores/account';
+import { useAccountsStore } from '@/stores/accounts';
+import AccountsList from '@/components/account/AccountsList.vue';
 
 const store = useAccountStore();
+const accountsStore = useAccountsStore();
 
 function formatTime(iso: string): string {
   try {
@@ -99,7 +103,7 @@ function onRefresh() { store.fetchAll(); }
 function onSync() { store.syncAll().then(() => store.fetchAll()); }
 function onReconcile() { store.reconcile().then(() => store.fetchReconciliations()); }
 
-onMounted(() => { store.fetchAll(); });
+onMounted(() => { store.fetchAll(); accountsStore.fetchAccounts(); });
 </script>
 
 <style scoped>

@@ -33,6 +33,11 @@ All notable changes to this project will be documented in this file.
 - **Security Audit API**: Frontend integration for `/security/audit` endpoints — audit entries with category/severity filters, summary with breakdown. Pinia store with fetch actions.
 - **API module tests expansion**: 45 new API tests covering all 8 new modules — rebalance (5), journal (7), replay (10), governance (9), exchange-health (4), features (8), security (2), walkforward extensions. Total: 1555 tests in 78 files.
 - **Pinia store tests expansion**: 135 new store tests covering all 7 new stores + walkforward extensions — rebalance (18), journal (17), replay (20), governance (23), exchange-health (11), features (20), security (12), walkforward (14 existing pass).
+- **Admin API**: Frontend integration for `/admin` endpoints — masked config read, event subscriber stats, config reload with auto-refresh. Pinia store with 3 actions.
+- **Warmup API**: Frontend integration for `/warmup` endpoints — warmup status, per-symbol/timeframe results with error tracking. Pinia store with 2 actions.
+- **Multi-Account API**: Frontend integration for `/accounts` endpoints — account listing, detail, kill/unkill switches. Pinia store with optimistic updates.
+- **Backtest Archive API**: Frontend integration for `/archive` endpoints — archive run with metadata, version listing, version comparison with diff, entry browsing with pagination, tag management. Pinia store with 5 actions.
+- **Final API test expansion**: 15 new API tests — admin (3), warmup (2), accounts (4), archive (6). Total: 1610 tests in 82 files. All 31 backend API modules now fully integrated.
 
 ### Features
 

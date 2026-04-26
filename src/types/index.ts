@@ -1160,3 +1160,77 @@ export interface JournalReport {
   top_tags: string[];
   pnl_summary: Record<string, unknown>;
 }
+
+// ── Admin ────────────────────────────────────────────
+export interface AdminConfig {
+  [key: string]: unknown;
+}
+
+export interface AdminEventsStats {
+  subscribers: number;
+}
+
+export interface AdminReloadResult {
+  status: 'reloaded' | 'no_config_path';
+  environment?: string;
+  allowed_symbols?: string[];
+}
+
+// ── Warmup ───────────────────────────────────────────
+export interface WarmupResult {
+  symbol: string;
+  timeframe: string;
+  state: string;
+  source: string;
+  requested_count: number;
+  loaded_count: number;
+  duration_seconds: number;
+  timestamp: string;
+  error: string | null;
+}
+
+export interface WarmupStatus {
+  [key: string]: unknown;
+}
+
+// ── Multi-Account Management ────────────────────────
+export interface ExchangeAccount {
+  account_id: string;
+  exchange: string;
+  label: string;
+  is_default: boolean;
+}
+
+export interface AccountKillResult {
+  status: 'killed' | 'unkilled';
+  account_id: string;
+}
+
+// ── Backtest Archive ─────────────────────────────────
+export interface ArchivedRun {
+  run_id: string;
+  strategy_id: string;
+  strategy_version: string;
+  strategy_source_hash: string;
+  params_snapshot: Record<string, unknown>;
+  tag: string;
+  label: string;
+  created_at: string;
+}
+
+export interface ArchiveVersionSummary {
+  strategy_id: string;
+  version: string;
+  run_count: number;
+  avg_sharpe: string;
+  avg_return: string;
+  best_sharpe: string;
+  created_at: string;
+}
+
+export interface ArchiveComparison {
+  version_a: string;
+  version_b: string;
+  params_diff: Record<string, unknown>;
+  metrics_diff: Record<string, unknown>;
+}

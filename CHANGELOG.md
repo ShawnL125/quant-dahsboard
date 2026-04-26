@@ -6,10 +6,14 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
-- **Testing infrastructure**: Vitest unit tests (1282 tests, 66 files) + Playwright E2E tests (129 tests, 17 spec files) with Page Object Model (15 page objects, 17 flow specs). Coverage: 91% statements, 86% branches, 89% functions, 91% lines.
+- **Testing infrastructure**: Vitest unit tests (1349 tests, 70 files) + Playwright E2E tests (129 tests, 17 spec files) with Page Object Model (15 page objects, 17 flow specs). Coverage: 91% statements, 86% branches, 89% functions, 91% lines.
 - **E2E full coverage expansion**: 77 new E2E tests across 10 spec files and 8 new page objects — Dashboard (10), Analytics (9), Positions (7), Ledger (9), Funding (9), Auto-Tune (8), Walk-Forward (8), Risk read-only (6), System (9), Signals (6). All 15 views now have E2E test coverage.
-- **API module tests**: 106 tests covering all 15 API clients — HTTP method, URL path, and parameter structure verification.
-- **Pinia store tests**: 185 tests covering all 15 stores — state mutations, async actions, WebSocket handlers, deduplication, pagination.
+- **Strategy Lifecycle Management API**: Frontend integration for `/strategy-mgmt` endpoints — list registered strategies with metadata, load from plugin files, start/stop/reload/unload strategies. Pinia store with optimistic status updates.
+- **Fee Tracking API**: Frontend integration for `/fees` endpoints — daily fee summaries, maker/taker breakdown, VIP tier progress, fee deviation analysis, per-strategy fee reports. Pinia store with parallel data fetching.
+- **Performance Attribution API**: Frontend integration for `/attribution` endpoints — compute/save/list/delete reports, per-trade contribution analysis, equity rollforward decomposition, regime classification, buy-and-hold benchmark comparison.
+- **Smart Alerts API**: Frontend integration for `/alerts` endpoints — rules CRUD, alert firings with status filters, active alerts, manual rule evaluation. Pinia store with WebSocket real-time update handler.
+- **API module tests**: 133 tests covering all 19 API clients — HTTP method, URL path, and parameter structure verification.
+- **Pinia store tests**: 245 tests covering all 19 stores — state mutations, async actions, WebSocket handlers, deduplication, pagination.
 - **Vue component tests (P1 + P2)**: 30 component test files with 281 test cases covering all UI components — props rendering, event emission, conditional rendering, CSS class binding.
 - **View page tests**: 15 view test files with 664 tests covering all pages — user interactions, computed properties, lifecycle hooks, timer-based polling (RiskView/SystemView), form validation, modal workflows, table rendering, pagination.
 - **Utils tests**: formatMoney, formatPct, formatQty, formatTime, formatUptime edge cases; chart theme and constants coverage.
@@ -18,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - **TradingMode safety guard**: E2E global-setup checks `/health` `trading_mode` field and aborts if backend is in `live` mode. Unverified backends log warnings; destructive tests blocked when safety cannot be confirmed.
 - **E2E destructive test opt-in**: Kill-switch E2E spec gated behind `E2E_ALLOW_DESTRUCTIVE=true`. Default `test:e2e` skips it; `test:e2e:destructive` script enables it.
 - **SystemView connector filter**: Connected exchanges now filtered by `ws_connected`/`ready` status instead of showing all configured connectors.
+- **Adversarial review fixes**: Cancel order button upgraded to proper Ant Design component; `playwright-report/` added to `.gitignore`.
 
 ### Features
 

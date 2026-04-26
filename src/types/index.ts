@@ -739,3 +739,168 @@ export interface ApiKeyCreated {
   name: string;
   created_at: string;
 }
+
+// ── Strategy Lifecycle Management ──────────────────
+export interface StrategyMgmtRecord {
+  strategy_id: string;
+  status: 'LOADED' | 'STARTED' | 'STOPPED' | 'FAILED' | 'UNKNOWN';
+  version: string;
+  author: string;
+  description: string;
+  source_path: string;
+  loaded_at: string | null;
+  started_at: string | null;
+}
+
+// ── Fee Tracking ───────────────────────────────────
+export interface FeeSummary {
+  date: string;
+  exchange: string;
+  account_id: string;
+  total_fee: string;
+  trade_volume: string;
+}
+
+export interface FeeBreakdown {
+  maker_count: number;
+  taker_count: number;
+  maker_fee: string;
+  taker_fee: string;
+  maker_ratio: string;
+}
+
+export interface VipProgress {
+  current_tier: string;
+  rolling_volume_30d: string;
+  next_tier: string;
+  volume_to_next: string;
+  progress_pct: string;
+}
+
+export interface FeeDeviation {
+  total_actual: string;
+  total_estimated: string;
+  deviation_bps: string;
+  trade_count: number;
+}
+
+export interface StrategyFeeReport {
+  strategy_id: string;
+  total_fee: string;
+  total_estimated: string;
+  trade_count: number;
+}
+
+// ── Attribution ────────────────────────────────────
+export interface AttributionReport {
+  report_id: string;
+  strategy_id: string;
+  start_time: string;
+  end_time: string;
+  total_pnl: string;
+  total_trades: number;
+  winning_trades: number;
+  losing_trades: number;
+  win_rate: string;
+  profit_factor: string;
+  trading_pnl: string;
+  fee_cost: string;
+  funding_cost: string;
+  by_symbol: Record<string, unknown>;
+  by_side: Record<string, unknown>;
+  by_hour: Record<string, unknown>;
+  by_day: Record<string, unknown>;
+  by_regime: Record<string, unknown>;
+  entry_quality_score: string;
+  exit_quality_score: string;
+  strategy_return_pct: string;
+  benchmark_return_pct: string;
+  alpha: string;
+  top_winner_concentration: string;
+  top_loser_concentration: string;
+  top_winners: unknown[];
+  top_losers: unknown[];
+  metadata: Record<string, unknown>;
+  created_at: string | null;
+}
+
+export interface TradeContribution {
+  trade_id: string;
+  symbol: string;
+  side: string;
+  entry_time: string | null;
+  exit_time: string | null;
+  net_pnl: string;
+  holding_duration_sec: number;
+  market_regime: string;
+  entry_score: string;
+  exit_score: string;
+}
+
+export interface RollforwardBucket {
+  bucket_start: string;
+  bucket_end: string;
+  trading_pnl: string;
+  fee_cost: string;
+  funding_cost: string;
+  net_change: string;
+  cumulative_equity: string;
+}
+
+export interface RegimeAttribution {
+  regime: string;
+  start_time: string;
+  end_time: string;
+  avg_volatility: string;
+  trend_direction: string;
+}
+
+export interface BenchmarkComparison {
+  strategy_return_pct: string;
+  benchmark_return_pct: string;
+  alpha: string;
+  total_pnl: string;
+  total_trades: number;
+}
+
+// ── Alerts ─────────────────────────────────────────
+export interface AlertRule {
+  rule_id: string;
+  name: string;
+  alert_type: string;
+  enabled: boolean;
+  conditions: Record<string, unknown>;
+  cooldown_seconds: number;
+  severity: string;
+}
+
+export interface CreateAlertRule {
+  rule_id: string;
+  name: string;
+  alert_type: string;
+  enabled?: boolean;
+  conditions?: Record<string, unknown>;
+  cooldown_seconds?: number;
+  severity?: string;
+}
+
+export interface UpdateAlertRule {
+  name?: string;
+  alert_type?: string;
+  enabled?: boolean;
+  conditions?: Record<string, unknown>;
+  cooldown_seconds?: number;
+  severity?: string;
+}
+
+export interface AlertFiring {
+  firing_id: string;
+  rule_id: string;
+  alert_type: string;
+  severity: string;
+  message: string;
+  actual_value: string;
+  threshold: string;
+  fired_at: string | null;
+  resolved_at: string | null;
+}

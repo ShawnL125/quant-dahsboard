@@ -12,7 +12,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AAlert: typeof import('ant-design-vue/es')['Alert']
-    ABadge: typeof import('ant-design-vue/es')['Badge']
     AButton: typeof import('ant-design-vue/es')['Button']
     AccountsList: typeof import('./src/components/account/AccountsList.vue')['default']
     ACollapse: typeof import('ant-design-vue/es')['Collapse']
@@ -41,8 +40,10 @@ declare module 'vue' {
     ATabs: typeof import('ant-design-vue/es')['Tabs']
     ATag: typeof import('ant-design-vue/es')['Tag']
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
+    ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     BacktestResult: typeof import('./src/components/backtest/BacktestResult.vue')['default']
     BacktestTrades: typeof import('./src/components/backtest/BacktestTrades.vue')['default']
+    BaseSkeleton: typeof import('./src/components/common/BaseSkeleton.vue')['default']
     ComponentStatus: typeof import('./src/components/system/ComponentStatus.vue')['default']
     ConnectorHealthCards: typeof import('./src/components/quality/ConnectorHealthCards.vue')['default']
     DefinitionTable: typeof import('./src/components/features/DefinitionTable.vue')['default']
@@ -87,5 +88,6 @@ declare module 'vue' {
     SystemStatusBar: typeof import('./src/components/dashboard/SystemStatusBar.vue')['default']
     WarmupSection: typeof import('./src/components/system/WarmupSection.vue')['default']
     WindowsTable: typeof import('./src/components/walkforward/WindowsTable.vue')['default']
+    WsDisconnectBanner: typeof import('./src/components/common/WsDisconnectBanner.vue')['default']
   }
 }

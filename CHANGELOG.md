@@ -6,6 +6,29 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
+- **Global error handling**: Axios response interceptor attaches `userMessage` for network errors, timeouts, 5xx, and 403 responses. Vue `app.config.errorHandler` catches unexpected component errors. Error boundary in AppLayout captures page-level errors with reload card. `useErrorHandler` composable for consistent error display across views. Unhandled promise rejection listener logs to console.
+
+- **Loading skeletons**: `BaseSkeleton` component with shimmer animation supports `stats`, `table`, `card-grid`, and `detail` variants. Replaces `<a-spin>` with skeletons for first load on 6 views (Dashboard, Account, Risk, Positions, Orders, Strategies), preserving spinners for subsequent refreshes.
+
+- **WebSocket disconnect UI**: Enhanced `useWebSocket` composable tracks `reconnectAttempt` and `disconnectedAt`. `WsDisconnectBanner` shows after 5s disconnection with attempt count and "Connection restored" toast on reconnect. Sidebar status dot gains tooltip with connection details.
+
+- **Data auto-refresh**: `usePolling` composable with visibility-based pause/resume and `onUnmounted` cleanup. Added HTTP polling to 4 views — Positions (10s), Orders (10s), Account (30s), Strategies (30s). WS-connected views pause polling when real-time data is active, matching DashboardView pattern.
+
+- **Bundle optimization**: Removed full Ant Design Vue import (`app.use(Antd)`) — components resolved by `unplugin-vue-components`. Added `unplugin-auto-import` for `message`/`notification` global availability.
+
+### Tests
+
+- `useErrorHandler.test.ts` — 5 tests for error message extraction priority
+- `BaseSkeleton.test.ts` — 6 tests for all variants and default props
+- `WsDisconnectBanner.test.ts` — 5 tests for show/hide/reconnect timing
+- `usePolling.test.ts` — 9 tests for start/stop/pause/resume/visibility
+- Updated `client.test.ts` — 4 new tests for `userMessage` attachment
+- Updated `useWebSocket.test.ts` — 3 new tests for reconnect tracking
+- Updated `AccountView.test.ts` — skeleton loading state tests
+- Total: 1649 unit tests passing, 118 E2E tests passing
+
+### Features
+
 - **TradingView Dark Theme**: Full dark theme redesign across 55 files — TradingView-inspired color palette (#131722 bg, #1e222d cards, #2a2e39 borders), flat design with 4px radius and no shadows, JetBrains Mono for numeric data, compact spacing. Ant Design darkAlgorithm ConfigProvider with dark token overrides. Dark chart theme (grid, tooltip, gradients). Redesigned sidebar (200px, text-only logo, compact menu items) and header (48px). All status pills converted to thin-border style. Danger button styling preserved for destructive actions. Login page covered by shared dark theme provider. 1611 tests passing.
 
 - **Dangerous action confirmation dialogs**: Added `a-popconfirm` confirmation prompts to 8 dangerous operations — Orders (deactivate trailing stop, cancel algo order), Account (sync all exchanges, reconcile now), System (reload config), Admin (reload config), Strategies (reload all), Auto-Tune (rollback run, delete schedule). All prompts include descriptive warning messages explaining the consequences.

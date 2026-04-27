@@ -1,6 +1,7 @@
 <template>
   <div class="dashboard">
-    <a-spin :spinning="tradingStore.loading">
+    <BaseSkeleton v-if="tradingStore.loading && !tradingStore.portfolio" variant="stats" :columns="4" />
+    <a-spin v-else :spinning="tradingStore.loading">
       <StatCards
         :total-equity="tradingStore.portfolio?.total_equity || '0'"
         :available-balance="tradingStore.portfolio?.available_balance || '0'"
@@ -42,6 +43,7 @@ import { useTradingStore } from '@/stores/trading';
 import { useOrdersStore } from '@/stores/orders';
 import { useSystemStore } from '@/stores/system';
 import StatCards from '@/components/dashboard/StatCards.vue';
+import BaseSkeleton from '@/components/common/BaseSkeleton.vue';
 import EquityChart from '@/components/dashboard/EquityChart.vue';
 import PositionsDonut from '@/components/dashboard/PositionsDonut.vue';
 import RecentTrades from '@/components/dashboard/RecentTrades.vue';

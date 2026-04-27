@@ -1,5 +1,7 @@
 <template>
   <div class="risk-page">
+    <BaseSkeleton v-if="riskStore.loading && !riskStore.status" variant="stats" :columns="4" />
+    <template v-else>
     <a-spin :spinning="riskStore.loading">
       <KillSwitchBar
         v-if="riskStore.status?.kill_switch"
@@ -34,6 +36,7 @@
         class="risk-cell"
       />
     </div>
+    </template>
   </div>
 </template>
 
@@ -41,6 +44,7 @@
 import { onMounted, onUnmounted } from 'vue';
 import { useRiskStore } from '@/stores/risk';
 import KillSwitchBar from '@/components/risk/KillSwitchBar.vue';
+import BaseSkeleton from '@/components/common/BaseSkeleton.vue';
 import DrawdownChart from '@/components/risk/DrawdownChart.vue';
 import ExposureTable from '@/components/risk/ExposureTable.vue';
 import RiskConfigCards from '@/components/risk/RiskConfigCards.vue';

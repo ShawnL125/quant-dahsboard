@@ -155,16 +155,21 @@ describe('AccountView', () => {
     expect(mockFetchAll).toHaveBeenCalledOnce();
   });
 
-  // ── Loading spinner ──────────────────────────────────────────────
+  // ── Loading skeleton ──────────────────────────────────────────────
 
-  it('passes loading state to a-spin', () => {
-    const wrapper = mountView({ loading: true });
+  it('shows skeleton when loading and no margin data', () => {
+    const wrapper = mountView({ loading: true, margins: [] });
+    expect(wrapper.find('.skeleton-card-grid').exists()).toBe(true);
+  });
+
+  it('shows a-spin when loading with existing margin data', () => {
+    const wrapper = mountView({ loading: true, margins: sampleMargins });
     const spin = wrapper.findComponent({ name: 'a-spin' });
     expect(spin.props('spinning')).toBe(true);
   });
 
   it('passes loading=false when not loading', () => {
-    const wrapper = mountView({ loading: false });
+    const wrapper = mountView({ loading: false, margins: sampleMargins });
     const spin = wrapper.findComponent({ name: 'a-spin' });
     expect(spin.props('spinning')).toBe(false);
   });

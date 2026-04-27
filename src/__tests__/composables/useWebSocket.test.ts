@@ -61,6 +61,16 @@ describe('useWebSocket', () => {
       const { isConnected } = useWebSocket({ url: 'ws://localhost:8080' });
       expect(isConnected.value).toBe(false);
     });
+
+    it('has zero reconnect attempts', () => {
+      const { reconnectAttempt } = useWebSocket({ url: 'ws://localhost:8080' });
+      expect(reconnectAttempt.value).toBe(0);
+    });
+
+    it('has null disconnectedAt', () => {
+      const { disconnectedAt } = useWebSocket({ url: 'ws://localhost:8080' });
+      expect(disconnectedAt.value).toBeNull();
+    });
   });
 
   // ── connect ──────────────────────────────────────────────────────
@@ -104,6 +114,32 @@ describe('useWebSocket', () => {
       mockWsInstance.onclose!();
       vi.advanceTimersByTime(1000);
       expect(MockWebSocket.mock.calls.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('increments reconnectAttempt and sets disconnectedAt on close', () => {
+      const { connect, reconnectAttempt, disconnectedAt } = useWebSocket({ url: 'ws://localhost:8080' });
+      connect();
+
+      expect(reconnectAttempt.value).toBe(0);
+      expect(disconnectedAt.value).toBeNull();
+
+      mockWsInstance.onclose!();
+
+      expect(reconnectAttempt.value).toBe(1);
+      expect(disconnectedAt.value).toBeGreaterThan(0);
+    });
+
+    it('resets reconnectAttempt and disconnectedAt on open', () => {
+      const { connect, reconnectAttempt, disconnectedAt } = useWebSocket({ url: 'ws://localhost:8080' });
+      connect();
+
+      mockWsInstance.onclose!();
+      expect(reconnectAttempt.value).toBe(1);
+      expect(disconnectedAt.value).not.toBeNull();
+
+      mockWsInstance.onopen!();
+      expect(reconnectAttempt.value).toBe(0);
+      expect(disconnectedAt.value).toBeNull();
     });
   });
 

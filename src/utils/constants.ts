@@ -17,3 +17,8 @@ export const ORDER_TYPES = [
 ] as const;
 
 export const POLL_INTERVAL_MS = 5000;
+
+export const POLL_POSITIONS_MS = 10_000;
+export const POLL_ORDERS_MS = 10_000;
+export const POLL_ACCOUNT_MS = 30_000;
+export const POLL_STRATEGIES_MS = 30_000;

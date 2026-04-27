@@ -30,25 +30,45 @@
           </div>
         </div>
       </header>
+      <WsDisconnectBanner />
       <main class="app-content">
-        <router-view />
+        <div v-if="pageError" class="error-boundary">
+          <div class="error-card">
+            <div class="error-icon">!</div>
+            <h3 class="error-title">Something went wrong</h3>
+            <p class="error-message">{{ pageError }}</p>
+            <a-button type="primary" @click="reloadPage">Reload</a-button>
+          </div>
+        </div>
+        <router-view v-else />
       </main>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { inject, type Ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { inject, ref, onErrorCaptured, type Ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { SearchOutlined, BellOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons-vue';
 import SideMenu from './SideMenu.vue';
+import WsDisconnectBanner from '@/components/common/WsDisconnectBanner.vue';
 import { useAuthStore } from '@/stores/auth';
-import { useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const tradingMode = inject<Ref<import('@/types').TradingMode>>('tradingMode', { value: 'live' } as Ref<import('@/types').TradingMode>);
+
+const pageError = ref<string | null>(null);
+
+onErrorCaptured((err) => {
+  pageError.value = err instanceof Error ? err.message : String(err);
+  return false;
+});
+
+function reloadPage() {
+  pageError.value = null;
+}
 
 function onLogout() {
   authStore.logout();
@@ -165,5 +185,45 @@ const pageTitle: Record<string, string> = {
   background: var(--q-bg);
   padding: var(--q-content-padding);
   overflow-y: auto;
+}
+
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.error-card {
+  text-align: center;
+  padding: 40px;
+  background: var(--q-card);
+  border-radius: var(--q-card-radius);
+  box-shadow: var(--q-card-shadow);
+}
+
+.error-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--q-error);
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 48px;
+  margin: 0 auto 16px;
+}
+
+.error-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--q-text);
+  margin: 0 0 8px;
+}
+
+.error-message {
+  font-size: 13px;
+  color: var(--q-text-muted);
+  margin: 0 0 20px;
 }
 </style>

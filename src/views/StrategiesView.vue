@@ -1,5 +1,7 @@
 <template>
   <div class="strategies-page">
+    <BaseSkeleton v-if="store.loading && store.strategies.length === 0" variant="card-grid" :rows="3" :columns="2" />
+    <template v-else>
     <div class="action-bar">
       <div class="action-left">
         <span class="active-count">{{ activeCount }} Active</span>
@@ -108,6 +110,7 @@
         </div>
       </template>
     </a-drawer>
+    </template>
   </div>
 </template>
 
@@ -117,6 +120,9 @@ import { useStrategiesStore } from '@/stores/strategies';
 import StrategyList from '@/components/strategies/StrategyList.vue';
 import RebalanceSection from '@/components/strategies/RebalanceSection.vue';
 import { message } from 'ant-design-vue';
+import BaseSkeleton from '@/components/common/BaseSkeleton.vue';
+import { usePolling } from '@/composables/usePolling';
+import { POLL_STRATEGIES_MS } from '@/utils/constants';
 
 const store = useStrategiesStore();
 const detailOpen = ref(false);
@@ -181,8 +187,15 @@ async function onSaveParams() {
   }
 }
 
+const polling = usePolling({
+  fn: () => store.fetchStrategies(),
+  intervalMs: POLL_STRATEGIES_MS,
+  immediate: false,
+});
+
 onMounted(() => {
   store.fetchStrategies();
+  polling.start();
 });
 </script>
 

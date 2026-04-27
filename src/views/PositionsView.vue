@@ -1,5 +1,7 @@
 <template>
   <div class="positions-page">
+    <BaseSkeleton v-if="tradingStore.loading && tradingStore.positions.length === 0" variant="table" :rows="5" :columns="9" />
+    <template v-else>
     <div class="summary-bar">
       <div class="summary-item">
         <span class="summary-label">Total Positions</span>
@@ -64,16 +66,21 @@
       </table>
       <div v-else class="empty-state">No open positions</div>
     </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, inject, onMounted, watch, type Ref, ref } from 'vue';
 import { useTradingStore } from '@/stores/trading';
 import type { Position } from '@/types';
 import { message } from 'ant-design-vue';
+import BaseSkeleton from '@/components/common/BaseSkeleton.vue';
+import { usePolling } from '@/composables/usePolling';
+import { POLL_POSITIONS_MS } from '@/utils/constants';
 
 const tradingStore = useTradingStore();
+const wsConnected = inject<Ref<boolean>>('wsConnected', ref(false));
 
 const profitCount = computed(() =>
   tradingStore.positions.filter((p) => parseFloat(p.unrealized_pnl) > 0).length,
@@ -95,8 +102,25 @@ function onClosePosition(_pos: Position) {
   message.info('Position close requested');
 }
 
+const polling = usePolling({
+  fn: () => tradingStore.fetchPositions(),
+  intervalMs: POLL_POSITIONS_MS,
+  immediate: false,
+});
+
+watch(wsConnected, (connected) => {
+  if (connected) {
+    polling.pause();
+  } else {
+    polling.resume();
+  }
+});
+
 onMounted(() => {
   tradingStore.fetchPositions();
+  if (!wsConnected.value) {
+    polling.start();
+  }
 });
 </script>
 

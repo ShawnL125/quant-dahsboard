@@ -44,6 +44,11 @@ export class SystemPage {
     await this.container.waitFor({ state: 'visible' });
   }
 
+  async clickTab(tabLabel: string): Promise<void> {
+    const tab = this.page.locator('.ant-tabs-tab', { hasText: tabLabel });
+    await tab.click();
+  }
+
   async expandConfig(): Promise<void> {
     await this.configCollapse.locator('.ant-collapse-header').first().click();
   }

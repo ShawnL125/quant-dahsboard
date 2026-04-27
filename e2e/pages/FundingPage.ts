@@ -20,7 +20,7 @@ export class FundingPage {
     this.container = page.locator('.funding-page');
     this.rateGrid = page.locator('.rate-grid');
     this.rateCards = page.locator('.rate-card');
-    this.rateEmpty = page.locator('.rate-grid').locator('.empty-state, .empty-inline');
+    this.rateEmpty = page.locator('.funding-page .card').first().locator('.empty-state, .empty-inline');
     this.historicalSection = page.locator('.card', { hasText: /historical rates/i });
     this.historicalTable = this.historicalSection.locator('.data-table');
     this.costSection = page.locator('.card', { hasText: /funding cost summary/i });

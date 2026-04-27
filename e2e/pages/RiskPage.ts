@@ -45,8 +45,8 @@ export class RiskPage {
     this.exposureCard = this.riskGrid.locator('.risk-cell').nth(1);
     this.configCard = this.riskGrid.locator('.risk-cell').nth(2);
     this.eventsCard = this.riskGrid.locator('.risk-cell').nth(3);
-    this.eventsTable = this.eventsCard.locator('.data-table');
-    this.eventsEmpty = this.eventsCard.locator('.empty-state, .empty-inline');
+    this.eventsTable = this.eventsCard.locator('.ant-table');
+    this.eventsEmpty = this.eventsCard.locator('.events-empty, .empty-state, .empty-inline');
   }
 
   async goto(): Promise<void> {

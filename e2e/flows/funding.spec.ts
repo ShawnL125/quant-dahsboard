@@ -13,7 +13,10 @@ test.describe('Funding', () => {
 
   test('page loads with current rates section', async () => {
     await expect(fundingPage.container).toBeVisible();
-    await expect(fundingPage.rateGrid).toBeVisible({ timeout: 10000 });
+    // Rate grid is conditionally rendered — either rates or empty state
+    await expect(
+      fundingPage.rateGrid.or(fundingPage.rateEmpty)
+    ).toBeVisible({ timeout: 10000 });
   });
 
   test('rate cards or empty state', async () => {

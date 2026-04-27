@@ -39,14 +39,17 @@ test.describe('System', () => {
   });
 
   test('data quality section renders', async () => {
+    await systemPage.clickTab('Quality');
     await expect(systemPage.qualitySection).toBeVisible({ timeout: 10000 });
   });
 
   test('configuration collapse panel renders', async () => {
+    await systemPage.clickTab('Config');
     await expect(systemPage.configCard).toBeVisible({ timeout: 10000 });
   });
 
   test('expand config shows reload button and JSON', async ({ page }) => {
+    await systemPage.clickTab('Config');
     const hasCollapse = (await systemPage.configCollapse.count()) > 0;
     test.skip(!hasCollapse, 'No config collapse panel');
     await systemPage.expandConfig();
@@ -54,6 +57,7 @@ test.describe('System', () => {
   });
 
   test('event statistics table or empty state', async () => {
+    await systemPage.clickTab('Config');
     const hasEvents = (await systemPage.eventsCard.count()) > 0;
     test.skip(!hasEvents, 'No events card');
     await expect(
@@ -62,6 +66,7 @@ test.describe('System', () => {
   });
 
   test('reconciliation alerts table or empty state', async () => {
+    await systemPage.clickTab('Reconciliation');
     const hasRecon = (await systemPage.reconCard.count()) > 0;
     test.skip(!hasRecon, 'No recon card');
     await expect(

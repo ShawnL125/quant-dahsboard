@@ -78,6 +78,11 @@ const antStubs = {
     props: ['loading', 'size'],
     emits: ['click'],
   },
+  'a-popconfirm': {
+    template: '<div class="a-popconfirm-stub" @confirm="$emit(\'confirm\')"><slot /></div>',
+    props: ['title'],
+    emits: ['confirm'],
+  },
 };
 
 function mountSystem() {
@@ -316,9 +321,8 @@ describe('SystemView', () => {
   it('calls store.reloadConfig when Reload Config button is clicked', async () => {
     const wrapper = mountSystem();
     await flushPromises();
-    const buttons = wrapper.findAll('.a-button-stub');
-    const reloadBtn = buttons.find((b) => b.text().includes('Reload Config'))!;
-    await reloadBtn.trigger('click');
+    const popconfirm = wrapper.find('.a-popconfirm-stub');
+    await popconfirm.trigger('confirm');
     await flushPromises();
     expect(mockReloadConfig).toHaveBeenCalledOnce();
   });
@@ -329,12 +333,12 @@ describe('SystemView', () => {
 
     const wrapper = mountSystem();
     await flushPromises();
-    const buttons = wrapper.findAll('.a-button-stub');
-    const reloadBtn = buttons.find((b) => b.text().includes('Reload Config'))!;
+    const popconfirm = wrapper.find('.a-popconfirm-stub');
 
-    await reloadBtn.trigger('click');
+    await popconfirm.trigger('confirm');
     await flushPromises();
     // While pending, the button should have the loading prop set to "true"
+    const reloadBtn = wrapper.findAll('.a-button-stub').find((b) => b.text().includes('Reload Config'))!;
     expect(reloadBtn.attributes('data-loading')).toBe('true');
 
     resolveReload();

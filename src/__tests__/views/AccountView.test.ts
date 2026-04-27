@@ -40,6 +40,12 @@ const antStubs = {
     props: ['size', 'type'],
     emits: ['click'],
   },
+  'a-popconfirm': {
+    name: 'a-popconfirm',
+    template: '<div class="a-popconfirm-stub" @click="$emit(\'confirm\')"><slot /></div>',
+    props: ['title'],
+    emits: ['confirm'],
+  },
   AccountsList: {
     name: 'AccountsList',
     template: '<div class="accounts-list-stub">Accounts</div>',
@@ -432,10 +438,11 @@ describe('AccountView', () => {
       mockFetchAll.mockClear();
       mockSyncAll.mockClear();
 
-      const buttons = wrapper.findAll('.a-button-stub');
-      const syncBtn = buttons.find((b) => b.text().includes('Sync All'));
-      expect(syncBtn).toBeTruthy();
-      await syncBtn!.trigger('click');
+      const popconfirms = wrapper.findAllComponents({ name: 'a-popconfirm' });
+      const syncPopconfirm = popconfirms.find((pc) => pc.text().includes('Sync All'));
+      expect(syncPopconfirm).toBeTruthy();
+      await syncPopconfirm!.vm.$emit('confirm');
+      await nextTick();
 
       expect(mockSyncAll).toHaveBeenCalledOnce();
       await flushPromises();
@@ -452,10 +459,11 @@ describe('AccountView', () => {
       mockFetchReconciliations.mockClear();
       mockReconcile.mockClear();
 
-      const buttons = wrapper.findAll('.a-button-stub');
-      const reconcileBtn = buttons.find((b) => b.text().includes('Reconcile Now'));
-      expect(reconcileBtn).toBeTruthy();
-      await reconcileBtn!.trigger('click');
+      const popconfirms = wrapper.findAllComponents({ name: 'a-popconfirm' });
+      const reconcilePopconfirm = popconfirms.find((pc) => pc.text().includes('Reconcile Now'));
+      expect(reconcilePopconfirm).toBeTruthy();
+      await reconcilePopconfirm!.vm.$emit('confirm');
+      await nextTick();
 
       expect(mockReconcile).toHaveBeenCalledOnce();
       await flushPromises();

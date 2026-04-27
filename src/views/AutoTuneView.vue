@@ -26,7 +26,9 @@
               <td class="text-muted">{{ formatTime(run.created_at) }}</td>
               <td class="action-cell">
                 <a-button v-if="run.status === 'pending'" size="small" @click="store.confirmRun(run.run_id)">Confirm</a-button>
-                <a-button v-if="run.status === 'applied'" size="small" danger @click="store.rollbackRun(run.run_id)">Rollback</a-button>
+                <a-popconfirm v-if="run.status === 'applied'" title="Rollback applied parameters? This reverts to the previous values." @confirm="store.rollbackRun(run.run_id)">
+                  <a-button size="small" danger>Rollback</a-button>
+                </a-popconfirm>
               </td>
             </tr>
           </tbody>
@@ -57,7 +59,9 @@
               <td class="text-mono">{{ sched.cron_expr }}</td>
               <td><span class="mode-pill">{{ sched.apply_mode }}</span></td>
               <td>{{ sched.train_days }}d / {{ sched.test_days }}d</td>
-              <td><a-button size="small" danger @click="store.deleteSchedule(sched.schedule_id)">Delete</a-button></td>
+              <td><a-popconfirm title="Delete this scheduled auto-tune job?" @confirm="store.deleteSchedule(sched.schedule_id)">
+                <a-button size="small" danger>Delete</a-button>
+              </a-popconfirm></td>
             </tr>
           </tbody>
         </table>

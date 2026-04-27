@@ -82,6 +82,12 @@ const stubs = {
     props: ['strategies'],
     emits: ['toggle', 'view'],
   },
+  'a-popconfirm': {
+    name: 'APopconfirm',
+    props: ['title'],
+    emits: ['confirm'],
+    template: '<div class="ant-popconfirm"><slot /></div>',
+  },
   'a-button': {
     template: '<button class="ant-btn" @click="$emit(\'click\')"><slot /></button>',
     props: ['type', 'size', 'loading'],
@@ -180,11 +186,11 @@ describe('StrategiesView — Reload button', () => {
   it('calls store.reloadStrategies and shows success message', async () => {
     const { message } = await import('ant-design-vue');
     const wrapper = mountStrategies();
-    // Find the Reload button
-    const buttons = wrapper.findAll('button');
-    const reloadBtn = buttons.find((b) => b.text() === 'Reload');
-    expect(reloadBtn).toBeTruthy();
-    await reloadBtn!.trigger('click');
+    // Find the popconfirm wrapping the Reload button and emit confirm
+    const popconfirm = wrapper.findComponent({ name: 'APopconfirm' });
+    expect(popconfirm.exists()).toBe(true);
+    await popconfirm.vm.$emit('confirm');
+    await nextTick();
     expect(mockReloadStrategies).toHaveBeenCalledOnce();
     expect(message.success).toHaveBeenCalledWith('Strategies reloaded');
   });

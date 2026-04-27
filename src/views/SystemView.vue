@@ -42,7 +42,9 @@
           <a-collapse>
             <a-collapse-panel key="config" header="Configuration">
               <div class="config-actions">
-                <a-button size="small" @click="onReloadConfig" :loading="reloading">Reload Config</a-button>
+                <a-popconfirm title="Reload system configuration? This may temporarily affect running services." @confirm="onReloadConfig">
+                  <a-button size="small" :loading="reloading">Reload Config</a-button>
+                </a-popconfirm>
               </div>
               <pre class="config-code">{{ formatJson(store.config) }}</pre>
             </a-collapse-panel>

@@ -57,14 +57,14 @@ test.describe('Dashboard', () => {
 
   test('recent trades table or empty state', async () => {
     await expect(
-      dashboardPage.tradesTable.or(dashboardPage.tradesCard.locator('.empty-state, .empty-inline'))
+      dashboardPage.tradesTable.or(dashboardPage.tradesEmpty)
     ).toBeVisible({ timeout: 10000 });
   });
 
   test('recent trades shows data or empty state', async () => {
     const tradesCard = dashboardPage.tradesCard;
     const rows = tradesCard.locator('tbody tr');
-    const emptyState = tradesCard.locator('.empty-state, .empty-inline');
+    const emptyState = dashboardPage.tradesEmpty;
     const hasRows = (await rows.count()) > 0;
     const hasEmpty = (await emptyState.count()) > 0;
     expect(hasRows || hasEmpty).toBe(true);

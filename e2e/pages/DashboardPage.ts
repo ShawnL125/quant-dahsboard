@@ -32,13 +32,14 @@ export class DashboardPage {
   // Recent trades
   readonly tradesCard: Locator;
   readonly tradesTable: Locator;
+  readonly tradesEmpty: Locator;
 
   constructor(page: Page) {
     this.page = page;
 
     this.container = page.locator('.dashboard');
     this.chartsRow = page.locator('.dashboard-charts');
-    this.systemStatusBar = page.locator('.system-status-bar');
+    this.systemStatusBar = page.locator('.status-bar');
 
     // Sidebar (defined in SideMenu.vue)
     this.sidebar = page.locator('.sidebar-menu');
@@ -62,6 +63,7 @@ export class DashboardPage {
     // Recent trades
     this.tradesCard = page.locator('.trades-card');
     this.tradesTable = page.locator('.trades-table');
+    this.tradesEmpty = page.locator('.trades-empty');
   }
 
   async goto(): Promise<void> {

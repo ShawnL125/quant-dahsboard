@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 
 - **TradingView Dark Theme**: Full dark theme redesign across 55 files — TradingView-inspired color palette (#131722 bg, #1e222d cards, #2a2e39 borders), flat design with 4px radius and no shadows, JetBrains Mono for numeric data, compact spacing. Ant Design darkAlgorithm ConfigProvider with dark token overrides. Dark chart theme (grid, tooltip, gradients). Redesigned sidebar (200px, text-only logo, compact menu items) and header (48px). All status pills converted to thin-border style. Danger button styling preserved for destructive actions. Login page covered by shared dark theme provider. 1611 tests passing.
 
+### Bug Fixes
+
+- **E2E test selectors**: Adapted page objects and specs for tabbed SystemView layout (clickTab helper), scoped Account refresh button to margin section, fixed Funding rateGrid/rateEmpty locators, updated Risk events table to .ant-table selector, handled Orders cancel popconfirm flow. 120 E2E tests passing.
+
 - **Testing infrastructure**: Vitest unit tests (1349 tests, 70 files) + Playwright E2E tests (129 tests, 17 spec files) with Page Object Model (15 page objects, 17 flow specs). Coverage: 91% statements, 86% branches, 89% functions, 91% lines.
 - **E2E full coverage expansion**: 77 new E2E tests across 10 spec files and 8 new page objects — Dashboard (10), Analytics (9), Positions (7), Ledger (9), Funding (9), Auto-Tune (8), Walk-Forward (8), Risk read-only (6), System (9), Signals (6). All 15 views now have E2E test coverage.
 - **Strategy Lifecycle Management API**: Frontend integration for `/strategy-mgmt` endpoints — list registered strategies with metadata, load from plugin files, start/stop/reload/unload strategies. Pinia store with optimistic status updates.

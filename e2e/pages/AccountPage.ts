@@ -34,7 +34,7 @@ export class AccountPage {
     this.marginSection = page.locator('.margin-section');
     this.marginCards = page.locator('.margin-card');
     this.syncButton = page.getByRole('button', { name: /sync all/i });
-    this.refreshButton = page.getByRole('button', { name: /refresh/i });
+    this.refreshButton = this.marginSection.getByRole('button', { name: /refresh/i });
     this.marginEmpty = this.marginSection.locator('.empty-state');
 
     // Snapshots section

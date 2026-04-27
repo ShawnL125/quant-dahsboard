@@ -17,6 +17,8 @@ export function useWebSocket(options: UseWebSocketOptions) {
   } = options;
 
   const isConnected = ref(false);
+  const reconnectAttempt = ref(0);
+  const disconnectedAt = ref<number | null>(null);
   let ws: WebSocket | null = null;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   let currentReconnectInterval = reconnectInterval;
@@ -29,6 +31,8 @@ export function useWebSocket(options: UseWebSocketOptions) {
 
     ws.onopen = () => {
       isConnected.value = true;
+      reconnectAttempt.value = 0;
+      disconnectedAt.value = null;
       currentReconnectInterval = reconnectInterval;
       if (subscribedChannels.length > 0) {
         sendCommand('subscribe', subscribedChannels);
@@ -37,6 +41,8 @@ export function useWebSocket(options: UseWebSocketOptions) {
 
     ws.onclose = () => {
       isConnected.value = false;
+      reconnectAttempt.value++;
+      disconnectedAt.value = Date.now();
       scheduleReconnect();
     };
 
@@ -97,5 +103,5 @@ export function useWebSocket(options: UseWebSocketOptions) {
     disconnect();
   });
 
-  return { isConnected, connect, disconnect, subscribe, unsubscribe, onMessage };
+  return { isConnected, reconnectAttempt, disconnectedAt, connect, disconnect, subscribe, unsubscribe, onMessage };
 }

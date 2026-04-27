@@ -1,6 +1,7 @@
 <template>
   <div class="account-page">
-    <a-spin :spinning="store.loading">
+    <BaseSkeleton v-if="store.loading && store.margins.length === 0" variant="card-grid" :rows="2" :columns="3" />
+    <a-spin v-else :spinning="store.loading">
       <AccountsList />
       <div class="margin-section">
         <div class="section-header">
@@ -89,13 +90,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, inject, watch, ref, type Ref } from 'vue';
 import { useAccountStore } from '@/stores/account';
 import { useAccountsStore } from '@/stores/accounts';
 import AccountsList from '@/components/account/AccountsList.vue';
+import BaseSkeleton from '@/components/common/BaseSkeleton.vue';
+import { usePolling } from '@/composables/usePolling';
+import { POLL_ACCOUNT_MS } from '@/utils/constants';
 
 const store = useAccountStore();
 const accountsStore = useAccountsStore();
+const wsConnected = inject<Ref<boolean>>('wsConnected', ref(false));
 
 function formatTime(iso: string): string {
   try {
@@ -107,7 +112,27 @@ function onRefresh() { store.fetchAll(); }
 function onSync() { store.syncAll().then(() => store.fetchAll()); }
 function onReconcile() { store.reconcile().then(() => store.fetchReconciliations()); }
 
-onMounted(() => { store.fetchAll(); accountsStore.fetchAccounts(); });
+const polling = usePolling({
+  fn: () => store.fetchAll(),
+  intervalMs: POLL_ACCOUNT_MS,
+  immediate: false,
+});
+
+watch(wsConnected, (connected) => {
+  if (connected) {
+    polling.pause();
+  } else {
+    polling.resume();
+  }
+});
+
+onMounted(() => {
+  store.fetchAll();
+  accountsStore.fetchAccounts();
+  if (!wsConnected.value) {
+    polling.start();
+  }
+});
 </script>
 
 <style scoped>

@@ -1,5 +1,7 @@
 <template>
   <div class="orders-page">
+    <BaseSkeleton v-if="ordersStore.loading && ordersStore.openOrders.length === 0" variant="table" :rows="5" :columns="8" />
+    <template v-else>
     <OrderForm @placed="onOrderPlaced" />
 
     <a-tabs v-model:activeKey="activeTab" class="orders-tabs">
@@ -189,19 +191,24 @@
       show-icon
       class="page-section"
     />
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted, watch, inject, type Ref } from 'vue';
 import { useOrdersStore } from '@/stores/orders';
 import type { Order, SubmitAlgoBody } from '@/types';
 import OrderForm from '@/components/orders/OrderForm.vue';
 import OpenOrdersTable from '@/components/orders/OpenOrdersTable.vue';
 import OrderHistoryTable from '@/components/orders/OrderHistoryTable.vue';
 import { message } from 'ant-design-vue';
+import BaseSkeleton from '@/components/common/BaseSkeleton.vue';
+import { usePolling } from '@/composables/usePolling';
+import { POLL_ORDERS_MS } from '@/utils/constants';
 
 const ordersStore = useOrdersStore();
+const wsConnected = inject<Ref<boolean>>('wsConnected', ref(false));
 const activeTab = ref('open');
 const algoModalOpen = ref(false);
 const algoSubmitting = ref(false);
@@ -301,8 +308,25 @@ watch(activeTab, (tab) => {
   else if (tab === 'algo') ordersStore.fetchAlgoOrders();
 });
 
+const polling = usePolling({
+  fn: () => ordersStore.fetchOrders(),
+  intervalMs: POLL_ORDERS_MS,
+  immediate: false,
+});
+
+watch(wsConnected, (connected) => {
+  if (connected) {
+    polling.pause();
+  } else {
+    polling.resume();
+  }
+});
+
 onMounted(() => {
   ordersStore.fetchOrders();
+  if (!wsConnected.value) {
+    polling.start();
+  }
 });
 </script>
 

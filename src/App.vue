@@ -26,9 +26,11 @@ import { useReconciliationStore } from '@/stores/reconciliation';
 
 const route = useRoute();
 const wsConnected = ref(false);
+const wsReconnectAttempt = ref(0);
 const tradingMode = ref<import('@/types').TradingMode>('live');
 
 provide('wsConnected', wsConnected);
+provide('wsReconnectAttempt', wsReconnectAttempt);
 provide('tradingMode', tradingMode);
 
 const isPublicRoute = computed(() => route.meta?.public === true);
@@ -116,6 +118,7 @@ onMounted(async () => {
   ws.subscribe(['orders', 'positions', 'pnl', 'system', 'trades', 'risk', 'signals', 'quality', 'account', 'margin', 'reconcile', 'funding', 'params', 'notifications']);
   wsPollTimer = setInterval(() => {
     wsConnected.value = ws.isConnected.value;
+    wsReconnectAttempt.value = ws.reconnectAttempt.value;
   }, 1000);
 
   try {

@@ -116,6 +116,38 @@ describe('API Client', () => {
       expect(localStorage.getItem('access_token')).toBe('t');
     });
 
+    it('attaches userMessage for network errors (ERR_NETWORK)', async () => {
+      const client = await getClient();
+      const error = { code: 'ERR_NETWORK' };
+      await expect(
+        client.interceptors.response.handlers[0].rejected(error),
+      ).rejects.toMatchObject({ userMessage: 'Network error. Please check your connection.' });
+    });
+
+    it('attaches userMessage for timeout errors (ECONNABORTED)', async () => {
+      const client = await getClient();
+      const error = { code: 'ECONNABORTED' };
+      await expect(
+        client.interceptors.response.handlers[0].rejected(error),
+      ).rejects.toMatchObject({ userMessage: 'Request timed out.' });
+    });
+
+    it('attaches userMessage for 5xx errors', async () => {
+      const client = await getClient();
+      const error = { response: { status: 503 } };
+      await expect(
+        client.interceptors.response.handlers[0].rejected(error),
+      ).rejects.toMatchObject({ userMessage: 'Server error. Please try again.' });
+    });
+
+    it('attaches userMessage for 403 errors', async () => {
+      const client = await getClient();
+      const error = { response: { status: 403 } };
+      await expect(
+        client.interceptors.response.handlers[0].rejected(error),
+      ).rejects.toMatchObject({ userMessage: 'Access denied.' });
+    });
+
     it('handles 401 when tokens already absent', async () => {
       const client = await getClient();
       const error = { response: { status: 401 } };

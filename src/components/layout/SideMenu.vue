@@ -16,7 +16,12 @@
       </div>
     </nav>
     <div class="sidebar-footer">
-      <span class="status-dot" :class="wsConnected ? 'connected' : 'disconnected'"></span>
+      <a-tooltip>
+        <template #title>
+          {{ wsConnected ? 'WebSocket connected' : 'WebSocket disconnected' }}
+        </template>
+        <span class="status-dot" :class="wsConnected ? 'connected' : 'disconnected'"></span>
+      </a-tooltip>
       <span class="status-text">{{ wsConnected ? 'Live' : 'Offline' }}</span>
     </div>
   </div>

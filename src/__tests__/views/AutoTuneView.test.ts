@@ -36,6 +36,10 @@ const stubs = {
     emits: ['update:value'],
   },
   'a-select-option': { template: '<option class="a-select-option-stub"><slot /></option>', props: ['value'] },
+  'a-popconfirm': {
+    template: '<div class="a-popconfirm-stub"><slot /></div>',
+    emits: ['confirm', 'cancel'],
+  },
 };
 
 vi.mock('ant-design-vue', () => ({
@@ -146,9 +150,10 @@ describe('AutoTuneView', () => {
       { run_id: 'run-def', strategy_id: 's2', apply_mode: 'auto', status: 'applied', created_at: '2025-01-01T00:00:00Z' },
     ];
     const wrapper = mountView();
-    const rollbackBtn = wrapper.findAll('.runs-section .a-button-stub').find((b) => b.text().includes('Rollback'));
-    expect(rollbackBtn).toBeTruthy();
-    await rollbackBtn!.trigger('click');
+    const popconfirm = wrapper.findAllComponents('.a-popconfirm-stub').find((pc) => pc.text().includes('Rollback'));
+    expect(popconfirm).toBeTruthy();
+    await popconfirm!.vm.$emit('confirm');
+    await flushPromises();
     expect(mockRollbackRun).toHaveBeenCalledWith('run-def');
   });
 
@@ -196,9 +201,10 @@ describe('AutoTuneView', () => {
       { schedule_id: 'sched-delete', strategy_id: 'a', cron_expr: '* *', apply_mode: 'auto', train_days: 10, test_days: 5 },
     ];
     const wrapper = mountView();
-    const deleteBtn = wrapper.findAll('.schedules-section .a-button-stub').find((b) => b.text().includes('Delete'));
-    expect(deleteBtn).toBeTruthy();
-    await deleteBtn!.trigger('click');
+    const popconfirm = wrapper.findAllComponents('.a-popconfirm-stub').find((pc) => pc.text().includes('Delete'));
+    expect(popconfirm).toBeTruthy();
+    await popconfirm!.vm.$emit('confirm');
+    await flushPromises();
     expect(mockDeleteSchedule).toHaveBeenCalledWith('sched-delete');
   });
 

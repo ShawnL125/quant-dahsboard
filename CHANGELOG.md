@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 - **TradingView Dark Theme**: Full dark theme redesign across 55 files — TradingView-inspired color palette (#131722 bg, #1e222d cards, #2a2e39 borders), flat design with 4px radius and no shadows, JetBrains Mono for numeric data, compact spacing. Ant Design darkAlgorithm ConfigProvider with dark token overrides. Dark chart theme (grid, tooltip, gradients). Redesigned sidebar (200px, text-only logo, compact menu items) and header (48px). All status pills converted to thin-border style. Danger button styling preserved for destructive actions. Login page covered by shared dark theme provider. 1611 tests passing.
 
+- **Dangerous action confirmation dialogs**: Added `a-popconfirm` confirmation prompts to 8 dangerous operations — Orders (deactivate trailing stop, cancel algo order), Account (sync all exchanges, reconcile now), System (reload config), Admin (reload config), Strategies (reload all), Auto-Tune (rollback run, delete schedule). All prompts include descriptive warning messages explaining the consequences.
+
 ### Bug Fixes
 
 - **E2E test selectors**: Adapted page objects and specs for tabbed SystemView layout (clickTab helper), scoped Account refresh button to margin section, fixed Funding rateGrid/rateEmpty locators, updated Risk events table to .ant-table selector, handled Orders cancel popconfirm flow. 120 E2E tests passing.

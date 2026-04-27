@@ -17,6 +17,7 @@ declare module 'vue' {
     AccountsList: typeof import('./src/components/account/AccountsList.vue')['default']
     ACollapse: typeof import('ant-design-vue/es')['Collapse']
     ACollapsePanel: typeof import('ant-design-vue/es')['CollapsePanel']
+    AConfigProvider: typeof import('ant-design-vue/es')['ConfigProvider']
     ADatePicker: typeof import('ant-design-vue/es/date-picker/dayjs')['default']
     AdminSection: typeof import('./src/components/system/AdminSection.vue')['default']
     ADrawer: typeof import('ant-design-vue/es')['Drawer']

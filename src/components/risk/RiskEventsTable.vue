@@ -20,7 +20,7 @@
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'time'">
-          {{ formatTime(record.time) }}
+          {{ formatTime(record.time || record.received_at) }}
         </template>
         <template v-if="column.key === 'event_type'">
           <a-tag :color="typeColor(record.event_type)">{{ record.event_type }}</a-tag>
@@ -69,8 +69,10 @@ const columns = [
   { title: 'Reason', dataIndex: 'reason', key: 'reason' },
 ];
 
-function formatTime(iso: string): string {
+function formatTime(iso?: string): string {
+  if (!iso) return '-';
   const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '-';
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 

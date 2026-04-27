@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 
+- **Risk store adversarial review fixes**: Fixed 3 issues from adversarial code review — (1) WebSocket event normalization now preserves server-supplied timestamps and `received_at` instead of fabricating `new Date().toISOString()`, with deterministic fallback IDs to prevent data loss on missing event IDs; (2) WS-driven status/exposure refreshes now use single-flight coalescing to prevent request fan-out during burst traffic; (3) Drawdown history sampling properly exposed for chart polling. RiskEventsTable renders `received_at` when `time` is missing. Regression tests added. Design docs updated to match implementation.
+
 - **E2E test selectors**: Adapted page objects and specs for tabbed SystemView layout (clickTab helper), scoped Account refresh button to margin section, fixed Funding rateGrid/rateEmpty locators, updated Risk events table to .ant-table selector, handled Orders cancel popconfirm flow. 120 E2E tests passing.
 
 - **Testing infrastructure**: Vitest unit tests (1349 tests, 70 files) + Playwright E2E tests (129 tests, 17 spec files) with Page Object Model (15 page objects, 17 flow specs). Coverage: 91% statements, 86% branches, 89% functions, 91% lines.

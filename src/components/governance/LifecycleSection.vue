@@ -316,7 +316,7 @@ onMounted(() => {
 .warnings-title {
   font-size: 12px;
   font-weight: 600;
-  color: #eab308;
+  color: var(--q-warning);
   margin-bottom: 8px;
 }
 

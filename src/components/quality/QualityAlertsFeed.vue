@@ -118,11 +118,11 @@ function formatTime(iso: string): string {
   margin-top: 2px;
 }
 
-.type-data_gap { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
-.type-price_anomaly { background: rgba(168, 85, 247, 0.12); color: #a855f7; }
-.type-volume_spike { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
-.type-high_latency { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
-.type-validation_failure { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+.type-data_gap { border: 1px solid var(--q-primary); color: var(--q-primary); background: transparent; }
+.type-price_anomaly { border: 1px solid #a855f7; color: #a855f7; background: transparent; }
+.type-volume_spike { border: 1px solid var(--q-warning); color: var(--q-warning); background: transparent; }
+.type-high_latency { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
+.type-validation_failure { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
 
 .alert-body {
   flex: 1;
@@ -155,8 +155,8 @@ function formatTime(iso: string): string {
   text-transform: uppercase;
 }
 
-.alert-severity.warning { background: var(--q-warning-light); color: var(--q-warning); }
-.alert-severity.critical { background: var(--q-error-light); color: var(--q-error); }
+.alert-severity.warning { border: 1px solid var(--q-warning); color: var(--q-warning); background: transparent; }
+.alert-severity.critical { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
 
 .alert-metric {
   font-size: 11px;

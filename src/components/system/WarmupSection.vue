@@ -200,27 +200,31 @@ onMounted(() => {
 }
 
 .state-ok {
-  background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
+  border: 1px solid var(--q-success);
+  color: var(--q-success);
+  background: transparent;
 }
 
 .state-error {
-  background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
+  border: 1px solid var(--q-error);
+  color: var(--q-error);
+  background: transparent;
 }
 
 .state-active {
-  background: rgba(59, 130, 246, 0.12);
-  color: #3b82f6;
+  border: 1px solid var(--q-primary);
+  color: var(--q-primary);
+  background: transparent;
 }
 
 .state-pending {
-  background: rgba(156, 163, 175, 0.12);
-  color: #9ca3af;
+  border: 1px solid var(--q-text-muted);
+  color: var(--q-text-muted);
+  background: transparent;
 }
 
 .error-text {
-  color: #ef4444;
+  color: var(--q-error);
   font-size: 11px;
 }
 

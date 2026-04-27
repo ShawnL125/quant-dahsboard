@@ -244,10 +244,10 @@ onMounted(() => {
   font-size: 11px;
   font-weight: 500;
 }
-.status-completed { background: var(--q-success-light); color: var(--q-success); }
-.status-failed { background: var(--q-error-light); color: var(--q-error); }
-.status-running { background: var(--q-primary-light); color: var(--q-primary); }
-.status-default { background: var(--q-hover); color: var(--q-text-muted); }
+.status-completed { border: 1px solid var(--q-success); color: var(--q-success); background: transparent; }
+.status-failed { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
+.status-running { border: 1px solid var(--q-primary); color: var(--q-primary); background: transparent; }
+.status-default { border: 1px solid var(--q-text-muted); color: var(--q-text-muted); background: transparent; }
 
 .text-muted { color: var(--q-text-muted); }
 .text-bold { font-weight: 600; }

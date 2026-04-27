@@ -137,13 +137,13 @@ onMounted(() => { store.fetchAll(); });
 .text-muted { color: var(--q-text-muted); font-size: 11px; }
 .text-mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
 
-.mode-pill { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+.mode-pill { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; border: 1px solid var(--q-primary); color: var(--q-primary); background: transparent; }
 .status-pill { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
-.status-completed, .status-applied { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
-.status-running { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
-.status-pending { background: rgba(234, 179, 8, 0.12); color: #eab308; }
-.status-failed { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
-.status-rolled_back { background: rgba(156, 163, 175, 0.12); color: #9ca3af; }
+.status-completed, .status-applied { border: 1px solid var(--q-success); color: var(--q-success); background: transparent; }
+.status-running { border: 1px solid var(--q-primary); color: var(--q-primary); background: transparent; }
+.status-pending { border: 1px solid var(--q-warning); color: var(--q-warning); background: transparent; }
+.status-failed { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
+.status-rolled_back { border: 1px solid var(--q-text-muted); color: var(--q-text-muted); background: transparent; }
 
 .action-cell { display: flex; gap: 6px; }
 .empty-state { text-align: center; color: var(--q-text-muted); padding: 24px 0; font-size: 13px; }

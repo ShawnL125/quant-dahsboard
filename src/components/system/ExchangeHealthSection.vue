@@ -174,13 +174,15 @@ onMounted(() => {
 }
 
 .health-ok {
-  background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
+  border: 1px solid var(--q-success);
+  color: var(--q-success);
+  background: transparent;
 }
 
 .health-error {
-  background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
+  border: 1px solid var(--q-error);
+  color: var(--q-error);
+  background: transparent;
 }
 
 .exchange-metrics {
@@ -263,7 +265,7 @@ onMounted(() => {
 }
 
 .text-error {
-  color: #ef4444;
+  color: var(--q-error);
   font-weight: 600;
 }
 

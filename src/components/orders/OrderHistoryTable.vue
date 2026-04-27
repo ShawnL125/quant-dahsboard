@@ -158,9 +158,10 @@ function formatTime(dateStr?: string): string {
 <style scoped>
 .orders-card {
   background: var(--q-card);
-  border-radius: var(--q-card-radius);
+  border: 1px solid var(--q-border);
+  border-radius: 4px;
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 
 .card-header {
@@ -173,16 +174,17 @@ function formatTime(dateStr?: string): string {
 .card-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--q-primary-dark);
+  color: var(--q-text);
 }
 
 .card-badge {
-  background: var(--q-primary-light);
+  border: 1px solid var(--q-primary);
   color: var(--q-primary);
   font-size: 11px;
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 10px;
+  background: transparent;
 }
 
 .filter-bar {
@@ -251,31 +253,33 @@ function formatTime(dateStr?: string): string {
 
 .text-muted { color: var(--q-text-muted); }
 .text-bold { font-weight: 600; }
-.text-mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
+.text-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
 
 .side-pill {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: var(--q-tag-radius);
+  border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
+  background: transparent;
 }
 
-.side-buy { background: var(--q-success-light); color: var(--q-success); }
-.side-sell { background: var(--q-error-light); color: var(--q-error); }
+.side-buy { border: 1px solid var(--q-success); color: var(--q-success); }
+.side-sell { border: 1px solid var(--q-error); color: var(--q-error); }
 
 .status-pill {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: var(--q-tag-radius);
+  border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
+  background: transparent;
 }
 
-.status-filled { background: var(--q-success-light); color: var(--q-success); }
-.status-canceled { background: var(--q-hover); color: var(--q-text-muted); }
-.status-partial { background: var(--q-primary-light); color: var(--q-primary); }
-.status-default { background: var(--q-hover); color: var(--q-text-secondary); }
+.status-filled { border: 1px solid var(--q-success); color: var(--q-success); }
+.status-canceled { border: 1px solid var(--q-text-muted); color: var(--q-text-muted); }
+.status-partial { border: 1px solid var(--q-warning); color: var(--q-warning); }
+.status-default { border: 1px solid var(--q-text-secondary); color: var(--q-text-secondary); }
 
 .pagination {
   display: flex;
@@ -290,7 +294,7 @@ function formatTime(dateStr?: string): string {
 .page-btn {
   background: var(--q-card);
   border: 1px solid var(--q-border);
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 4px 10px;
   font-size: 12px;
   cursor: pointer;

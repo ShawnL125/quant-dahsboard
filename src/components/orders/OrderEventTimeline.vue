@@ -134,6 +134,6 @@ function formatTime(iso: string): string {
 .timeline-detail {
   font-size: 10px;
   color: var(--q-text-secondary);
-  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 </style>

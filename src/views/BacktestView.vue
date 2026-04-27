@@ -282,9 +282,10 @@ onMounted(() => {
 
 .run-card {
   background: var(--q-card);
+  border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 
 .card-title {
@@ -303,21 +304,24 @@ onMounted(() => {
 .status-pill {
   display: inline-block;
   padding: 2px 10px;
-  border-radius: 10px;
+  border-radius: var(--q-tag-radius);
   font-size: 11px;
   font-weight: 500;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  letter-spacing: 0.02em;
 }
 
-.status-completed { background: var(--q-success-light); color: var(--q-success); }
-.status-failed { background: var(--q-error-light); color: var(--q-error); }
-.status-running { background: var(--q-primary-light); color: var(--q-primary); }
-.status-default { background: var(--q-hover); color: var(--q-text-muted); }
+.status-completed { background: transparent; border: 1px solid var(--q-success); color: var(--q-success); }
+.status-failed { background: transparent; border: 1px solid var(--q-error); color: var(--q-error); }
+.status-running { background: transparent; border: 1px solid var(--q-primary); color: var(--q-primary); }
+.status-default { background: transparent; border: 1px solid var(--q-border); color: var(--q-text-muted); }
 
 .history-card {
   background: var(--q-card);
+  border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 
 .card-header {
@@ -328,12 +332,13 @@ onMounted(() => {
 }
 
 .card-badge {
-  background: var(--q-primary-light);
+  background: transparent;
+  border: 1px solid var(--q-primary);
   color: var(--q-primary);
   font-size: 11px;
   font-weight: 600;
   padding: 2px 8px;
-  border-radius: 10px;
+  border-radius: var(--q-tag-radius);
 }
 
 .data-table {
@@ -365,7 +370,7 @@ onMounted(() => {
 .text-bold { font-weight: 600; }
 .text-success { color: var(--q-success); font-weight: 600; }
 .text-error { color: var(--q-error); font-weight: 600; }
-.text-mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
+.text-mono { font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
 
 .view-link {
   font-size: 12px;

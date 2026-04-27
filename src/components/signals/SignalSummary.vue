@@ -100,9 +100,9 @@ function formatTime(iso: string): string {
   letter-spacing: 0.03em;
 }
 
-.dir-long { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
-.dir-short { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
-.dir-close { background: rgba(156, 163, 175, 0.12); color: #9ca3af; }
+.dir-long { border: 1px solid var(--q-success); color: var(--q-success); background: transparent; }
+.dir-short { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
+.dir-close { border: 1px solid var(--q-text-muted); color: var(--q-text-muted); background: transparent; }
 
 .signal-symbol {
   font-size: 12px;

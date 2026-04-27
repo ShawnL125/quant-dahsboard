@@ -276,9 +276,10 @@ onMounted(() => {
 
 .archive-block {
   background: var(--q-card);
+  border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 
 .section-header {
@@ -325,7 +326,7 @@ onMounted(() => {
 .data-table tbody tr:last-child td { border-bottom: none; }
 .data-table tbody tr:hover td { background: var(--q-hover); }
 
-.text-mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
+.text-mono { font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
 .text-muted { color: var(--q-text-muted); }
 
 .val-positive { color: var(--q-success); font-weight: 600; }
@@ -372,10 +373,12 @@ onMounted(() => {
 
 .compare-code {
   background: var(--q-bg);
+  border: 1px solid var(--q-border);
   padding: 16px;
-  border-radius: 8px;
+  border-radius: var(--q-card-radius);
   font-size: 12px;
-  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  color: var(--q-text-secondary);
   overflow-x: auto;
   margin: 0;
   white-space: pre-wrap;

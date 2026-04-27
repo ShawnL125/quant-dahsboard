@@ -52,17 +52,17 @@ const chartOption = computed(() => {
       data: times,
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { color: '#94a3b8', fontSize: 10, interval: 'auto' as const },
+      axisLabel: { color: '#787b86', fontSize: 10, interval: 'auto' as const },
       splitLine: { show: false },
     },
     yAxis: {
       type: 'value' as const,
       axisLabel: {
-        color: '#94a3b8',
+        color: '#787b86',
         fontSize: 10,
         formatter: (v: number) => '$' + (v / 1000).toFixed(1) + 'k',
       },
-      splitLine: { lineStyle: { color: '#f0f2f5' } },
+      splitLine: { lineStyle: { color: '#2a2e39' } },
     },
     series: [{
       name: 'Equity',
@@ -77,9 +77,10 @@ const chartOption = computed(() => {
 <style scoped>
 .chart-card {
   background: var(--q-card);
+  border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 
 .chart-card-header {

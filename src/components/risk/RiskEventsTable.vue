@@ -147,10 +147,10 @@ function formatMeta(meta: Record<string, unknown>): string {
 
 <style>
 .row-critical td {
-  background: rgba(239, 68, 68, 0.06) !important;
+  background: rgba(239, 83, 80, 0.08) !important;
 }
 
 .row-warning td {
-  background: rgba(245, 158, 11, 0.06) !important;
+  background: rgba(255, 152, 0, 0.08) !important;
 }
 </style>

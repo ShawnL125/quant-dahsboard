@@ -57,15 +57,15 @@ const chartOption = computed(() => {
   if (props.drawdown?.max_threshold) {
     markLines.push({
       yAxis: -props.drawdown.max_threshold,
-      lineStyle: { color: '#ef4444', type: 'dashed' as const, width: 1.5 },
-      label: { formatter: 'HALT', color: '#ef4444', fontSize: 10, position: 'insideEndTop' as const },
+      lineStyle: { color: '#ef5350', type: 'dashed' as const, width: 1.5 },
+      label: { formatter: 'HALT', color: '#ef5350', fontSize: 10, position: 'insideEndTop' as const },
     });
   }
   if (props.drawdown?.reduce_threshold) {
     markLines.push({
       yAxis: -props.drawdown.reduce_threshold,
-      lineStyle: { color: '#f59e0b', type: 'dashed' as const, width: 1.5 },
-      label: { formatter: 'REDUCE', color: '#f59e0b', fontSize: 10, position: 'insideEndTop' as const },
+      lineStyle: { color: '#ff9800', type: 'dashed' as const, width: 1.5 },
+      label: { formatter: 'REDUCE', color: '#ff9800', fontSize: 10, position: 'insideEndTop' as const },
     });
   }
 
@@ -78,13 +78,13 @@ const chartOption = computed(() => {
       data: times,
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { color: '#94a3b8', fontSize: 10 },
+      axisLabel: { color: '#787b86', fontSize: 10 },
       splitLine: { show: false },
     },
     yAxis: {
       type: 'value' as const,
-      axisLabel: { color: '#94a3b8', fontSize: 10, formatter: '{value}%' },
-      splitLine: { lineStyle: { color: '#f0f2f5' } },
+      axisLabel: { color: '#787b86', fontSize: 10, formatter: '{value}%' },
+      splitLine: { lineStyle: { color: '#2a2e39' } },
     },
     series: [{
       name: 'Drawdown',
@@ -92,14 +92,14 @@ const chartOption = computed(() => {
       smooth: true,
       symbol: 'none' as const,
       data: values,
-      lineStyle: { color: '#ef4444', width: 2 },
+      lineStyle: { color: '#ef5350', width: 2 },
       areaStyle: {
         color: {
           type: 'linear' as const,
           x: 0, y: 0, x2: 0, y2: 1,
           colorStops: [
-            { offset: 0, color: 'rgba(239, 68, 68, 0.25)' },
-            { offset: 1, color: 'rgba(239, 68, 68, 0.02)' },
+            { offset: 0, color: 'rgba(239, 83, 80, 0.25)' },
+            { offset: 1, color: 'rgba(239, 83, 80, 0.02)' },
           ],
         },
       },

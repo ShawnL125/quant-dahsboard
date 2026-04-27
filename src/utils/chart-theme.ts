@@ -1,13 +1,13 @@
 export const CHART_COLORS = {
-  primary: '#3b82f6',
-  primaryDark: '#1e3a8a',
-  success: '#10b981',
-  error: '#ef4444',
-  warning: '#f59e0b',
-  muted: '#94a3b8',
-  grid: '#f0f2f5',
-  gradientStart: 'rgba(59, 130, 246, 0.15)',
-  gradientEnd: 'rgba(59, 130, 246, 0.01)',
+  primary: '#2962ff',
+  primaryDark: '#1e53e5',
+  success: '#26a69a',
+  error: '#ef5350',
+  warning: '#ff9800',
+  muted: '#787b86',
+  grid: '#2a2e39',
+  gradientStart: 'rgba(41, 98, 255, 0.15)',
+  gradientEnd: 'rgba(41, 98, 255, 0.01)',
 };
 
 export const LINE_SERIES_DEFAULTS = {
@@ -36,8 +36,17 @@ export const CHART_GRID = {
 
 export const CHART_TOOLTIP = {
   trigger: 'axis' as const,
-  backgroundColor: '#fff',
-  borderColor: '#e2e8f0',
+  backgroundColor: '#1e222d',
+  borderColor: '#2a2e39',
   borderWidth: 1,
-  textStyle: { color: '#1e293b', fontSize: 12 },
+  textStyle: { color: '#d1d4dc', fontSize: 12 },
+};
+
+export const CHART_AXIS_LABEL = {
+  color: '#787b86',
+  fontSize: 11,
+};
+
+export const CHART_SPLIT_LINE = {
+  lineStyle: { color: '#2a2e39', type: 'dashed' as const },
 };

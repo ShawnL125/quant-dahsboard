@@ -130,7 +130,7 @@ describe('PositionTable', () => {
     // Row 0 (BTC/USDT): unrealized_pnl = 250.00
     const pnlSpan = rows[0].find('span[style]');
     expect(pnlSpan.text()).toBe('250.00');
-    expect(pnlSpan.attributes('style')).toContain('#3f8600');
+    expect(pnlSpan.attributes('style')).toContain('var(--q-success)');
   });
 
   it('renders negative unrealized PnL with red style', () => {
@@ -139,7 +139,7 @@ describe('PositionTable', () => {
     // Row 1 (ETH/USDT): unrealized_pnl = -80.50
     const pnlSpan = rows[1].find('span[style]');
     expect(pnlSpan.text()).toBe('-80.50');
-    expect(pnlSpan.attributes('style')).toContain('#cf1322');
+    expect(pnlSpan.attributes('style')).toContain('var(--q-error)');
   });
 
   // ── Action column template slot ──────────────────────────────────

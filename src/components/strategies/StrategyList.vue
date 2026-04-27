@@ -59,9 +59,10 @@ const emit = defineEmits<{
 
 .strategy-card {
   background: var(--q-card);
+  border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
 }
@@ -98,6 +99,7 @@ const emit = defineEmits<{
 
 .metric-value {
   font-weight: 500;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
   color: var(--q-text);
   display: flex;
   gap: 4px;
@@ -135,7 +137,7 @@ const emit = defineEmits<{
   font-weight: 500;
 }
 
-.view-link:hover { text-decoration: underline; }
+.view-link:hover { text-decoration: underline; color: var(--q-primary-hover); }
 
 .status-dot {
   width: 8px;

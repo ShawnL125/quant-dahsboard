@@ -63,9 +63,10 @@ function formatTime(dateStr?: string): string {
 <style scoped>
 .orders-card {
   background: var(--q-card);
-  border-radius: var(--q-card-radius);
+  border: 1px solid var(--q-border);
+  border-radius: 4px;
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 
 .card-header {
@@ -78,16 +79,17 @@ function formatTime(dateStr?: string): string {
 .card-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--q-primary-dark);
+  color: var(--q-text);
 }
 
 .card-badge {
-  background: var(--q-primary-light);
+  border: 1px solid var(--q-primary);
   color: var(--q-primary);
   font-size: 11px;
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 10px;
+  background: transparent;
 }
 
 .data-table {
@@ -126,18 +128,20 @@ function formatTime(dateStr?: string): string {
 .side-pill {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: var(--q-tag-radius);
+  border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
+  background: transparent;
 }
 
-.side-buy { background: var(--q-success-light); color: var(--q-success); }
-.side-sell { background: var(--q-error-light); color: var(--q-error); }
+.side-buy { border: 1px solid var(--q-success); color: var(--q-success); }
+.side-sell { border: 1px solid var(--q-error); color: var(--q-error); }
 
 .cancel-btn {
   font-size: 12px;
   font-weight: 500;
   padding: 0;
+  color: var(--q-error);
 }
 
 .cancel-btn:hover { text-decoration: underline; }

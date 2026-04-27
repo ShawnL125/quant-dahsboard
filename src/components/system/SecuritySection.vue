@@ -199,28 +199,33 @@ onMounted(() => {
 }
 
 .severity-critical {
-  background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
+  border: 1px solid var(--q-error);
+  color: var(--q-error);
+  background: transparent;
 }
 
 .severity-high {
-  background: rgba(249, 115, 22, 0.12);
-  color: #f97316;
+  border: 1px solid var(--q-warning);
+  color: var(--q-warning);
+  background: transparent;
 }
 
 .severity-medium {
-  background: rgba(234, 179, 8, 0.12);
-  color: #eab308;
+  border: 1px solid var(--q-warning);
+  color: var(--q-warning);
+  background: transparent;
 }
 
 .severity-low {
-  background: rgba(59, 130, 246, 0.12);
-  color: #3b82f6;
+  border: 1px solid var(--q-primary);
+  color: var(--q-primary);
+  background: transparent;
 }
 
 .severity-info {
-  background: rgba(156, 163, 175, 0.12);
-  color: #9ca3af;
+  border: 1px solid var(--q-text-muted);
+  color: var(--q-text-muted);
+  background: transparent;
 }
 
 .text-bold {
@@ -233,7 +238,7 @@ onMounted(() => {
 }
 
 .text-error {
-  color: #ef4444;
+  color: var(--q-error);
 }
 
 .empty-state {

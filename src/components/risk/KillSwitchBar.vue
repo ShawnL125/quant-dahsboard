@@ -66,7 +66,7 @@ function onToggle(activate: boolean) {
 
 <style scoped>
 .killswitch-bar {
-  background: #f8fafc;
+  background: var(--q-card);
   border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
   padding: 14px 20px;
@@ -137,7 +137,7 @@ function onToggle(activate: boolean) {
 .ks-details {
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid var(--q-border);
   display: flex;
   flex-direction: column;
   gap: 6px;

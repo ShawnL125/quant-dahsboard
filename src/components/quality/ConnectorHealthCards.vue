@@ -113,7 +113,7 @@ function formatAge(seconds: number): string {
 }
 
 .connector-card.unhealthy {
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: var(--q-error);
 }
 
 .connector-top {

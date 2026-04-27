@@ -191,7 +191,7 @@ onMounted(() => {
 
 .val-positive { color: var(--q-success); font-weight: 600; }
 .val-negative { color: var(--q-error); font-weight: 600; }
-.val-warning { color: #eab308; font-weight: 600; }
+.val-warning { color: var(--q-warning); font-weight: 600; }
 
 .empty-state {
   text-align: center;

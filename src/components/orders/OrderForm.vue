@@ -90,27 +90,28 @@ async function handleSubmit() {
 <style scoped>
 .order-form-card {
   background: var(--q-card);
-  border-radius: var(--q-card-radius);
+  border: 1px solid var(--q-border);
+  border-radius: 4px;
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 
 .card-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--q-primary-dark);
+  color: var(--q-text);
   margin-bottom: 16px;
 }
 
 .side-buy-active {
   background: var(--q-success) !important;
   border-color: var(--q-success) !important;
-  color: #fff !important;
+  color: var(--q-bg) !important;
 }
 
 .side-sell-active {
   background: var(--q-error) !important;
   border-color: var(--q-error) !important;
-  color: #fff !important;
+  color: var(--q-bg) !important;
 }
 </style>

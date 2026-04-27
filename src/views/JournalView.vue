@@ -172,8 +172,8 @@ onMounted(async () => {
 }
 
 .pending-banner {
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  background: rgba(255, 152, 0, 0.08);
+  border: 1px solid rgba(255, 152, 0, 0.2);
   border-radius: var(--q-card-radius);
   padding: 10px 16px;
   display: flex;

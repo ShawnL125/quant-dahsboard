@@ -148,13 +148,15 @@ function statusClass(status: string): string {
 }
 
 .side-buy {
-  background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
+  border: 1px solid var(--q-success);
+  color: var(--q-success);
+  background: transparent;
 }
 
 .side-sell {
-  background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
+  border: 1px solid var(--q-error);
+  color: var(--q-error);
+  background: transparent;
 }
 
 .status-pill {
@@ -166,18 +168,21 @@ function statusClass(status: string): string {
 }
 
 .status-ok {
-  background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
+  border: 1px solid var(--q-success);
+  color: var(--q-success);
+  background: transparent;
 }
 
 .status-error {
-  background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
+  border: 1px solid var(--q-error);
+  color: var(--q-error);
+  background: transparent;
 }
 
 .status-pending {
-  background: rgba(156, 163, 175, 0.12);
-  color: #9ca3af;
+  border: 1px solid var(--q-text-muted);
+  color: var(--q-text-muted);
+  background: transparent;
 }
 
 .val-positive { color: var(--q-success); }
@@ -189,8 +194,9 @@ function statusClass(status: string): string {
   border-radius: 4px;
   font-size: 11px;
   font-weight: 600;
-  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--q-primary);
   color: var(--q-primary);
+  background: transparent;
 }
 
 .action-btns {

@@ -58,21 +58,26 @@ const metrics = computed(() => [
 
 .metric-card {
   background: var(--q-card);
+  border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
-  padding: 16px;
-  box-shadow: var(--q-card-shadow);
+  padding: 12px 14px;
+  box-shadow: none;
 }
 
 .metric-label {
   display: block;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--q-text-muted);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .metric-value {
   display: block;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  letter-spacing: -0.02em;
 }
 </style>

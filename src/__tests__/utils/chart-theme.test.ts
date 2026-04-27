@@ -3,12 +3,12 @@ import { CHART_COLORS, LINE_SERIES_DEFAULTS, CHART_GRID, CHART_TOOLTIP } from '@
 
 describe('chart-theme', () => {
   it('exports CHART_COLORS with required keys', () => {
-    expect(CHART_COLORS.primary).toBe('#3b82f6');
-    expect(CHART_COLORS.success).toBe('#10b981');
-    expect(CHART_COLORS.error).toBe('#ef4444');
-    expect(CHART_COLORS.warning).toBe('#f59e0b');
-    expect(CHART_COLORS.muted).toBe('#94a3b8');
-    expect(CHART_COLORS.grid).toBe('#f0f2f5');
+    expect(CHART_COLORS.primary).toBe('#2962ff');
+    expect(CHART_COLORS.success).toBe('#26a69a');
+    expect(CHART_COLORS.error).toBe('#ef5350');
+    expect(CHART_COLORS.warning).toBe('#ff9800');
+    expect(CHART_COLORS.muted).toBe('#787b86');
+    expect(CHART_COLORS.grid).toBe('#2a2e39');
   });
 
   it('exports LINE_SERIES_DEFAULTS with smooth and symbol', () => {
@@ -36,7 +36,7 @@ describe('chart-theme', () => {
 
   it('exports CHART_TOOLTIP with axis trigger', () => {
     expect(CHART_TOOLTIP.trigger).toBe('axis');
-    expect(CHART_TOOLTIP.backgroundColor).toBe('#fff');
+    expect(CHART_TOOLTIP.backgroundColor).toBe('#1e222d');
     expect(CHART_TOOLTIP.textStyle.fontSize).toBe(12);
   });
 });

@@ -237,20 +237,20 @@ onMounted(() => {
 }
 
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.section-title { font-size: 13px; font-weight: 600; color: var(--q-primary-dark); }
+.section-title { font-size: 13px; font-weight: 600; color: var(--q-text); }
 .params-source { font-size: 11px; color: var(--q-text-muted); }
 
 .params-grid { display: flex; flex-direction: column; gap: 4px; }
 .param-row { display: flex; align-items: center; gap: 12px; }
 .param-key { font-size: 12px; font-weight: 600; color: var(--q-text); min-width: 140px; }
-.param-value { font-size: 12px; font-family: 'SF Mono', 'Fira Code', monospace; color: var(--q-text-secondary); }
-.param-input { flex: 1; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
+.param-value { font-size: 12px; font-family: 'JetBrains Mono', 'SF Mono', monospace; color: var(--q-text-secondary); }
+.param-input { flex: 1; font-family: 'JetBrains Mono', 'SF Mono', monospace; font-size: 12px; }
 
 .params-actions { margin-top: 10px; display: flex; gap: 8px; }
 
-.status-pill { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
-.status-ok { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
-.status-error { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+.status-pill { display: inline-block; padding: 1px 8px; border-radius: var(--q-tag-radius); font-size: 10px; font-weight: 700; background: transparent; }
+.status-ok { border: 1px solid var(--q-success); color: var(--q-success); }
+.status-error { border: 1px solid var(--q-error); color: var(--q-error); }
 
 .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .data-table th { text-align: left; color: var(--q-text-muted); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.02em; padding: 6px 0; }
@@ -259,7 +259,7 @@ onMounted(() => {
 
 .text-bold { font-weight: 600; }
 .text-muted { color: var(--q-text-muted); font-size: 11px; }
-.text-mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
+.text-mono { font-family: 'JetBrains Mono', 'SF Mono', monospace; font-size: 11px; }
 
 .empty-sm { text-align: center; color: var(--q-text-muted); padding: 12px 0; font-size: 12px; }
 </style>

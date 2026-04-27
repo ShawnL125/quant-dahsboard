@@ -171,13 +171,15 @@ function onSubmit() {
 }
 
 .side-buy {
-  background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
+  border: 1px solid var(--q-success);
+  color: var(--q-success);
+  background: transparent;
 }
 
 .side-sell {
-  background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
+  border: 1px solid var(--q-error);
+  color: var(--q-error);
+  background: transparent;
 }
 
 .val-positive { color: var(--q-success); }

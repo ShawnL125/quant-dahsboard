@@ -382,8 +382,8 @@ onMounted(async () => {
   font-weight: 700;
 }
 
-.side-long { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
-.side-short { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+.side-long { border: 1px solid var(--q-success); color: var(--q-success); background: transparent; }
+.side-short { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
 
 .text-bold { font-weight: 600; }
 .text-muted { color: var(--q-text-muted); font-size: 11px; }

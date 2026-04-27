@@ -338,9 +338,9 @@ onUnmounted(() => {
   text-transform: uppercase;
 }
 
-.level-critical { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
-.level-warning { background: rgba(234, 179, 8, 0.12); color: #eab308; }
-.level-info { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+.level-critical { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
+.level-warning { border: 1px solid var(--q-warning); color: var(--q-warning); background: transparent; }
+.level-info { border: 1px solid var(--q-primary); color: var(--q-primary); background: transparent; }
 
 .empty-state {
   text-align: center;

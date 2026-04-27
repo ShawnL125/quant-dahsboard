@@ -183,16 +183,17 @@ function formatMoney(value: string): string {
 
 .stat-card {
   background: var(--q-card);
+  border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 
 .stat-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .stat-label {
@@ -221,11 +222,12 @@ function formatMoney(value: string): string {
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 4px;
+  font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
 }
 
 .stat-trend {
   font-size: 11px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .trend-up {

@@ -88,16 +88,17 @@ const chartOption = computed(() => {
 <style scoped>
 .donut-card {
   background: var(--q-card);
+  border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 
 .donut-title {
   font-size: 14px;
   font-weight: 600;
   color: var(--q-primary-dark);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -146,6 +147,7 @@ const chartOption = computed(() => {
 .legend-count {
   font-weight: 600;
   color: var(--q-text);
+  font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
 }
 
 .donut-empty {

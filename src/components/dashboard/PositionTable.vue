@@ -14,7 +14,7 @@
           </a-tag>
         </template>
         <template v-if="column.key === 'unrealized_pnl'">
-          <span :style="{ color: parseFloat(record.unrealized_pnl) >= 0 ? '#3f8600' : '#cf1322' }">
+          <span :style="{ color: parseFloat(record.unrealized_pnl) >= 0 ? 'var(--q-success)' : 'var(--q-error)' }" class="text-mono">
             {{ parseFloat(record.unrealized_pnl).toFixed(2) }}
           </span>
         </template>

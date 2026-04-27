@@ -37,14 +37,14 @@ function formatUptime(seconds: number): string {
 <style scoped>
 .status-bar {
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 
 .status-pill {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 500;

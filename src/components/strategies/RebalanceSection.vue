@@ -255,7 +255,7 @@ watch(
 .section-title {
   font-size: 13px;
   font-weight: 600;
-  color: var(--q-primary-dark);
+  color: var(--q-text);
 }
 
 .rebalance-status-grid {
@@ -277,24 +277,27 @@ watch(
 .rebalance-value {
   font-size: 14px;
   font-weight: 700;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
 }
 
 .status-pill {
   display: inline-block;
   padding: 1px 8px;
-  border-radius: 4px;
+  border-radius: var(--q-tag-radius);
   font-size: 10px;
   font-weight: 700;
 }
 
 .status-ok {
-  background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
+  background: transparent;
+  border: 1px solid var(--q-success);
+  color: var(--q-success);
 }
 
 .status-warning {
-  background: rgba(234, 179, 8, 0.12);
-  color: #eab308;
+  background: transparent;
+  border: 1px solid var(--q-warning);
+  color: var(--q-warning);
 }
 
 .val-positive {
@@ -341,7 +344,7 @@ watch(
 }
 
 .text-mono {
-  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
   font-size: 11px;
 }
 

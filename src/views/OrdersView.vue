@@ -129,7 +129,7 @@
               <td>
                 <a-progress
                   :percent="parseFloat(a.progress_pct || '0')"
-                  :stroke-color="parseFloat(a.progress_pct || '0') >= 100 ? '#22c55e' : '#3b82f6'"
+                  :stroke-color="parseFloat(a.progress_pct || '0') >= 100 ? 'var(--q-success)' : 'var(--q-primary)'"
                   size="small"
                   style="width: 80px"
                 />
@@ -325,19 +325,19 @@ onMounted(() => {
 
 .text-bold { font-weight: 600; }
 .text-muted { color: var(--q-text-muted); font-size: 11px; }
-.text-mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
+.text-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
 
 .side-pill { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
-.side-buy { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
-.side-sell { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+.side-buy { border: 1px solid var(--q-success); color: var(--q-success); background: transparent; }
+.side-sell { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
 
-.status-pill { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
-.status-ok { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
-.status-error { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
-.status-active { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
-.status-pending { background: rgba(156, 163, 175, 0.12); color: #9ca3af; }
+.status-pill { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background: transparent; }
+.status-ok { border: 1px solid var(--q-success); color: var(--q-success); }
+.status-error { border: 1px solid var(--q-error); color: var(--q-error); }
+.status-active { border: 1px solid var(--q-primary); color: var(--q-primary); }
+.status-pending { border: 1px solid var(--q-text-secondary); color: var(--q-text-secondary); }
 
-.algo-type-pill { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background: rgba(139, 92, 246, 0.12); color: #8b5cf6; }
+.algo-type-pill { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; border: 1px solid var(--q-warning); color: var(--q-warning); background: transparent; }
 
 .action-btns { display: flex; gap: 4px; }
 

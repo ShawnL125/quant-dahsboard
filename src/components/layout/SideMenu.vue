@@ -1,7 +1,6 @@
 <template>
   <div class="sidebar-menu">
     <div class="sidebar-logo">
-      <div class="logo-icon">Q</div>
       <span class="logo-text">Quant</span>
     </div>
     <nav class="sidebar-nav">
@@ -96,35 +95,21 @@ const menuItems = computed(() => allMenuItems.filter((item) => !item.adminOnly |
 .sidebar-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 20px 20px 28px;
-}
-
-.logo-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #1e3a8a);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-weight: 700;
-  font-size: 16px;
-  flex-shrink: 0;
+  padding: 16px 16px 24px;
 }
 
 .logo-text {
   font-weight: 700;
   font-size: 18px;
-  color: var(--q-primary-dark);
+  color: var(--q-primary);
+  letter-spacing: -0.02em;
 }
 
 .sidebar-nav {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   padding: 0 8px;
 }
 
@@ -132,9 +117,9 @@ const menuItems = computed(() => allMenuItems.filter((item) => !item.adminOnly |
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
   color: var(--q-sidebar-item-text);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -143,6 +128,7 @@ const menuItems = computed(() => allMenuItems.filter((item) => !item.adminOnly |
 
 .sidebar-item:hover {
   background: var(--q-sidebar-item-hover);
+  color: var(--q-text);
 }
 
 .sidebar-item.active {
@@ -151,20 +137,20 @@ const menuItems = computed(() => allMenuItems.filter((item) => !item.adminOnly |
 }
 
 .sidebar-icon {
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .sidebar-footer {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 16px 20px;
-  border-top: 1px solid var(--q-border);
+  padding: 12px 16px;
+  border-top: 1px solid var(--q-sidebar-border);
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -178,7 +164,7 @@ const menuItems = computed(() => allMenuItems.filter((item) => !item.adminOnly |
 }
 
 .status-text {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--q-text-muted);
 }
 </style>

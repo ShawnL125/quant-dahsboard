@@ -52,16 +52,17 @@ function formatTime(dateStr?: string): string {
 <style scoped>
 .trades-card {
   background: var(--q-card);
+  border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 
 .trades-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .trades-title {
@@ -89,13 +90,14 @@ function formatTime(dateStr?: string): string {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  padding: 6px 0;
+  padding: 4px 0;
 }
 
 .trades-table td {
-  padding: 10px 0;
+  padding: 8px 0;
   color: var(--q-text);
   border-bottom: 1px solid var(--q-border);
+  font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
 }
 
 .trades-table tbody tr:last-child td {
@@ -136,7 +138,7 @@ function formatTime(dateStr?: string): string {
 .trades-empty {
   text-align: center;
   color: var(--q-text-muted);
-  padding: 24px 0;
+  padding: 20px 0;
   font-size: 13px;
 }
 </style>

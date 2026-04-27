@@ -58,9 +58,10 @@ function pnlClass(v: string): string {
 <style scoped>
 .trades-card {
   background: var(--q-card);
+  border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 
 .card-header {
@@ -77,12 +78,13 @@ function pnlClass(v: string): string {
 }
 
 .card-badge {
-  background: var(--q-primary-light);
+  background: transparent;
+  border: 1px solid var(--q-primary);
   color: var(--q-primary);
   font-size: 11px;
   font-weight: 600;
   padding: 2px 8px;
-  border-radius: 10px;
+  border-radius: var(--q-tag-radius);
 }
 
 .data-table {
@@ -119,10 +121,12 @@ function pnlClass(v: string): string {
   border-radius: var(--q-tag-radius);
   font-size: 11px;
   font-weight: 500;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  letter-spacing: 0.02em;
 }
 
-.side-buy { background: var(--q-success-light); color: var(--q-success); }
-.side-sell { background: var(--q-error-light); color: var(--q-error); }
+.side-buy { background: transparent; border: 1px solid var(--q-success); color: var(--q-success); }
+.side-sell { background: transparent; border: 1px solid var(--q-error); color: var(--q-error); }
 
 .empty-state {
   text-align: center;

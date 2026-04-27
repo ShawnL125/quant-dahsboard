@@ -76,12 +76,13 @@ async function onKill(accountId: string) {
 
 .default-badge {
   display: inline-block;
-  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid var(--q-primary);
   color: var(--q-primary);
   font-size: 10px;
   font-weight: 700;
   padding: 1px 8px;
   border-radius: 4px;
+  background: transparent;
   margin-bottom: 8px;
 }
 

@@ -1,13 +1,16 @@
 <template>
-  <router-view v-if="isPublicRoute" />
-  <template v-else>
-    <AppLayout />
-  </template>
+  <a-config-provider :theme="darkTheme">
+    <router-view v-if="isPublicRoute" />
+    <template v-else>
+      <AppLayout />
+    </template>
+  </a-config-provider>
 </template>
 
 <script setup lang="ts">
 import { provide, ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { theme as antTheme } from 'ant-design-vue';
 import AppLayout from '@/components/layout/AppLayout.vue';
 import { useWebSocket } from '@/composables/useWebSocket';
 import { systemApi } from '@/api/system';
@@ -29,6 +32,21 @@ provide('wsConnected', wsConnected);
 provide('tradingMode', tradingMode);
 
 const isPublicRoute = computed(() => route.meta?.public === true);
+
+const darkTheme = {
+  algorithm: antTheme.darkAlgorithm,
+  token: {
+    colorPrimary: '#2962ff',
+    colorBgContainer: '#1e222d',
+    colorBgElevated: '#1e222d',
+    colorBgLayout: '#131722',
+    colorBorder: '#2a2e39',
+    colorText: '#d1d4dc',
+    colorTextSecondary: '#787b86',
+    borderRadius: 4,
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  },
+};
 
 const ws = useWebSocket({
   url: import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws',
@@ -120,9 +138,14 @@ onUnmounted(() => {
 body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--q-bg);
-  color: var(--q-text);
+  background: #131722;
+  color: #d1d4dc;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Monospace numbers */
+.text-mono, .ant-statistic-content-value, .ant-table-tbody td.text-mono {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
 }
 </style>

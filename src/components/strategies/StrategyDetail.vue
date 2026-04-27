@@ -71,12 +71,12 @@ const emit = defineEmits<{
 .status-pill {
   font-size: 11px;
   padding: 2px 10px;
-  border-radius: 10px;
+  border-radius: var(--q-tag-radius);
   font-weight: 500;
 }
 
-.status-running { background: var(--q-success-light); color: var(--q-success); }
-.status-stopped { background: var(--q-hover); color: var(--q-text-muted); }
+.status-running { background: transparent; border: 1px solid var(--q-success); color: var(--q-success); }
+.status-stopped { background: transparent; border: 1px solid var(--q-text-muted); color: var(--q-text-muted); }
 
 .metrics-grid {
   display: grid;
@@ -87,7 +87,8 @@ const emit = defineEmits<{
 
 .metric-card {
   background: var(--q-bg);
-  border-radius: 8px;
+  border: 1px solid var(--q-border);
+  border-radius: var(--q-card-radius);
   padding: 12px;
 }
 
@@ -101,6 +102,7 @@ const emit = defineEmits<{
 .metric-value {
   font-size: 13px;
   font-weight: 500;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
   color: var(--q-text);
   display: flex;
   gap: 4px;
@@ -128,7 +130,7 @@ const emit = defineEmits<{
 .section-title {
   font-size: 13px;
   font-weight: 600;
-  color: var(--q-primary-dark);
+  color: var(--q-text);
   margin-bottom: 12px;
 }
 
@@ -136,7 +138,8 @@ const emit = defineEmits<{
   display: flex;
   flex-direction: column;
   background: var(--q-bg);
-  border-radius: 8px;
+  border: 1px solid var(--q-border);
+  border-radius: var(--q-card-radius);
   overflow: hidden;
 }
 
@@ -155,7 +158,7 @@ const emit = defineEmits<{
 
 .param-value {
   color: var(--q-text);
-  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
   font-size: 11px;
 }
 

@@ -145,7 +145,7 @@ function formatParams(params: Record<string, unknown>): string {
   font-weight: 500;
 }
 
-.overfit-low { background: var(--q-success-light); color: var(--q-success); }
-.overfit-mid { background: var(--q-warning-light); color: var(--q-warning); }
-.overfit-high { background: var(--q-error-light); color: var(--q-error); }
+.overfit-low { border: 1px solid var(--q-success); color: var(--q-success); background: transparent; }
+.overfit-mid { border: 1px solid var(--q-warning); color: var(--q-warning); background: transparent; }
+.overfit-high { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
 </style>

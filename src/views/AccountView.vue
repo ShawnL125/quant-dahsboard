@@ -156,8 +156,8 @@ onMounted(() => { store.fetchAll(); accountsStore.fetchAccounts(); });
 .val-negative { color: var(--q-error); }
 
 .status-pill { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
-.status-ok { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
-.status-mismatch { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+.status-ok { border: 1px solid var(--q-success); color: var(--q-success); background: transparent; }
+.status-mismatch { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
 
 .empty-state { text-align: center; color: var(--q-text-muted); padding: 24px 0; font-size: 13px; }
 </style>

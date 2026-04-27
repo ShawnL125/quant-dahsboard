@@ -17,9 +17,7 @@
               </template>
             </a-input>
           </div>
-          <a-badge :dot="false">
-            <BellOutlined style="font-size: 18px; color: var(--q-text-secondary); cursor: pointer;" />
-          </a-badge>
+          <BellOutlined style="font-size: 16px; color: var(--q-text-secondary); cursor: pointer;" />
           <a-tag v-if="tradingMode === 'paper'" color="orange" style="margin: 0; font-size: 11px;">PAPER</a-tag>
           <a-tag v-else-if="tradingMode === 'testnet'" color="blue" style="margin: 0; font-size: 11px;">TESTNET</a-tag>
           <a-tag v-else-if="tradingMode === 'live'" color="red" style="margin: 0; font-size: 11px;">LIVE</a-tag>
@@ -108,19 +106,19 @@ const pageTitle: Record<string, string> = {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 20px;
   flex-shrink: 0;
 }
 
 .header-left {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 10px;
 }
 
 .header-title {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--q-text);
   margin: 0;
 }
@@ -133,17 +131,22 @@ const pageTitle: Record<string, string> = {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .header-search {
-  width: 200px;
+  width: 180px;
 }
 
-.header-search .ant-input {
+.header-search :deep(.ant-input) {
   background: var(--q-bg);
-  border: none;
-  font-size: 13px;
+  border: 1px solid var(--q-border);
+  font-size: 12px;
+  color: var(--q-text);
+}
+
+.header-search :deep(.ant-input)::placeholder {
+  color: var(--q-text-muted);
 }
 
 .header-user {

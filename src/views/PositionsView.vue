@@ -189,8 +189,8 @@ onMounted(() => {
   font-weight: 500;
 }
 
-.side-buy { background: var(--q-success-light); color: var(--q-success); }
-.side-sell { background: var(--q-error-light); color: var(--q-error); }
+.side-buy { border: 1px solid var(--q-success); color: var(--q-success); background: transparent; }
+.side-sell { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
 
 .close-btn {
   color: var(--q-error);

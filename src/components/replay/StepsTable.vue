@@ -98,10 +98,10 @@ function formatTime(dateStr?: string): string {
   font-weight: 500;
 }
 
-.action-buy { background: var(--q-success-light); color: var(--q-success); }
-.action-sell { background: var(--q-error-light); color: var(--q-error); }
-.action-hold { background: var(--q-primary-light); color: var(--q-primary); }
-.action-default { background: var(--q-hover); color: var(--q-text-muted); }
+.action-buy { border: 1px solid var(--q-success); color: var(--q-success); background: transparent; }
+.action-sell { border: 1px solid var(--q-error); color: var(--q-error); background: transparent; }
+.action-hold { border: 1px solid var(--q-primary); color: var(--q-primary); background: transparent; }
+.action-default { border: 1px solid var(--q-text-muted); color: var(--q-text-muted); background: transparent; }
 
 .val-positive { color: var(--q-success); font-weight: 600; }
 .val-negative { color: var(--q-error); font-weight: 600; }

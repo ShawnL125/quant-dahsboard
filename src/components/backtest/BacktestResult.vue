@@ -60,9 +60,10 @@ defineProps<{
 
 .detail-card {
   background: var(--q-card);
+  border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
   padding: var(--q-card-padding);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 
 .card-title {
@@ -77,7 +78,8 @@ defineProps<{
   grid-template-columns: 1fr 1fr;
   gap: 0;
   background: var(--q-bg);
-  border-radius: 8px;
+  border: 1px solid var(--q-border);
+  border-radius: var(--q-card-radius);
   overflow: hidden;
 }
 
@@ -94,7 +96,7 @@ defineProps<{
 
 .detail-label { color: var(--q-text-muted); }
 .detail-value { font-weight: 600; color: var(--q-text); }
-.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
+.mono { font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
 .text-success { color: var(--q-success); }
 .text-error { color: var(--q-error); }
 
@@ -104,7 +106,8 @@ defineProps<{
   padding: 40px 0;
   font-size: 13px;
   background: var(--q-card);
+  border: 1px solid var(--q-border);
   border-radius: var(--q-card-radius);
-  box-shadow: var(--q-card-shadow);
+  box-shadow: none;
 }
 </style>

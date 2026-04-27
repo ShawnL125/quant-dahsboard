@@ -6,7 +6,9 @@
         <div class="section-header">
           <span class="section-title">Margin Status</span>
           <div class="header-actions">
-            <a-button size="small" @click="onSync">Sync All</a-button>
+            <a-popconfirm title="Sync all exchange accounts? This may take a moment." @confirm="onSync">
+              <a-button size="small">Sync All</a-button>
+            </a-popconfirm>
             <a-button size="small" @click="onRefresh">Refresh</a-button>
           </div>
         </div>
@@ -56,7 +58,9 @@
       <div class="recon-section page-section">
         <div class="section-header">
           <span class="section-title">Account Reconciliations</span>
-          <a-button size="small" @click="onReconcile">Reconcile Now</a-button>
+          <a-popconfirm title="Run reconciliation now? This compares local state with exchange records." @confirm="onReconcile">
+            <a-button size="small">Reconcile Now</a-button>
+          </a-popconfirm>
         </div>
         <table v-if="store.reconciliations.length > 0" class="data-table">
           <thead>

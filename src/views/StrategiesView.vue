@@ -5,9 +5,9 @@
         <span class="active-count">{{ activeCount }} Active</span>
         <span class="total-count">/ {{ store.strategies.length }} Total</span>
       </div>
-      <a-button type="primary" :loading="store.loading" @click="onReload">
-        Reload
-      </a-button>
+      <a-popconfirm title="Reload all strategies? Running strategies may restart." @confirm="onReload">
+        <a-button type="primary" :loading="store.loading">Reload</a-button>
+      </a-popconfirm>
     </div>
 
     <a-alert

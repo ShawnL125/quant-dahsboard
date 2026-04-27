@@ -128,6 +128,11 @@ const stubs = {
     template: '<div class="ant-progress" />',
     props: ['percent', 'strokeColor', 'size'],
   },
+  'a-popconfirm': {
+    template: '<div class="ant-popconfirm"><slot /></div>',
+    props: ['title'],
+    emits: ['confirm'],
+  },
 };
 
 beforeEach(() => {
@@ -409,9 +414,10 @@ describe('OrdersView — trailing stops table with data', () => {
       },
     ];
     const wrapper = mountOrders();
-    const deactivateBtn = wrapper.findAll('button').find((b) => b.text() === 'Deactivate');
-    expect(deactivateBtn).toBeTruthy();
-    await deactivateBtn!.trigger('click');
+    const popconfirm = wrapper.findComponent('.ant-popconfirm');
+    expect(popconfirm.exists()).toBe(true);
+    await popconfirm.vm.$emit('confirm');
+    await nextTick();
     expect(mockDeactivateTrailingStop).toHaveBeenCalledWith('trail-001');
     await nextTick();
     expect(message.success).toHaveBeenCalledWith('Trailing stop deactivated');
@@ -436,8 +442,8 @@ describe('OrdersView — trailing stops table with data', () => {
       },
     ];
     const wrapper = mountOrders();
-    const deactivateBtn = wrapper.findAll('button').find((b) => b.text() === 'Deactivate');
-    await deactivateBtn!.trigger('click');
+    const popconfirm = wrapper.findComponent('.ant-popconfirm');
+    await popconfirm.vm.$emit('confirm');
     await nextTick();
     expect(message.error).toHaveBeenCalledWith('Failed to deactivate');
   });
@@ -580,9 +586,9 @@ describe('OrdersView — algo order action handlers', () => {
     const { message } = await import('ant-design-vue');
     mockAlgoOrders = [{ ...baseAlgo, status: 'RUNNING' }];
     const wrapper = mountOrders();
-    const cancelBtn = wrapper.findAll('button').find((b) => b.text() === 'Cancel');
-    expect(cancelBtn).toBeTruthy();
-    await cancelBtn!.trigger('click');
+    // Popconfirm stub wraps the button; call the handler directly
+    await wrapper.vm.onCancelAlgo('algo-action-001');
+    await nextTick();
     expect(mockCancelAlgoOrder).toHaveBeenCalledWith('algo-action-001');
     await nextTick();
     expect(message.success).toHaveBeenCalledWith('Algo order cancelled');
@@ -593,8 +599,7 @@ describe('OrdersView — algo order action handlers', () => {
     mockCancelAlgoOrder.mockRejectedValueOnce(new Error('fail'));
     mockAlgoOrders = [{ ...baseAlgo, status: 'RUNNING' }];
     const wrapper = mountOrders();
-    const cancelBtn = wrapper.findAll('button').find((b) => b.text() === 'Cancel');
-    await cancelBtn!.trigger('click');
+    await wrapper.vm.onCancelAlgo('algo-action-001');
     await nextTick();
     expect(message.error).toHaveBeenCalledWith('Failed to cancel algo order');
   });

@@ -92,7 +92,9 @@
               <td class="text-mono text-bold">{{ t.current_stop }}</td>
               <td class="text-mono">{{ t.highest_price }} / {{ t.lowest_price }}</td>
               <td>
-                <a-button size="small" danger @click="onDeactivateTrailing(t.order_id)">Deactivate</a-button>
+                <a-popconfirm title="Deactivate this trailing stop? This removes your risk protection." @confirm="onDeactivateTrailing(t.order_id)">
+                  <a-button size="small" danger>Deactivate</a-button>
+                </a-popconfirm>
               </td>
             </tr>
           </tbody>
@@ -140,7 +142,9 @@
                 <div class="action-btns">
                   <a-button v-if="a.status === 'RUNNING'" size="small" @click="onPauseAlgo(a.algo_id)">Pause</a-button>
                   <a-button v-if="a.status === 'PAUSED'" size="small" type="primary" @click="onResumeAlgo(a.algo_id)">Resume</a-button>
-                  <a-button v-if="a.status !== 'COMPLETED' && a.status !== 'CANCELLED'" size="small" danger @click="onCancelAlgo(a.algo_id)">Cancel</a-button>
+                  <a-popconfirm v-if="a.status !== 'COMPLETED' && a.status !== 'CANCELLED'" title="Cancel this algo order? Running slices will be stopped." @confirm="onCancelAlgo(a.algo_id)">
+                    <a-button size="small" danger>Cancel</a-button>
+                  </a-popconfirm>
                 </div>
               </td>
             </tr>

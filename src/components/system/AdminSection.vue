@@ -3,7 +3,9 @@
     <a-spin :spinning="store.loading">
       <div class="section-header">
         <span class="section-title">Configuration</span>
-        <a-button size="small" :loading="store.loading" @click="onReload">Reload Config</a-button>
+        <a-popconfirm title="Reload admin configuration? This may affect active subscribers." @confirm="onReload">
+          <a-button size="small" :loading="store.loading">Reload Config</a-button>
+        </a-popconfirm>
       </div>
 
       <a-collapse class="admin-block">

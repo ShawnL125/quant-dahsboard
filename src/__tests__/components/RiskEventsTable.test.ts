@@ -117,4 +117,28 @@ describe('RiskEventsTable', () => {
     const vm = wrapper.vm as any;
     expect(vm.rowClass({ ...fakeEvents[0], event_type: 'INFO' })).toBe('');
   });
+
+  it('formats missing or invalid timestamps as a dash', () => {
+    const wrapper = mountComponent(fakeEvents);
+    const vm = wrapper.vm as any;
+    expect(vm.formatTime('')).toBe('-');
+    expect(vm.formatTime('not-a-date')).toBe('-');
+  });
+
+  it('renders received_at when event time is missing', () => {
+    const wrapper = mountComponent([
+      {
+        event_id: 'evt-3',
+        time: '',
+        received_at: '2026-01-01T03:00:00Z',
+        event_type: 'INFO',
+        level: 'info',
+        target: 'global',
+        reason: 'fallback time',
+        metadata: {},
+      },
+    ]);
+
+    expect(wrapper.text()).not.toContain('-');
+  });
 });

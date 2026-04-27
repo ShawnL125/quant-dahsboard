@@ -40,6 +40,10 @@ export const useRiskStore = defineStore('risk', () => {
   const drawdownHistory = ref<DrawdownPoint[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
+  let statusRequest: Promise<RiskStatus | null> | null = null;
+  let exposureRequest: Promise<void> | null = null;
+  let realtimeRefreshRequest: Promise<void> | null = null;
+  let hasPendingRealtimeRefresh = false;
 
   function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -52,29 +56,62 @@ export const useRiskStore = defineStore('risk', () => {
       return String(rawEventId);
     }
 
+    if (time.length > 0) {
+      return [
+        time,
+        String(payload.event_type ?? payload.action ?? ''),
+        String(payload.level ?? ''),
+        String(payload.target ?? ''),
+        String(payload.reason ?? ''),
+      ].join(':');
+    }
+
     return [
-      time,
       String(payload.event_type ?? payload.action ?? ''),
       String(payload.level ?? ''),
       String(payload.target ?? ''),
       String(payload.reason ?? ''),
+      stableStringify(metadata ?? payload),
     ].join(':');
+  }
+
+  function stableStringify(value: unknown): string {
+    if (Array.isArray(value)) {
+      return `[${value.map((item) => stableStringify(item)).join(',')}]`;
+    }
+    if (!isRecord(value)) {
+      return JSON.stringify(value);
+    }
+
+    return `{${Object.keys(value)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${stableStringify(value[key])}`)
+      .join(',')}}`;
+  }
+
+  function getEventTime(payload: Record<string, unknown>): string {
+    if (typeof payload.time === 'string' && payload.time.length > 0) {
+      return payload.time;
+    }
+    if (typeof payload.timestamp === 'string' && payload.timestamp.length > 0) {
+      return payload.timestamp;
+    }
+    return '';
   }
 
   function normalizeRiskEvent(payload: RiskEvent | Record<string, unknown>, serverTimestamp?: string): RiskEvent {
     const rawPayload = isRecord(payload) ? payload : {};
-    const time =
-      serverTimestamp ??
-      (typeof rawPayload.time === 'string' && rawPayload.time.length > 0
-        ? rawPayload.time
-        : typeof rawPayload.timestamp === 'string' && rawPayload.timestamp.length > 0
-          ? rawPayload.timestamp
-          : new Date().toISOString());
+    const time = getEventTime(rawPayload);
     const metadata = isRecord(rawPayload.metadata) ? rawPayload.metadata : rawPayload;
 
     return {
       event_id: buildEventId(rawPayload, time),
       time,
+      received_at:
+        serverTimestamp ??
+        (typeof rawPayload.received_at === 'string' && rawPayload.received_at.length > 0
+          ? rawPayload.received_at
+          : undefined),
       event_type: String(rawPayload.event_type ?? rawPayload.action ?? ''),
       level: String(rawPayload.level ?? ''),
       target: String(rawPayload.target ?? ''),
@@ -150,22 +187,42 @@ export const useRiskStore = defineStore('risk', () => {
   }
 
   async function fetchStatus() {
-    try {
-      const data = await riskApi.getStatus();
-      status.value = data;
-      return data;
-    } catch (e: unknown) {
-      error.value = e instanceof Error ? e.message : String(e);
-      return null;
+    if (statusRequest) {
+      return statusRequest;
     }
+
+    statusRequest = (async () => {
+      try {
+        const data = await riskApi.getStatus();
+        status.value = data;
+        return data;
+      } catch (e: unknown) {
+        error.value = e instanceof Error ? e.message : String(e);
+        return null;
+      } finally {
+        statusRequest = null;
+      }
+    })();
+
+    return statusRequest;
   }
 
   async function fetchExposure() {
-    try {
-      exposure.value = await riskApi.getExposure();
-    } catch (e: unknown) {
-      error.value = e instanceof Error ? e.message : String(e);
+    if (exposureRequest) {
+      return exposureRequest;
     }
+
+    exposureRequest = (async () => {
+      try {
+        exposure.value = await riskApi.getExposure();
+      } catch (e: unknown) {
+        error.value = e instanceof Error ? e.message : String(e);
+      } finally {
+        exposureRequest = null;
+      }
+    })();
+
+    return exposureRequest;
   }
 
   async function fetchEvents(limit = eventsPageSize.value, offset = (currentEventsPage.value - 1) * eventsPageSize.value) {
@@ -241,6 +298,22 @@ export const useRiskStore = defineStore('risk', () => {
     }
   }
 
+  function refreshRealtimeState() {
+    if (realtimeRefreshRequest) {
+      hasPendingRealtimeRefresh = true;
+      return;
+    }
+
+    realtimeRefreshRequest = (async () => {
+      do {
+        hasPendingRealtimeRefresh = false;
+        await Promise.all([fetchStatus(), fetchExposure()]);
+      } while (hasPendingRealtimeRefresh);
+    })().finally(() => {
+      realtimeRefreshRequest = null;
+    });
+  }
+
   function updateFromWS(data: Record<string, unknown>, serverTimestamp?: string) {
     const wsEvent = normalizeRiskEvent(data, serverTimestamp);
     const { insertedCount } = mergeEvents([wsEvent]);
@@ -251,7 +324,7 @@ export const useRiskStore = defineStore('risk', () => {
       eventsTotal.value += insertedCount;
     }
 
-    void Promise.all([fetchStatus(), fetchExposure()]);
+    refreshRealtimeState();
   }
 
   async function sampleDrawdown() {

@@ -71,7 +71,7 @@ RiskView ──→ riskStore ──→ child components (props)
 }
 ```
 
-**Handler:** On message, normalize the payload into a `RiskEvent`, derive a stable `event_id` from `event_id | id | metadata.event_id | metadata.id` (or fall back to `time:event_type:level:target:reason`), upsert by `event_id`, keep page 1 unique, increment totals only for new ids, then refresh `riskStore.fetchStatus()` and `riskStore.fetchExposure()`.
+**Handler:** On message, normalize the payload into a `RiskEvent`, preserve payload event time separately from websocket `timestamp`, derive a stable `event_id` from `event_id | id | metadata.event_id | metadata.id` (or fall back to `time:event_type:level:target:reason` when the event includes a real timestamp, otherwise a deterministic fingerprint of `event_type + level + target + reason + metadata`), upsert by `event_id`, keep page 1 unique, increment totals only for new ids, then trigger a coalesced status/exposure refresh so bursts collapse into at most one in-flight fetch plus one queued rerun.
 
 ## Component Designs
 
@@ -107,7 +107,7 @@ RiskView ──→ riskStore ──→ child components (props)
 **Data accumulation:**
 - The `risk` WS channel pushes event alerts (BLOCKED/HALT), not continuous drawdown values.
 - Drawdown data comes from `GET /risk/status` only.
-- Poll `fetchStatus()` every 5s while page is active, append `drawdown.current_pct` to local `drawdownHistory` array on each poll.
+- Poll `sampleDrawdown()` every 5s while page is active; it calls `fetchStatus()` and appends `drawdown.current_pct` into store-managed `drawdownHistory`.
 - Store maintains `drawdownHistory: Array<{ time: number; value: number }>` in `riskStore`.
 - Time range selector: Session (default) / 1H / 24H / All.
 
@@ -187,7 +187,7 @@ CSS Grid: `grid-template-columns: 1fr 1fr`, `grid-template-rows: auto 1fr 1fr`. 
 - `fetchEvents(limit, offset)` — GET /risk/events
 - `fetchConfig()` — GET /risk/config
 - `postKillSwitch(payload)` — POST /risk/kill-switch with optimistic concurrency (`expected_state`) and replay protection (`idempotency_key`), then refresh status and exposure
-- `updateFromWS(data)` — normalize and upsert the event by `event_id`, refresh status/exposure, append to page 1 without duplicates
+- `updateFromWS(data)` — normalize and upsert the event by `event_id`, preserve `received_at`, trigger a coalesced status/exposure refresh, append to page 1 without duplicates
 
 ## TypeScript Types
 

@@ -442,6 +442,38 @@ describe('risk store', () => {
 
       expect(store.eventsTotal).toBe(1);
     });
+
+    it('coalesces websocket refreshes while status and exposure requests are in flight', async () => {
+      let resolveStatus!: (value: RiskStatus) => void;
+      let resolveExposure!: (value: ExposureData) => void;
+
+      mockedRiskApi.getStatus.mockImplementationOnce(() => new Promise((resolve) => {
+        resolveStatus = resolve;
+      }));
+      mockedRiskApi.getExposure.mockImplementationOnce(() => new Promise((resolve) => {
+        resolveExposure = resolve;
+      }));
+      mockedRiskApi.getStatus.mockResolvedValue(fakeStatus);
+      mockedRiskApi.getExposure.mockResolvedValue(fakeExposure);
+
+      const store = useRiskStore();
+      store.updateFromWS(makeEvent({ event_id: 'burst-1' }));
+      store.updateFromWS(makeEvent({ event_id: 'burst-2' }));
+      store.updateFromWS(makeEvent({ event_id: 'burst-3' }));
+
+      await Promise.resolve();
+
+      expect(mockedRiskApi.getStatus).toHaveBeenCalledTimes(1);
+      expect(mockedRiskApi.getExposure).toHaveBeenCalledTimes(1);
+
+      resolveStatus(fakeStatus);
+      resolveExposure(fakeExposure);
+
+      await vi.waitFor(() => {
+        expect(mockedRiskApi.getStatus).toHaveBeenCalledTimes(2);
+        expect(mockedRiskApi.getExposure).toHaveBeenCalledTimes(2);
+      });
+    });
   });
 
   // ── mergeRealtimeEvent ───────────────────────────────────────────
@@ -654,7 +686,7 @@ describe('risk store', () => {
       expect(store.events[0].time).toBe('2026-03-15T10:00:00Z');
     });
 
-    it('generates current time when both time and timestamp are missing', async () => {
+    it('leaves time empty when both time and timestamp are missing', async () => {
       const rawEvent = {
         event_id: 'e-notime',
         event_type: 'ALERT',
@@ -664,17 +696,14 @@ describe('risk store', () => {
       } as any;
       mockedRiskApi.getEvents.mockResolvedValue({ events: [rawEvent], total: 1 });
 
-      const before = new Date().toISOString();
       const store = useRiskStore();
       await store.fetchEvents();
-      const after = new Date().toISOString();
 
-      const eventTime = store.events[0].time;
-      expect(eventTime >= before).toBe(true);
-      expect(eventTime <= after).toBe(true);
+      expect(store.events[0].time).toBe('');
+      expect(store.events[0].received_at).toBeUndefined();
     });
 
-    it('prefers serverTimestamp over payload time in updateFromWS', () => {
+    it('stores websocket receipt time separately from payload event time', () => {
       mockedRiskApi.getStatus.mockResolvedValue(fakeStatus);
       mockedRiskApi.getExposure.mockResolvedValue(fakeExposure);
 
@@ -684,8 +713,27 @@ describe('risk store', () => {
         '2026-06-15T12:00:00Z',
       );
 
-      // We can verify through the computed events
-      expect(store.events.length).toBeGreaterThanOrEqual(0);
+      expect(store.events[0].time).toBe('2026-01-01T00:00:00Z');
+      expect(store.events[0].received_at).toBe('2026-06-15T12:00:00Z');
+    });
+
+    it('builds a deterministic fallback id when both id and event time are missing', async () => {
+      const rawEvent = {
+        event_type: 'ALERT',
+        level: 'info',
+        target: 'BTC/USDT',
+        reason: 'No identifiers',
+        metadata: { source: 'risk-engine', rule: 'max_total_exposure' },
+      } as any;
+      mockedRiskApi.getEvents.mockResolvedValue({ events: [rawEvent], total: 1 });
+
+      const store = useRiskStore();
+      await store.fetchEvents();
+      const firstId = store.events[0].event_id;
+
+      await store.fetchEvents();
+      expect(store.events[0].event_id).toBe(firstId);
+      expect(firstId).toContain('risk-engine');
     });
 
     it('uses action field as fallback for event_type', async () => {
